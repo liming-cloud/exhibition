@@ -1,0 +1,26 @@
+[
+  {
+    "id": "one",
+    "image": "/images/news/slide1.jpg",
+    "title": "第二十届中国国际会展论坛成功举办",
+    "description": "本届论坛以\"创新驱动，展会赋能\"为主题，吸引来自全球展览业界的知名专家学者共同探讨行业发展趋势。",
+    "date": "2024-03-15",
+    "content": "test1"
+  },
+  {
+    "id": "two",
+    "image": "/images/news/slide2.jpg",
+    "title": "2024国际绿色科技展览会即将开幕",
+    "description": "本次展会将展示最新的环保技术和可持续发展解决方案，推动全球绿色经济发展。",
+    "date": "2024-03-10",
+    "content": "test2"
+  },
+  {
+    "id": "three",
+    "image": "/images/news/slide3.jpg",
+    "title": "数字技术展览会创新成果显著",
+    "description": "展会期间达成合作项目超过300个，交易额突破100亿元，展现了数字经济的蓬勃发展。",
+    "date": "2024-03-05",
+    "content": "test3"
+  }
+]
