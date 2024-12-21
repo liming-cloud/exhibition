@@ -26,12 +26,12 @@ const menuItems = [
   },
   {
     icon: 'Document',
-    title: '新闻管理',
+    title: '市场资讯管理',
     path: '/admin/news'
   },
   {
     icon: 'Discount',
-    title: '优惠政策管理',
+    title: '补贴信息管理',
     path: '/admin/policy'
   },
   {

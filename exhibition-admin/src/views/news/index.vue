@@ -2,7 +2,7 @@
   <div class="news-container">
     <div class="header">
       <el-button type="primary" @click="handleAdd">
-        添加新闻
+        添加市场资讯
       </el-button>
     </div>
 
@@ -116,8 +116,8 @@ import type { NewsItem } from '@/types'
 const tableData = ref<NewsItem[]>([
   {
     id: 1,
-    title: '示例新闻',
-    content: '这是一条示例新闻内容',
+    title: '示例市场资讯',
+    content: '这是一条示例市场资讯内容',
     image: 'https://example.com/news1.jpg',
     publishTime: '2024-01-01',
     status: true
@@ -125,7 +125,7 @@ const tableData = ref<NewsItem[]>([
 ])
 
 const dialogVisible = ref(false)
-const dialogTitle = ref('添加新闻')
+const dialogTitle = ref('添加市场资讯')
 const currentItem = ref<NewsItem>({
   id: 0,
   title: '',
@@ -136,7 +136,7 @@ const currentItem = ref<NewsItem>({
 })
 
 const handleAdd = () => {
-  dialogTitle.value = '添加新闻'
+  dialogTitle.value = '添加市场资讯'
   currentItem.value = {
     id: 0,
     title: '',
@@ -149,13 +149,13 @@ const handleAdd = () => {
 }
 
 const handleEdit = (row: NewsItem) => {
-  dialogTitle.value = '编辑新闻'
+  dialogTitle.value = '编辑市场资讯'
   currentItem.value = { ...row }
   dialogVisible.value = true
 }
 
 const handleDelete = (row: NewsItem) => {
-  ElMessageBox.confirm('确认删除该新闻吗？', '提示', {
+  ElMessageBox.confirm('确认删除该市场资讯吗？', '提示', {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
     type: 'warning'

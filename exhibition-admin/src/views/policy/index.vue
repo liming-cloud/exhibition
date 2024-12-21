@@ -2,7 +2,7 @@
   <div class="policy-container">
     <div class="header">
       <el-button type="primary" @click="handleAdd">
-        添加政策
+        添加补贴信息
       </el-button>
     </div>
 
@@ -100,8 +100,8 @@ import type { PolicyItem } from '@/types'
 const tableData = ref<PolicyItem[]>([
   {
     id: 1,
-    title: '示例政策',
-    content: '这是一条示例优惠政策内容',
+    title: '示例补贴信息',
+    content: '这是一条示例补贴信息内容',
     startTime: '2024-01-01',
     endTime: '2024-12-31',
     status: true
@@ -109,7 +109,7 @@ const tableData = ref<PolicyItem[]>([
 ])
 
 const dialogVisible = ref(false)
-const dialogTitle = ref('添加政策')
+const dialogTitle = ref('添加补贴信息')
 const currentItem = ref<PolicyItem>({
   id: 0,
   title: '',
@@ -120,7 +120,7 @@ const currentItem = ref<PolicyItem>({
 })
 
 const handleAdd = () => {
-  dialogTitle.value = '添加政策'
+  dialogTitle.value = '添加补贴信息'
   currentItem.value = {
     id: 0,
     title: '',
@@ -133,13 +133,13 @@ const handleAdd = () => {
 }
 
 const handleEdit = (row: PolicyItem) => {
-  dialogTitle.value = '编辑政策'
+  dialogTitle.value = '编辑补贴信息'
   currentItem.value = { ...row }
   dialogVisible.value = true
 }
 
 const handleDelete = (row: PolicyItem) => {
-  ElMessageBox.confirm('确认删除该政策吗？', '提示', {
+  ElMessageBox.confirm('确认删除该补贴信息吗？', '提示', {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
     type: 'warning'
@@ -155,11 +155,6 @@ const handleDelete = (row: PolicyItem) => {
 const handleSubmit = () => {
   if (!currentItem.value.title || !currentItem.value.content || !currentItem.value.startTime || !currentItem.value.endTime) {
     ElMessage.error('请填写完整信息')
-    return
-  }
-
-  if (new Date(currentItem.value.startTime) > new Date(currentItem.value.endTime)) {
-    ElMessage.error('开始时间不能大于结束时间')
     return
   }
 
@@ -192,6 +187,6 @@ const handleSubmit = () => {
 }
 
 .mx-2 {
-  margin: 0 16px;
+  margin: 0 8px;
 }
 </style> 
