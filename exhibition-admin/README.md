@@ -1,24 +1,56 @@
-# exhibition-admin
+# 展会管理系统
 
-## Project setup
-```
-yarn install
+基于 Vue 3 + TypeScript + Vite + Element Plus 开发的展会管理系统。
+
+## 功能特性
+
+- 轮播图管理：支持图片上传、排序和状态管理
+- 咨询管理：支持图文内容发布、编辑和状态管理
+- 优惠政策管理：支持政策发布、时间管理和状态控制
+- 展会管理：支持展会信息管理、文档上传和状态跟踪
+
+## 开发环境
+
+- Node.js >= 16
+- pnpm >= 8
+
+## 项目设置
+
+```bash
+# 安装依赖
+pnpm install
+
+# 启动开发服务器
+pnpm dev
+
+# 构建生产版本
+pnpm build
 ```
 
-### Compiles and hot-reloads for development
+## 项目结构
+
 ```
-yarn serve
+src/
+├── assets/        # 静态资源
+├── components/    # 公共组件
+├── layout/        # 布局组件
+├── router/        # 路由配置
+├── stores/        # 状态管理
+└── views/         # 页面组件
+    ├── carousel/  # 轮播图管理
+    ├── news/      # 咨询管理
+    ├── policy/    # 优惠政策管理
+    └── exhibition/# 展会管理
 ```
 
-### Compiles and minifies for production
-```
-yarn build
-```
+## 开发规范
 
-### Lints and fixes files
-```
-yarn lint
-```
+- 使用 TypeScript 编写代码
+- 使用 Element Plus 组件库
+- 遵循 Vue 3 组合式 API 风格
+- 使用 ESLint 进行代码检查
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+## 默认账号
+
+- 用户名：admin
+- 密码：123456

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.exhibition.admin.mapper.ExhibitionDetailMapper">
+  <resultMap id="BaseResultMap" type="cn.exhibition.admin.domain.entity.ExhibitionDetailPo">
+    <!--@mbg.generated-->
+    <!--@Table exhibition_detail-->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="location" jdbcType="VARCHAR" property="location" />
+    <result column="time" jdbcType="VARCHAR" property="time" />
+    <result column="year" jdbcType="VARCHAR" property="year" />
+    <result column="month" jdbcType="VARCHAR" property="month" />
+    <result column="sort" jdbcType="INTEGER" property="sort" />
+    <result column="file_url" jdbcType="LONGVARCHAR" property="fileUrl" />
+    <result column="country" jdbcType="INTEGER" property="country" />
+    <result column="country_name" jdbcType="VARCHAR" property="countryName" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, `name`, `location`, `time`, `year`, `month`, sort, file_url, country, country_name
+  </sql>
+</mapper>

@@ -11,19 +11,39 @@ export default defineConfig({
     }
   },
   server: {
-    host: '0.0.0.0',
     port: 3000,
+    host: true,
     proxy: {
-      [import.meta.env.VITE_APP_BASE_API]: {
-        target: import.meta.env.VITE_APP_API_URL,
+      '/api': {
+        target: 'http://127.0.0.1:8080',
         changeOrigin: true,
-        rewrite: (path) => path.replace(new RegExp('^' + import.meta.env.VITE_APP_BASE_API), '')
-      },
-      [import.meta.env.VITE_APP_UPLOAD_URL]: {
-        target: import.meta.env.VITE_APP_API_URL,
-        changeOrigin: true,
-        rewrite: (path) => path.replace(new RegExp('^' + import.meta.env.VITE_APP_UPLOAD_URL), '/upload')
+        rewrite: (path) => path.replace(/^\/api/, '')
+      }
+    }
+  },
+  css: {
+    preprocessorOptions: {
+      scss: {
+        additionalData: `@use "@/styles/element/index.scss" as *;`
+      }
+    }
+  },
+  build: {
+    target: 'es2015',
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true
+      }
+    },
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vue: ['vue', 'vue-router', 'pinia'],
+          elementPlus: ['element-plus']
+        }
       }
     }
   }
-}) 
+})

@@ -1,23 +1,31 @@
 import axios from 'axios'
-import type { AxiosInstance, InternalAxiosRequestConfig, AxiosResponse } from 'axios'
+import type { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios'
 import { ElMessage } from 'element-plus'
-import type { ApiResponse, PageResponse } from '@/types/response'
 
-// 创建 axios 实例
-const service: AxiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_APP_BASE_API, // 基础请求地址
-  timeout: 15000, // 请求超时时间
-  headers: {
-    'Content-Type': 'application/json;charset=utf-8'
+/** 获取图片完整URL */
+export const getImageUrl = (url: string) => {
+  if (!url) return ''
+  if (url.startsWith('http://') || url.startsWith('https://')) {
+    return url
   }
+  return `/api/file/preview?path=${encodeURIComponent(url)}`
+}
+
+// 创建axios实例
+const service: AxiosInstance = axios.create({
+  baseURL: '/api',
+  timeout: 10000
 })
 
 // 请求拦截器
 service.interceptors.request.use(
-  (config: InternalAxiosRequestConfig) => {
+  (config) => {
+    // 在发送请求之前做些什么
     return config
   },
   (error) => {
+    // 对请求错误做些什么
+    console.log(error)
     return Promise.reject(error)
   }
 )
@@ -25,49 +33,34 @@ service.interceptors.request.use(
 // 响应拦截器
 service.interceptors.response.use(
   (response: AxiosResponse) => {
-    const { data } = response
-    
-    // 检查响应状态码
-    if (data.code !== 200) {
-      ElMessage.error(data.msg || '请求失败')
-      return Promise.reject(new Error(data.msg || '请求失败'))
-    }
+    const res = response.data
 
-    // 判断是否为分页响应
-    if ('rows' in data && 'total' in data) {
-      return {
-        rows: data.rows,
-        total: data.total
-      }
-    }
+    // 如果返回的状态码不是200，说明接口有问题，把错误信息显示出来
+    if (res.code !== 200) {
+      ElMessage({
+        message: res.msg || '系统出错',
+        type: 'error',
+        duration: 5 * 1000
+      })
 
-    // 普通响应直接返回data字段
-    return data.data
+      return Promise.reject(new Error(res.msg || '系统出错'))
+    } else {
+      return res
+    }
   },
   (error) => {
-    ElMessage.error(error.message || '请求失败')
+    console.log('err' + error)
+    ElMessage({
+      message: error.message,
+      type: 'error',
+      duration: 5 * 1000
+    })
     return Promise.reject(error)
   }
 )
 
-// 封装GET请求
-export function get<T>(url: string, params?: any): Promise<T> {
-  return service.get(url, { params })
+const request = <T = any>(config: AxiosRequestConfig): Promise<T> => {
+  return service(config) as unknown as Promise<T>
 }
 
-// 封装POST请求
-export function post<T>(url: string, data?: any): Promise<T> {
-  return service.post(url, data)
-}
-
-// 封装PUT请求
-export function put<T>(url: string, data?: any): Promise<T> {
-  return service.put(url, data)
-}
-
-// 封装DELETE请求
-export function del<T>(url: string): Promise<T> {
-  return service.delete(url)
-}
-
-export default service 
+export default request 

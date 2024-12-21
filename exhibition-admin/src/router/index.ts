@@ -1,42 +1,53 @@
-import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
+import { createRouter, createWebHistory } from 'vue-router'
+import type { RouteRecordRaw } from 'vue-router'
 
-const routes: Array<RouteRecordRaw> = [
+const routes: RouteRecordRaw[] = [
+  {
+    path: '/',
+    redirect: '/login'
+  },
   {
     path: '/login',
     name: 'Login',
-    component: () => import('@/views/login/index.vue'),
+    component: () => import('../views/login/index.vue'),
     meta: { title: '登录' }
   },
   {
-    path: '/',
-    component: () => import('@/views/layout/index.vue'),
-    redirect: '/carousel',
+    path: '/admin',
+    name: 'Layout',
+    component: () => import('../layout/index.vue'),
+    redirect: '/admin/carousel',
+    meta: { requiresAuth: true },
     children: [
       {
         path: 'carousel',
         name: 'Carousel',
-        component: () => import('@/views/carousel/index.vue'),
-        meta: { title: '轮播图管理' }
+        component: () => import('../views/carousel/index.vue'),
+        meta: { title: '轮播图管理', requiresAuth: true }
       },
       {
         path: 'news',
         name: 'News',
-        component: () => import('@/views/news/index.vue'),
-        meta: { title: '资讯管理' }
+        component: () => import('../views/news/index.vue'),
+        meta: { title: '新闻管理', requiresAuth: true }
+      },
+      {
+        path: 'policy',
+        name: 'Policy',
+        component: () => import('../views/policy/index.vue'),
+        meta: { title: '优惠政策管理', requiresAuth: true }
       },
       {
         path: 'exhibition',
         name: 'Exhibition',
-        component: () => import('@/views/exhibition/index.vue'),
-        meta: { title: '展会信息管理' }
-      },
-      {
-        path: 'subsidy',
-        name: 'Subsidy',
-        component: () => import('@/views/subsidy/index.vue'),
-        meta: { title: '补贴政策管理' }
+        component: () => import('../views/exhibition/index.vue'),
+        meta: { title: '展会管理', requiresAuth: true }
       }
     ]
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    redirect: '/login'
   }
 ]
 
@@ -45,10 +56,23 @@ const router = createRouter({
   routes
 })
 
+// 路由守卫
 router.beforeEach((to, from, next) => {
-  const isAuthenticated = localStorage.getItem('isAuthenticated')
-  if (to.path !== '/login' && !isAuthenticated) {
-    next('/login')
+  // 设置页面标题
+  document.title = `${to.meta.title || '展会管理系统'}`
+  
+  const token = localStorage.getItem('token')
+  const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
+
+  if (requiresAuth && !token) {
+    // 需要认证但没有token，跳转到登录页
+    next({
+      path: '/login',
+      query: { redirect: to.fullPath }
+    })
+  } else if (to.path === '/login' && token) {
+    // 已登录但访问登录页，跳转到首页
+    next('/admin')
   } else {
     next()
   }

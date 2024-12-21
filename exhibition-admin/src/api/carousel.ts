@@ -1,33 +1,37 @@
-import { get, post, put, del } from '@/utils/request'
-import type { ApiResponse, PageResponse } from '@/types/response'
+import request from '@/utils/request'
 import type { Carousel, CarouselQuery } from '@/types/carousel'
+import type { ApiResponse, TableDataInfo } from '@/types/common'
 
-// 获取轮播图列表
-export function getCarouselList(params: CarouselQuery) {
-  return get<PageResponse<Carousel>>('/carousel/list', params)
+/** 查询轮播图列表 */
+export function listCarousel(query: CarouselQuery) {
+  return request<TableDataInfo<Carousel>>({
+    url: '/carousel/page',
+    method: 'get',
+    params: query
+  })
 }
 
-// 获取轮播图详情
-export function getCarouselDetail(id: number) {
-  return get<ApiResponse<Carousel>>(`/carousel/${id}`)
+/** 查询轮播图详细 */
+export function getCarousel(id: number) {
+  return request<ApiResponse<Carousel>>({
+    url: `/carousel/detail/${id}`,
+    method: 'get'
+  })
 }
 
-// 新增轮播图
-export function addCarousel(data: Carousel) {
-  return post<ApiResponse<void>>('/carousel', data)
+/** 新增或修改轮播图 */
+export function saveCarousel(data: Carousel) {
+  return request<ApiResponse<void>>({
+    url: '/carousel/save',
+    method: 'post',
+    data
+  })
 }
 
-// 更新轮播图
-export function updateCarousel(data: Carousel) {
-  return put<ApiResponse<void>>('/carousel', data)
-}
-
-// 删除轮播图
-export function deleteCarousel(id: number) {
-  return del<ApiResponse<void>>(`/carousel/${id}`)
-}
-
-// 更新轮播图状态
-export function updateCarouselStatus(id: number, status: number) {
-  return put<ApiResponse<void>>(`/carousel/status/${id}/${status}`)
+/** 删除轮播图 */
+export function delCarousel(id: number) {
+  return request<ApiResponse<void>>({
+    url: `/carousel/delete/${id}`,
+    method: 'delete'
+  })
 } 

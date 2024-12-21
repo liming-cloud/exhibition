@@ -1,164 +1,162 @@
 <template>
   <div class="app-container">
-    <!-- 搜索区域 -->
-    <el-card class="search-wrapper">
-      <el-form :model="queryParams" ref="queryForm" :inline="true">
+    <el-card class="box-card">
+      <!-- 搜索区域 -->
+      <el-form :model="queryParams" ref="queryRef" :inline="true">
         <el-form-item label="标题" prop="title">
-          <el-input
-            v-model="queryParams.title"
-            placeholder="请输入标题"
-            clearable
-            @keyup.enter="handleQuery"
-          />
+          <el-input v-model="queryParams.title" placeholder="请输入标题" clearable style="width: 200px" @keyup.enter="handleQuery" />
         </el-form-item>
         <el-form-item label="状态" prop="status">
-          <el-select v-model="queryParams.status" placeholder="请选择状态" clearable>
+          <el-select v-model="queryParams.status" placeholder="轮播图状态" clearable style="width: 200px">
             <el-option label="启用" :value="1" />
             <el-option label="禁用" :value="0" />
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="handleQuery">查询</el-button>
-          <el-button @click="resetQuery">重置</el-button>
+          <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
+          <el-button icon="Refresh" @click="resetQuery">重置</el-button>
         </el-form-item>
       </el-form>
-    </el-card>
 
-    <!-- 操作按钮区域 -->
-    <el-card class="table-wrapper">
-      <template #header>
-        <el-button type="primary" @click="handleAdd">新增轮播图</el-button>
-      </template>
+      <!-- 操作按钮区域 -->
+      <el-row :gutter="10" class="mb8">
+        <el-col :span="1.5">
+          <el-button type="primary" icon="Plus" @click="handleAdd">新增</el-button>
+        </el-col>
+      </el-row>
 
       <!-- 表格区域 -->
       <el-table v-loading="loading" :data="carouselList">
-        <el-table-column type="index" label="序号" width="60" />
+        <el-table-column type="index" label="序号" width="50" />
         <el-table-column prop="title" label="标题" />
-        <el-table-column prop="imageUrl" label="图片" width="120">
-          <template #default="{ row }">
-            <el-image
-              :src="row.imageUrl"
-              :preview-src-list="[row.imageUrl]"
-              fit="cover"
-              class="table-image"
-            />
+        <el-table-column prop="imageUrl" label="图片" width="100">
+          <template #default="scope">
+            <el-image 
+              :src="getImageUrl(scope.row.imageUrl)" 
+              :preview-src-list="[getImageUrl(scope.row.imageUrl)]" 
+              preview-teleported
+              fit="cover" 
+              style="width: 50px; height: 50px; cursor: pointer"
+            >
+              <template #error>
+                <div class="image-slot">
+                  <el-icon><Picture /></el-icon>
+                </div>
+              </template>
+            </el-image>
           </template>
         </el-table-column>
-        <el-table-column prop="link" label="链接" show-overflow-tooltip />
+        <el-table-column prop="detail" label="详情" show-overflow-tooltip>
+          <template #default="scope">
+            <div v-html="scope.row.detail"></div>
+          </template>
+        </el-table-column>
         <el-table-column prop="sort" label="排序" width="80" />
         <el-table-column prop="status" label="状态" width="80">
-          <template #default="{ row }">
-            <el-switch
-              v-model="row.status"
-              :active-value="1"
-              :inactive-value="0"
-              @change="handleStatusChange(row)"
-            />
+          <template #default="scope">
+            <el-tag :type="scope.row.status === 1 ? 'success' : 'info'">
+              {{ scope.row.status === 1 ? '正常' : '停用' }}
+            </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="createTime" label="创建时间" width="180" />
-        <el-table-column label="操作" width="180" fixed="right">
-          <template #default="{ row }">
-            <el-button type="primary" link @click="handleEdit(row)">编辑</el-button>
-            <el-button type="danger" link @click="handleDelete(row)">删除</el-button>
+        <el-table-column label="操作" width="180" align="center">
+          <template #default="scope">
+            <el-button type="primary" link icon="Edit" @click="handleUpdate(scope.row)">修改</el-button>
+            <el-button type="danger" link icon="Delete" @click="handleDelete(scope.row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
 
       <!-- 分页区域 -->
-      <div class="pagination-wrapper">
+      <div class="pagination-container">
         <el-pagination
           v-model:current-page="queryParams.pageNum"
           v-model:page-size="queryParams.pageSize"
           :page-sizes="[10, 20, 30, 50]"
-          :total="total"
+          :small="false"
+          :disabled="false"
+          :background="true"
           layout="total, sizes, prev, pager, next, jumper"
+          :total="total"
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
         />
       </div>
-    </el-card>
 
-    <!-- 新增/编辑对话框 -->
-    <el-dialog
-      :title="dialogTitle"
-      v-model="dialogVisible"
-      width="500px"
-      append-to-body
-      destroy-on-close
-    >
-      <el-form
-        ref="formRef"
-        :model="form"
-        :rules="rules"
-        label-width="80px"
-      >
-        <el-form-item label="标题" prop="title">
-          <el-input v-model="form.title" placeholder="请输入标题" />
-        </el-form-item>
-        <el-form-item label="图片" prop="imageUrl">
-          <el-upload
-            class="avatar-uploader"
-            :action="import.meta.env.VITE_APP_UPLOAD_URL"
-            :show-file-list="false"
-            :before-upload="beforeUpload"
-            :on-success="handleUploadSuccess"
-          >
-            <img v-if="form.imageUrl" :src="form.imageUrl" class="avatar" />
-            <el-icon v-else class="avatar-uploader-icon"><Plus /></el-icon>
-          </el-upload>
-        </el-form-item>
-        <el-form-item label="链接" prop="link">
-          <el-input v-model="form.link" placeholder="请输入链接" />
-        </el-form-item>
-        <el-form-item label="排序" prop="sort">
-          <el-input-number v-model="form.sort" :min="0" :max="999" />
-        </el-form-item>
-        <el-form-item label="状态" prop="status">
-          <el-radio-group v-model="form.status">
-            <el-radio :label="1">启用</el-radio>
-            <el-radio :label="0">禁用</el-radio>
-          </el-radio-group>
-        </el-form-item>
-      </el-form>
-      <template #footer>
-        <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="handleSubmit">确 定</el-button>
-      </template>
-    </el-dialog>
+      <!-- 添加或修改轮播图对话框 -->
+      <el-dialog :title="title" v-model="open" width="500px" append-to-body>
+        <el-form ref="carouselRef" :model="form" :rules="rules" label-width="80px">
+          <el-form-item label="标题" prop="title">
+            <el-input v-model="form.title" placeholder="请输入标题" />
+          </el-form-item>
+          <el-form-item label="图片" prop="imageUrl">
+            <el-upload
+              class="avatar-uploader"
+              :action="uploadUrl"
+              name="file"
+              :show-file-list="false"
+              :on-success="handleUploadSuccess"
+              :before-upload="beforeUpload"
+            >
+              <el-image 
+                v-if="form.imageUrl" 
+                :src="getImageUrl(form.imageUrl)" 
+                :preview-src-list="[getImageUrl(form.imageUrl)]"
+                preview-teleported
+                class="avatar" 
+              />
+              <el-icon v-else class="avatar-uploader-icon"><Plus /></el-icon>
+            </el-upload>
+          </el-form-item>
+          <el-form-item label="链接" prop="link">
+            <el-input v-model="form.link" placeholder="请输入链接" />
+          </el-form-item>
+          <el-form-item label="排序" prop="sort">
+            <el-input-number v-model="form.sort" :min="0" :max="999" controls-position="right" />
+          </el-form-item>
+          <el-form-item label="状态">
+            <el-radio-group v-model="form.status">
+              <el-radio :label="1">启用</el-radio>
+              <el-radio :label="0">禁用</el-radio>
+            </el-radio-group>
+          </el-form-item>
+        </el-form>
+        <template #footer>
+          <div class="dialog-footer">
+            <el-button type="primary" @click="submitForm">确 定</el-button>
+            <el-button @click="cancel">取 消</el-button>
+          </div>
+        </template>
+      </el-dialog>
+    </el-card>
   </div>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue'
-import { ElMessage, ElMessageBox, FormInstance } from 'element-plus'
-import { Plus } from '@element-plus/icons-vue'
+import { ElMessage, ElMessageBox } from 'element-plus'
+import type { FormInstance, UploadProps } from 'element-plus'
+import { Picture, Plus } from '@element-plus/icons-vue'
+import { listCarousel, getCarousel, delCarousel, saveCarousel } from '@/api/carousel'
 import type { Carousel, CarouselQuery } from '@/types/carousel'
-import {
-  getCarouselList,
-  addCarousel,
-  updateCarousel,
-  deleteCarousel,
-  updateCarouselStatus
-} from '@/api/carousel'
+import { getImageUrl } from '@/utils/request'
+
+const loading = ref(false)
+const total = ref(0)
+const open = ref(false)
+const title = ref('')
+const carouselList = ref<Carousel[]>([])
+const uploadUrl = '/api/file/upload'
 
 // 查询参数
 const queryParams = reactive<CarouselQuery>({
   pageNum: 1,
   pageSize: 10,
-  title: '',
+  title: undefined,
   status: undefined
 })
 
-// 数据列表
-const carouselList = ref<Carousel[]>([])
-const total = ref(0)
-const loading = ref(false)
-
-// 表单相关
-const dialogVisible = ref(false)
-const dialogTitle = ref('')
-const formRef = ref<FormInstance>()
+// 表单参数
 const form = reactive<Carousel>({
   title: '',
   imageUrl: '',
@@ -168,173 +166,150 @@ const form = reactive<Carousel>({
 })
 
 // 表单校验规则
-const rules = {
-  title: [{ required: true, message: '请输入标题', trigger: 'blur' }],
-  imageUrl: [{ required: true, message: '请上传图片', trigger: 'change' }],
-  link: [{ required: true, message: '请输入链接', trigger: 'blur' }],
-  sort: [{ required: true, message: '请输入排序', trigger: 'blur' }],
-  status: [{ required: true, message: '请选择状态', trigger: 'change' }]
-}
+const rules = reactive({
+  title: [{ required: true, message: '标题不能为空', trigger: 'blur' }],
+  imageUrl: [{ required: true, message: '请上传图片', trigger: 'blur' }],
+  link: [{ required: true, message: '链接不能为空', trigger: 'blur' }],
+  sort: [{ required: true, message: '排序不能为空', trigger: 'blur' }]
+})
 
-// 获取列表数据
+const queryRef = ref<FormInstance>()
+const carouselRef = ref<FormInstance>()
+
+/** 查询轮播图列表 */
 const getList = async () => {
+  loading.value = true
   try {
-    loading.value = true
-    const { rows, total: totalCount } = await getCarouselList(queryParams)
-    carouselList.value = rows
-    total.value = totalCount
+    const res = await listCarousel(queryParams)
+    carouselList.value = res.rows
+    total.value = res.total
   } catch (error) {
-    console.error('获取轮播图列表失败:', error)
-  } finally {
-    loading.value = false
+    console.error(error)
   }
+  loading.value = false
 }
 
-// 查询操作
+/** 搜索按钮操作 */
 const handleQuery = () => {
   queryParams.pageNum = 1
   getList()
 }
 
-// 重置查询
+/** 重置按钮操作 */
 const resetQuery = () => {
-  queryParams.title = ''
-  queryParams.status = undefined
+  queryRef.value?.resetFields()
   handleQuery()
 }
 
-// 分页操作
-const handleSizeChange = (val: number) => {
-  queryParams.pageSize = val
-  getList()
-}
-
-const handleCurrentChange = (val: number) => {
-  queryParams.pageNum = val
-  getList()
-}
-
-// 新增操作
+/** 新增按钮操作 */
 const handleAdd = () => {
-  dialogTitle.value = '新增轮播图'
-  dialogVisible.value = true
-  Object.assign(form, {
-    title: '',
-    imageUrl: '',
-    link: '',
-    sort: 0,
-    status: 1
-  })
+  reset()
+  open.value = true
+  title.value = '添加轮播图'
 }
 
-// 编辑操作
-const handleEdit = (row: Carousel) => {
-  dialogTitle.value = '编辑轮播图'
-  dialogVisible.value = true
-  Object.assign(form, row)
+/** 修改按钮操作 */
+const handleUpdate = async (row: Carousel) => {
+  reset()
+  const id = row.id || 0
+  const res = await getCarousel(id)
+  Object.assign(form, res.data)
+  open.value = true
+  title.value = '修改轮播图'
 }
 
-// 提交表单
-const handleSubmit = async () => {
-  if (!formRef.value) return
-  await formRef.value.validate(async (valid) => {
+/** 提交按钮 */
+const submitForm = async () => {
+  carouselRef.value?.validate(async (valid) => {
     if (valid) {
       try {
-        if (form.id) {
-          await updateCarousel(form)
-          ElMessage.success('修改成功')
-        } else {
-          await addCarousel(form)
-          ElMessage.success('新增成功')
-        }
-        dialogVisible.value = false
+        await saveCarousel(form)
+        ElMessage.success('操作成功')
+        open.value = false
         getList()
       } catch (error) {
-        console.error('保存失败:', error)
+        console.error(error)
       }
     }
   })
 }
 
-// 删除操作
+/** 删除按钮操作 */
 const handleDelete = (row: Carousel) => {
-  ElMessageBox.confirm('确认要删除该轮播图吗？', '提示', {
+  const id = row.id
+  if (!id) return
+  ElMessageBox.confirm('是否确认删除该轮播图?', '警告', {
     type: 'warning'
   }).then(async () => {
-    try {
-      await deleteCarousel(row.id!)
-      ElMessage.success('删除成功')
-      getList()
-    } catch (error) {
-      console.error('删除失败:', error)
-    }
+    await delCarousel(id)
+    ElMessage.success('删除成功')
+    getList()
   })
 }
 
-// 状态更新
-const handleStatusChange = async (row: Carousel) => {
-  try {
-    await updateCarouselStatus(row.id!, row.status)
-    ElMessage.success('状态更新成功')
-  } catch (error) {
-    console.error('状态更新失败:', error)
-    // 更新失败时恢复状态
-    row.status = row.status === 1 ? 0 : 1
+/** 表单重置 */
+const reset = () => {
+  form.id = undefined
+  form.title = ''
+  form.imageUrl = ''
+  form.link = ''
+  form.sort = 0
+  form.status = 1
+  carouselRef.value?.resetFields()
+}
+
+/** 上传成功回调 */
+const handleUploadSuccess: UploadProps['onSuccess'] = (response) => {
+  if (response.code === 200) {
+    form.imageUrl = response.data
+    ElMessage.success('上传成功')
+  } else {
+    ElMessage.error(response.msg || '上传失败')
   }
 }
 
-// 上传相关
-const beforeUpload = (file: File) => {
+/** 上传前的校验 */
+const beforeUpload: UploadProps['beforeUpload'] = (file) => {
   const isImage = file.type.startsWith('image/')
-  const isLt2M = file.size / 1024 / 1024 < 2
-
   if (!isImage) {
     ElMessage.error('只能上传图片文件!')
     return false
   }
+  const isLt2M = file.size / 1024 / 1024 < 10
   if (!isLt2M) {
-    ElMessage.error('图片大小不能超过 2MB!')
+    ElMessage.error('上传图片大小不能超过 10MB!')
     return false
   }
   return true
 }
 
-const handleUploadSuccess = (response: any) => {
-  form.imageUrl = response.data
+/** 取消按钮操作 */
+const cancel = () => {
+  open.value = false
+  reset()
 }
 
-// 初始化
+/** 分页大小改变 */
+const handleSizeChange = (val: number) => {
+  queryParams.pageSize = val
+  getList()
+}
+
+/** 页码改变 */
+const handleCurrentChange = (val: number) => {
+  queryParams.pageNum = val
+  getList()
+}
+
 onMounted(() => {
   getList()
 })
 </script>
 
 <style scoped>
-.app-container {
-  padding: 20px;
-}
-
-.search-wrapper {
-  margin-bottom: 20px;
-}
-
-.table-wrapper {
-  margin-bottom: 20px;
-}
-
-.table-image {
-  width: 80px;
-  height: 80px;
-  border-radius: 4px;
-}
-
-.pagination-wrapper {
-  margin-top: 20px;
-  display: flex;
-  justify-content: flex-end;
-}
-
 .avatar-uploader {
+  width: 178px;
+  height: 178px;
   border: 1px dashed var(--el-border-color);
   border-radius: 6px;
   cursor: pointer;
@@ -350,15 +325,15 @@ onMounted(() => {
 .avatar-uploader-icon {
   font-size: 28px;
   color: #8c939d;
-  width: 120px;
-  height: 120px;
+  width: 178px;
+  height: 178px;
   text-align: center;
-  line-height: 120px;
+  line-height: 178px;
 }
 
 .avatar {
-  width: 120px;
-  height: 120px;
+  width: 178px;
+  height: 178px;
   display: block;
 }
 </style> 

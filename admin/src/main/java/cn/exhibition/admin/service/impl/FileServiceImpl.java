@@ -37,7 +37,10 @@ public class FileServiceImpl implements FileService {
             if (originalFileName == null || originalFileName.isEmpty()) {
                 throw new IOException("File name is invalid.");
             }
-            String sanitizedFileName = originalFileName.trim().replaceAll("\\s+", "_").replaceAll("[^a-zA-Z0-9._-]", "");
+            // 只替换空格为下划线，保留中文字符和其他合法字符
+            String sanitizedFileName = originalFileName.trim()
+                .replaceAll("\\s+", "_")
+                .replaceAll("[\\\\/:*?\"<>|]", ""); // 只移除 Windows/Unix 文件系统中的非法字符
 
             // 保存文件
             Path filePath = uploadPath.resolve(sanitizedFileName);
