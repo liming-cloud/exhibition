@@ -151,7 +151,7 @@ const form = reactive<Cases>({
 })
 
 const rules = reactive({
-  title: [{ required: true, message: '请输��标题', trigger: 'blur' }],
+  title: [{ required: true, message: '请输输入标题', trigger: 'blur' }],
   content: [{ required: true, message: '请输入内容', trigger: 'blur' }],
   coverUrl: [{ required: true, message: '请上传封面图', trigger: 'change' }]
 })

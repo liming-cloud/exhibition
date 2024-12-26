@@ -152,7 +152,7 @@ const rules = reactive({
 
 /** 格式化金额 */
 const formatPrice = (price: number) => {
-  return `¥ ${(price / 100).toFixed(2)}`
+  return `¥ ${price}`
 }
 
 /** 查询列表 */
