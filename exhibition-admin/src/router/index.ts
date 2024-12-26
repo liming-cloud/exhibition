@@ -29,19 +29,25 @@ const routes: RouteRecordRaw[] = [
         path: 'news',
         name: 'News',
         component: () => import('../views/news/index.vue'),
-        meta: { title: '新闻管理', requiresAuth: true }
+        meta: { title: '市场资讯管理', requiresAuth: true }
       },
       {
         path: 'policy',
         name: 'Policy',
         component: () => import('../views/policy/index.vue'),
-        meta: { title: '优惠政策管理', requiresAuth: true }
+        meta: { title: '补贴信息管理', requiresAuth: true }
       },
       {
         path: 'exhibition',
         name: 'Exhibition',
         component: () => import('../views/exhibition/index.vue'),
         meta: { title: '展会管理', requiresAuth: true }
+      },
+      {
+        path: 'cases',
+        name: 'Cases',
+        component: () => import('../views/cases/index.vue'),
+        meta: { title: '案例管理', requiresAuth: true }
       }
     ]
   },

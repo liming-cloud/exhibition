@@ -16,5 +16,5 @@ public interface InformationService{
 
     InformationPo findById(Integer id);
 
-    IPage<InformationPo> findByPage(PageQuery pageQuery, InformationPo informationPo);
+    IPage<InformationPo> findByPage(PageQuery pageQuery, String title);
 }

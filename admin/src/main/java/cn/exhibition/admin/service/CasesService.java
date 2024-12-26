@@ -3,7 +3,6 @@ package cn.exhibition.admin.service;
 import cn.exhibition.admin.database.PageQuery;
 import cn.exhibition.admin.domain.entity.CasesPo;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
 /**
  * @author slm
@@ -22,5 +21,5 @@ public interface CasesService {
 
     CasesPo findById(Integer id);
 
-    IPage<CasesPo> findByPage(PageQuery pageQuery, CasesPo casesPo);
+    IPage<CasesPo> findByPage(PageQuery pageQuery, String title);
 }

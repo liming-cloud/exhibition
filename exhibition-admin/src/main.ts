@@ -7,6 +7,7 @@ import App from './App.vue'
 import router from './router'
 import './assets/main.css'
 import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
+import './styles/global.css'
 
 const app: VueApp = createApp(App)
 

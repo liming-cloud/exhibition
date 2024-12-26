@@ -4,8 +4,8 @@ export interface Exhibition {
   id?: number
   /** 展会名称 */
   name: string
-  /** 展会图片 */
-  fileUrl: string
+  /** 展会内容 */
+  content: string
   /** 展会时间 */
   time: string
   /** 年份 */

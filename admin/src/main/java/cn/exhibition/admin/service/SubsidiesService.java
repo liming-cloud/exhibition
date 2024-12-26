@@ -17,5 +17,5 @@ public interface SubsidiesService {
 
     SubsidiesPo findById(Integer id);
 
-    IPage<SubsidiesPo> page(PageQuery pageQuery, SubsidiesPo subsidiesPo);
+    IPage<SubsidiesPo> page(PageQuery pageQuery, String title);
 }

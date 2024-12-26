@@ -12,6 +12,7 @@ import lombok.Data;
 @Data
 @TableName(value = "cases")
 public class CasesPo {
+
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 

@@ -3,7 +3,7 @@
     <el-pagination
       v-model:current-page="currentPage"
       v-model:page-size="pageSize"
-      :page-sizes="[10, 20, 30, 50]"
+      :page-sizes="pageSizes"
       :small="small"
       :disabled="disabled"
       :background="background"
@@ -84,4 +84,5 @@ function handleCurrentChange(val: number) {
 .pagination-container {
   background: #fff;
   padding: 10px;
-}</style> 
+}
+</style> 

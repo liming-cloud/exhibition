@@ -1,0 +1,152 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap');
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    @apply font-sans text-neutral-700 bg-white antialiased;
+  }
+
+  h1 {
+    @apply font-display text-4xl md:text-5xl font-bold text-neutral-800 leading-tight tracking-tight;
+  }
+
+  h2 {
+    @apply font-display text-3xl md:text-4xl font-bold text-neutral-800 leading-tight tracking-tight;
+  }
+
+  h3 {
+    @apply font-display text-2xl md:text-3xl font-semibold text-neutral-800 leading-snug tracking-tight;
+  }
+
+  p {
+    @apply text-neutral-600 leading-relaxed;
+  }
+}
+
+@layer components {
+  .container {
+    @apply max-w-7xl mx-auto px-3 sm:px-4 lg:px-6;
+  }
+
+  /* 页面标题区域 */
+  .page-header {
+    @apply relative py-16 overflow-hidden;
+  }
+
+  .page-title {
+    @apply text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-primary-500 to-primary-600 bg-clip-text text-transparent;
+  }
+
+  .page-subtitle {
+    @apply text-lg text-neutral-600 max-w-2xl mx-auto;
+  }
+
+  /* 装饰背景 */
+  .decorative-bg {
+    @apply absolute inset-0 pointer-events-none;
+  }
+
+  .decorative-shape-1 {
+    @apply absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-gradient-to-b from-primary-100/50 to-transparent rounded-[60px] rotate-12 transform -translate-y-1/2;
+  }
+
+  .decorative-shape-2 {
+    @apply absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-gradient-to-b from-accent-100/30 to-transparent rounded-[60px] -rotate-12 transform -translate-y-1/2;
+  }
+
+  /* 卡片样式 */
+  .card {
+    @apply bg-white rounded-3xl shadow-modern p-6 hover:shadow-glow transition-shadow duration-300;
+  }
+
+  .card-header {
+    @apply flex items-center mb-4;
+  }
+
+  .card-title-bar {
+    @apply w-1.5 h-8 bg-gradient-to-b from-primary-400 to-primary-600 rounded-full mr-4;
+  }
+
+  .card-title {
+    @apply text-2xl font-bold text-neutral-900;
+  }
+
+  /* 图标容器 */
+  .icon-container {
+    @apply w-12 h-12 rounded-2xl bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center flex-shrink-0 shadow-glow transition-all duration-300 group-hover:scale-110;
+  }
+
+  .icon {
+    @apply text-white text-xl;
+  }
+
+  /* 按钮样式 */
+  .btn {
+    @apply inline-flex items-center justify-center px-5 py-2.5 rounded-xl font-medium transition-all duration-300;
+  }
+
+  .btn-primary {
+    @apply bg-gradient-to-r from-primary-500 to-primary-600 text-white shadow-glow hover:shadow-hover active:scale-95;
+  }
+
+  .btn-secondary {
+    @apply bg-white text-primary-600 border-2 border-primary-500 hover:bg-primary-50 active:scale-95;
+  }
+
+  .btn-accent {
+    @apply bg-gradient-to-r from-accent-500 to-accent-600 text-white shadow-glow hover:shadow-hover active:scale-95;
+  }
+
+  /* 网格布局 */
+  .grid-cols-auto-fit {
+    @apply grid gap-4 md:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3;
+  }
+
+  /* 特性卡片 */
+  .feature-card {
+    @apply flex items-start space-x-3 p-5 rounded-2xl bg-white shadow-modern hover:shadow-glow transition-all duration-300;
+  }
+
+  .feature-icon {
+    @apply w-12 h-12 rounded-xl bg-gradient-to-br from-primary-400 to-primary-600 text-white flex items-center justify-center flex-shrink-0;
+  }
+
+  /* 列表样式 */
+  .list-item {
+    @apply flex items-center space-x-2 py-3 px-4 rounded-xl hover:bg-primary-50 transition-colors duration-200;
+  }
+
+  .list-icon {
+    @apply w-10 h-10 rounded-lg bg-gradient-to-br from-primary-400 to-primary-600 text-white flex items-center justify-center flex-shrink-0;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .text-gradient {
+    @apply bg-gradient-to-r from-primary-500 to-primary-600 bg-clip-text text-transparent;
+  }
+
+  .hover-lift {
+    @apply transition-transform duration-300 hover:-translate-y-1;
+  }
+
+  .hover-scale {
+    @apply transition-transform duration-300 hover:scale-105;
+  }
+
+  .hover-glow {
+    @apply transition-shadow duration-300 hover:shadow-glow;
+  }
+} 

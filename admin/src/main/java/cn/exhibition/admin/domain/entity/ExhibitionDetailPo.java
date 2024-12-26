@@ -48,8 +48,8 @@ public class ExhibitionDetailPo {
     @TableField(value = "sort")
     private Integer sort;
 
-    @TableField(value = "file_url")
-    private String fileUrl;
+    @TableField(value = "content")
+    private String content;
 
     /**
      * 展会国家

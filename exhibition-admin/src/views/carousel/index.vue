@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container">
+  <div class="carousel-container">
     <el-card class="box-card">
       <!-- 搜索区域 -->
       <el-form :model="queryParams" ref="queryRef" :inline="true">
@@ -26,7 +26,7 @@
       </el-row>
 
       <!-- 表格区域 -->
-      <el-table v-loading="loading" :data="carouselList">
+      <el-table v-loading="loading" :data="carouselList" style="width: 100%" border>
         <el-table-column type="index" label="序号" width="50" />
         <el-table-column prop="title" label="标题" />
         <el-table-column prop="imageUrl" label="图片" width="100">
@@ -67,19 +67,13 @@
         </el-table-column>
       </el-table>
 
-      <!-- 分页区域 -->
       <div class="pagination-container">
-        <el-pagination
-          v-model:current-page="queryParams.pageNum"
-          v-model:page-size="queryParams.pageSize"
-          :page-sizes="[10, 20, 30, 50]"
-          :small="false"
-          :disabled="false"
-          :background="true"
-          layout="total, sizes, prev, pager, next, jumper"
+        <Pagination
+          v-if="total > 0"
           :total="total"
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
+          :page="queryParams.pageNum"
+          :limit="queryParams.pageSize"
+          @pagination="handlePagination"
         />
       </div>
 
@@ -140,6 +134,7 @@ import { Picture, Plus } from '@element-plus/icons-vue'
 import { listCarousel, getCarousel, delCarousel, saveCarousel } from '@/api/carousel'
 import type { Carousel, CarouselQuery } from '@/types/carousel'
 import { getImageUrl } from '@/utils/request'
+import Pagination from '@/components/Pagination/index.vue'
 
 const loading = ref(false)
 const total = ref(0)
@@ -289,15 +284,10 @@ const cancel = () => {
   reset()
 }
 
-/** 分页大小改变 */
-const handleSizeChange = (val: number) => {
-  queryParams.pageSize = val
-  getList()
-}
-
-/** 页码改变 */
-const handleCurrentChange = (val: number) => {
-  queryParams.pageNum = val
+/** 处理分页变化 */
+const handlePagination = ({ page, limit }: { page: number; limit: number }) => {
+  queryParams.pageNum = page
+  queryParams.pageSize = limit
   getList()
 }
 
@@ -307,6 +297,22 @@ onMounted(() => {
 </script>
 
 <style scoped>
+.carousel-container {
+  padding: 20px;
+  background: white;
+  border-radius: 4px;
+}
+
+.header {
+  margin-bottom: 20px;
+}
+
+.pagination-container {
+  margin-top: 20px;
+  display: flex;
+  justify-content: flex-end;
+}
+
 .avatar-uploader {
   width: 178px;
   height: 178px;

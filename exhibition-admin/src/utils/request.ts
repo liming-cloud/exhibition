@@ -3,12 +3,12 @@ import type { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios'
 import { ElMessage } from 'element-plus'
 
 /** 获取图片完整URL */
-export const getImageUrl = (url: string) => {
-  if (!url) return ''
-  if (url.startsWith('http://') || url.startsWith('https://')) {
-    return url
+export function getImageUrl(path: string) {
+  if (!path) return ''
+  if (path.startsWith('http') || path.startsWith('https')) {
+    return path
   }
-  return `/api/file/preview?path=${encodeURIComponent(url)}`
+  return `/api/file/preview?path=${encodeURIComponent(path)}`
 }
 
 // 创建axios实例

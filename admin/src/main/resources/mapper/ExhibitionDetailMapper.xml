@@ -11,12 +11,12 @@
     <result column="year" jdbcType="VARCHAR" property="year" />
     <result column="month" jdbcType="VARCHAR" property="month" />
     <result column="sort" jdbcType="INTEGER" property="sort" />
-    <result column="file_url" jdbcType="LONGVARCHAR" property="fileUrl" />
+    <result column="content" jdbcType="LONGVARCHAR" property="content" />
     <result column="country" jdbcType="INTEGER" property="country" />
     <result column="country_name" jdbcType="VARCHAR" property="countryName" />
   </resultMap>
   <sql id="Base_Column_List">
     <!--@mbg.generated-->
-    id, `name`, `location`, `time`, `year`, `month`, sort, file_url, country, country_name
+    id, `name`, `location`, `time`, `year`, `month`, sort, content, country, country_name
   </sql>
 </mapper>

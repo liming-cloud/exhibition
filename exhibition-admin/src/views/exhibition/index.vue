@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container">
+  <div class="exhibition-container">
     <el-card class="box-card">
       <!-- 搜索区域 -->
       <el-form :model="queryParams" ref="queryRef" :inline="true">
@@ -44,7 +44,7 @@
       </el-row>
 
       <!-- 表格区域 -->
-      <el-table v-loading="loading" :data="exhibitionList">
+      <el-table v-loading="loading" :data="exhibitionList" style="width: 100%" border>
         <el-table-column type="index" label="序号" width="50" />
         <el-table-column prop="name" label="展会名称" />
         <el-table-column prop="time" label="时间" width="160" />
@@ -59,19 +59,13 @@
         </el-table-column>
       </el-table>
 
-      <!-- 分页区域 -->
       <div class="pagination-container">
-        <el-pagination
-          v-model:current-page="queryParams.pageNum"
-          v-model:page-size="queryParams.pageSize"
-          :page-sizes="[10, 20, 30, 50]"
-          :small="false"
-          :disabled="false"
-          :background="true"
-          layout="total, sizes, prev, pager, next, jumper"
+        <Pagination
+          v-if="total > 0"
           :total="total"
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
+          :page="queryParams.pageNum"
+          :limit="queryParams.pageSize"
+          @pagination="handlePagination"
         />
       </div>
 
@@ -81,28 +75,11 @@
           <el-form-item label="展会名称" prop="name">
             <el-input v-model="form.name" placeholder="请输入展会名称" />
           </el-form-item>
+          <el-form-item label="展会内容" prop="content">
+            <Editor v-model="form.content" />
+          </el-form-item>
           <el-form-item label="举办地址" prop="location">
             <el-input v-model="form.location" placeholder="请输入举办地址" />
-          </el-form-item>
-          <el-form-item label="文件" prop="fileUrl">
-            <el-upload
-              class="file-uploader"
-              :action="uploadUrl"
-              name="file"
-              :show-file-list="true"
-              :limit="1"
-              :on-success="handleUploadSuccess"
-              :before-upload="beforeUpload"
-              :file-list="fileList"
-              :on-remove="handleRemove"
-            >
-              <el-button type="primary">点击上传</el-button>
-              <template #tip>
-                <div class="el-upload__tip">
-                  只能上传doc、docx、pdf格式文件
-                </div>
-              </template>
-            </el-upload>
           </el-form-item>
           <el-form-item label="时间" prop="time">
             <el-date-picker
@@ -166,17 +143,17 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted, computed, nextTick } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import type { FormInstance, UploadProps } from 'element-plus'
+import type { FormInstance } from 'element-plus'
 import { listExhibition, getExhibition, delExhibition, saveExhibition, findGlobalArea } from '@/api/exhibition'
 import type { Exhibition, ExhibitionQuery, GlobalArea } from '@/types/exhibition'
-import { getImageUrl } from '@/utils/request'
+import Pagination from '@/components/Pagination/index.vue'
+import Editor from '@/components/Editor/index.vue'
 
 const loading = ref(false)
 const total = ref(0)
 const open = ref(false)
 const title = ref('')
 const exhibitionList = ref<Exhibition[]>([])
-const uploadUrl = '/api/file/upload'
 const areaOptions = ref<GlobalArea[]>([])
 
 // 查询参数
@@ -190,20 +167,20 @@ const queryParams = reactive<ExhibitionQuery>({
 // 表单参数
 const form = reactive<Exhibition>({
   name: '',
+  content: '',
   location: '',
   time: '',
   year: '',
   month: '',
   sort: 0,
-  fileUrl: '',
   country: 0,
   countryName: ''
 })
 
-// 表单校验规则
+// 表单验证规则
 const rules = reactive({
   name: [{ required: true, message: '展会名称不能为空', trigger: 'blur' }],
-  fileUrl: [{ required: true, message: '请上传文件', trigger: 'blur' }],
+  content: [{ required: true, message: '展会内容不能为空', trigger: 'blur' }],
   time: [{ required: true, message: '请选择时间', trigger: 'change' }],
   country: [{ required: true, message: '请选择国家', trigger: 'change' }],
   location: [{ required: true, message: '举办地址不能为空', trigger: 'blur' }],
@@ -212,8 +189,6 @@ const rules = reactive({
 
 const queryRef = ref<FormInstance>()
 const exhibitionRef = ref<FormInstance>()
-
-const fileList = ref<any[]>([])
 
 const selectedContinent = ref<string>('')
 
@@ -344,13 +319,6 @@ const handleUpdate = async (row: Exhibition) => {
     // 设置表单数据
     Object.assign(form, res.data)
     
-    if (form.fileUrl) {
-      fileList.value = [{
-        name: form.fileUrl.substring(form.fileUrl.lastIndexOf('/') + 1),
-        url: getImageUrl(form.fileUrl)
-      }]
-    }
-    
     title.value = '修改展会'
     open.value = true
   } catch (error) {
@@ -397,70 +365,16 @@ const reset = () => {
   form.year = ''
   form.month = ''
   form.sort = 0
-  form.fileUrl = ''
   form.country = 0
   form.countryName = ''
   selectedContinent.value = ''
-  fileList.value = []
   exhibitionRef.value?.resetFields()
-}
-
-/** 上传成功回调 */
-const handleUploadSuccess: UploadProps['onSuccess'] = (response) => {
-  if (response.code === 200) {
-    form.fileUrl = response.data
-    fileList.value = [{
-      name: response.data.substring(response.data.lastIndexOf('/') + 1),
-      url: getImageUrl(response.data)
-    }]
-    ElMessage.success('上传成功')
-  } else {
-    ElMessage.error(response.msg || '上传失败')
-  }
-}
-
-/** 移除文件 */
-const handleRemove = () => {
-  form.fileUrl = ''
-  fileList.value = []
-}
-
-/** 上传前的校验 */
-const beforeUpload: UploadProps['beforeUpload'] = (file) => {
-  const allowedTypes = [
-    'application/msword',                                                    // .doc
-    'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // .docx
-    'application/pdf'                                                        // .pdf
-  ]
-  const isAllowed = allowedTypes.includes(file.type)
-  if (!isAllowed) {
-    ElMessage.error('只能上传doc、docx、pdf格式文件!')
-    return false
-  }
-  const isLt10M = file.size / 1024 / 1024 < 10
-  if (!isLt10M) {
-    ElMessage.error('上传文件大小不能超过 10MB!')
-    return false
-  }
-  return true
 }
 
 /** 取消按钮操作 */
 const cancel = () => {
   open.value = false
   reset()
-}
-
-/** 分页大小改变 */
-const handleSizeChange = (val: number) => {
-  queryParams.pageSize = val
-  getList()
-}
-
-/** 页码改变 */
-const handleCurrentChange = (val: number) => {
-  queryParams.pageNum = val
-  getList()
 }
 
 /** 处理搜索大洲选择变化 */
@@ -471,6 +385,13 @@ const handleSearchContinentChange = (val: string) => {
 /** 处理搜索国家选择变化 */
 const handleSearchCountryChange = (value: number) => {
   // 可以在这里添加额外的处理逻辑
+}
+
+/** 处理分页变化 */
+const handlePagination = ({ page, limit }: { page: number; limit: number }) => {
+  queryParams.pageNum = page
+  queryParams.pageSize = limit
+  getList()
 }
 
 onMounted(() => {
@@ -501,5 +422,21 @@ onMounted(() => {
 .area-select {
   width: 100%;
   min-width: 200px;
+}
+
+.exhibition-container {
+  padding: 20px;
+  background: white;
+  border-radius: 4px;
+}
+
+.header {
+  margin-bottom: 20px;
+}
+
+.pagination-container {
+  margin-top: 20px;
+  display: flex;
+  justify-content: flex-end;
 }
 </style> 
