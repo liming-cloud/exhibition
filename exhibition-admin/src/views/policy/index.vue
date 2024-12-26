@@ -107,7 +107,6 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox, type FormInstance } from 'element-plus'
-import { Plus, Search } from '@element-plus/icons-vue'
 import type { Subsidies, SubsidiesQuery } from '@/types/subsidies'
 import {
   listSubsidies,

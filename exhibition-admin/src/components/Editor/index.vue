@@ -65,8 +65,9 @@ const editorConfig = {
           ElMessage.error('图片上传失败')
         }
       },
-      onError(file: File, err: any, res: any) {
-        ElMessage.error(`图片 ${file.name} 上传失败: ${err.message}`)
+      onError(_file: File, err: any) {
+        ElMessage.error('上传图片失败')
+        console.error('上传图片失败:', err)
       }
     }
   }

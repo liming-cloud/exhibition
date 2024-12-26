@@ -61,7 +61,7 @@ const menuItems = [
         active-text-color="#409EFF"
       >
         <div class="logo-container">
-          <img src="@/assets/logo.png" alt="Logo" class="logo-image" v-if="!isCollapse">
+          <!-- <img src="@/assets/logo.png" alt="Logo" class="logo-image" v-if="!isCollapse"> -->
           <span v-if="!isCollapse" class="logo-text">展会管理系统</span>
         </div>
         <el-menu-item

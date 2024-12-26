@@ -243,7 +243,7 @@ const handleTimeChange = (val: string) => {
 }
 
 /** 处理大洲选择变化 */
-const handleContinentChange = (val: string) => {
+const handleContinentChange = (_val: string) => {
   form.country = 0
   form.countryName = ''
 }
@@ -378,13 +378,14 @@ const cancel = () => {
 }
 
 /** 处理搜索大洲选择变化 */
-const handleSearchContinentChange = (val: string) => {
+const handleSearchContinentChange = (_val: string) => {
   queryParams.country = undefined
+  getList()
 }
 
 /** 处理搜索国家选择变化 */
-const handleSearchCountryChange = (value: number) => {
-  // 可以在这里添加额外的处理逻辑
+const handleSearchCountryChange = (_value: number) => {
+  getList()
 }
 
 /** 处理分页变化 */
