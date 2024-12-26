@@ -49,7 +49,7 @@ const getSubsidyDetail = async () => {
 }
 
 const formatPrice = (price: number) => {
-  return `¥ ${(price / 100).toFixed(2)}万`
+  return `¥ ${(price / 10000).toFixed(2)}万`
 }
 
 const formatDate = (dateStr?: string) => {
