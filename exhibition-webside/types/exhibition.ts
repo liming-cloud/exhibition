@@ -1,3 +1,17 @@
+// 展会类型枚举
+export enum ExhibitionType {
+  ENERGY = 'ENERGY',
+  ELEVATOR = 'ELEVATOR',
+  MEDICAL = 'MEDICAL'
+}
+
+// 展会类型显示映射
+export const ExhibitionTypeMap = {
+  [ExhibitionType.ENERGY]: '能源展',
+  [ExhibitionType.ELEVATOR]: '电梯展',
+  [ExhibitionType.MEDICAL]: '医疗展'
+}
+
 export interface Exhibition {
   id: number
   name: string
@@ -9,6 +23,7 @@ export interface Exhibition {
   content: string
   country: number
   countryName: string
+  exhibitionType: ExhibitionType // 修改为枚举类型
 }
 
 export interface GlobalArea {
@@ -28,4 +43,6 @@ export interface ExhibitionQuery {
   name?: string
   /** 国家ID */
   country?: number
+  /** 展会类型 */
+  exhibitionType?: ExhibitionType // 修改为枚举类型
 }

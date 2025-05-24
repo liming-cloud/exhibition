@@ -48,6 +48,18 @@ const routes: RouteRecordRaw[] = [
         name: 'Cases',
         component: () => import('../views/cases/index.vue'),
         meta: { title: '案例管理', requiresAuth: true }
+      },
+      {
+        path: 'registration',
+        name: 'Registration',
+        component: () => import('../views/registration/index.vue'),
+        meta: { title: '报名管理', requiresAuth: true }
+      },
+      {
+        path: 'contact',
+        name: 'Contact',
+        component: () => import('../views/contact/index.vue'),
+        meta: { title: '联系信息管理', requiresAuth: true }
       }
     ]
   },
@@ -66,7 +78,7 @@ const router = createRouter({
 router.beforeEach((to, _from, next) => {
   // 设置页面标题
   document.title = `${to.meta.title || '展会管理系统'}`
-  
+
   const token = localStorage.getItem('token')
   const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
 

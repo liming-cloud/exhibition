@@ -4,28 +4,28 @@
       <!-- 搜索区域 -->
       <el-form :model="queryParams" ref="queryRef" :inline="true">
         <el-form-item label="展会名称" prop="name">
-          <el-input v-model="queryParams.name" placeholder="请输入展会名称" clearable style="width: 200px" @keyup.enter="handleQuery" />
+          <el-input v-model="queryParams.name" placeholder="请输入展会名称" clearable style="width: 200px"
+            @keyup.enter="handleQuery" />
+        </el-form-item>
+        <el-form-item label="展会类型" prop="exhibitionType">
+          <el-select v-model="queryParams.exhibitionType" placeholder="请选择展会类型" clearable style="width: 150px">
+            <el-option v-for="(label, value) in ExhibitionTypeMap" :key="value" :label="label" :value="value" />
+          </el-select>
         </el-form-item>
         <el-form-item label="国家" prop="country">
           <el-row :gutter="10">
             <el-col :span="12">
-              <el-select v-model="searchContinent" placeholder="请选择大洲" @change="handleSearchContinentChange" style="width: 120px">
-                <el-option
-                  v-for="continent in continentList"
-                  :key="continent.code"
-                  :label="continent.name"
-                  :value="continent.code"
-                />
+              <el-select v-model="searchContinent" placeholder="请选择大洲" @change="handleSearchContinentChange"
+                style="width: 120px">
+                <el-option v-for="continent in continentList" :key="continent.code" :label="continent.name"
+                  :value="continent.code" />
               </el-select>
             </el-col>
             <el-col :span="12">
-              <el-select v-model="queryParams.country" placeholder="请选择国家" @change="handleSearchCountryChange" :disabled="!searchContinent" style="width: 120px">
-                <el-option
-                  v-for="country in searchCountryList"
-                  :key="country.id"
-                  :label="country.countryName"
-                  :value="country.id"
-                />
+              <el-select v-model="queryParams.country" placeholder="请选择国家" @change="handleSearchCountryChange"
+                :disabled="!searchContinent" style="width: 120px">
+                <el-option v-for="country in searchCountryList" :key="country.id" :label="country.countryName"
+                  :value="country.id" />
               </el-select>
             </el-col>
           </el-row>
@@ -47,6 +47,13 @@
       <el-table v-loading="loading" :data="exhibitionList" style="width: 100%" border>
         <el-table-column type="index" label="序号" width="50" />
         <el-table-column prop="name" label="展会名称" />
+        <el-table-column prop="exhibitionType" label="展会类型" width="120" align="center">
+          <template #default="scope">
+            <el-tag size="small" :type="getExhibitionTypeTagType(scope.row.exhibitionType)">
+              {{ ExhibitionTypeMap[scope.row.exhibitionType] }}
+            </el-tag>
+          </template>
+        </el-table-column>
         <el-table-column prop="time" label="时间" width="160" />
         <el-table-column prop="location" label="地址" show-overflow-tooltip />
         <el-table-column prop="countryName" label="国家" width="120" />
@@ -60,13 +67,8 @@
       </el-table>
 
       <div class="pagination-container">
-        <Pagination
-          v-if="total > 0"
-          :total="total"
-          :page="queryParams.pageNum"
-          :limit="queryParams.pageSize"
-          @pagination="handlePagination"
-        />
+        <Pagination v-if="total > 0" :total="total" :page="queryParams.pageNum" :limit="queryParams.pageSize"
+          @pagination="handlePagination" />
       </div>
 
       <!-- 添加或修改展会对话框 -->
@@ -75,6 +77,11 @@
           <el-form-item label="展会名称" prop="name">
             <el-input v-model="form.name" placeholder="请输入展会名称" />
           </el-form-item>
+          <el-form-item label="展会类型" prop="exhibitionType">
+            <el-select v-model="form.exhibitionType" placeholder="请选择展会类型" style="width: 100%">
+              <el-option v-for="(label, value) in ExhibitionTypeMap" :key="value" :label="label" :value="value" />
+            </el-select>
+          </el-form-item>
           <el-form-item label="展会内容" prop="content">
             <Editor v-model="form.content" />
           </el-form-item>
@@ -82,14 +89,8 @@
             <el-input v-model="form.location" placeholder="请输入举办地址" />
           </el-form-item>
           <el-form-item label="时间" prop="time">
-            <el-date-picker
-              v-model="form.time"
-              type="date"
-              placeholder="请选择时间"
-              format="YYYY-MM-DD"
-              value-format="YYYY-MM-DD"
-              @change="handleTimeChange"
-            />
+            <el-date-picker v-model="form.time" type="date" placeholder="请选择时间" format="YYYY-MM-DD"
+              value-format="YYYY-MM-DD" @change="handleTimeChange" />
           </el-form-item>
           <el-form-item label="年月" prop="year">
             <el-row :gutter="10">
@@ -104,23 +105,17 @@
           <el-form-item label="国家" prop="country">
             <el-row :gutter="10">
               <el-col :span="12">
-                <el-select v-model="selectedContinent" placeholder="请选择大洲" @change="handleContinentChange" class="area-select">
-                  <el-option
-                    v-for="continent in continentList"
-                    :key="continent.code"
-                    :label="continent.name"
-                    :value="continent.code"
-                  />
+                <el-select v-model="selectedContinent" placeholder="请选择大洲" @change="handleContinentChange"
+                  class="area-select">
+                  <el-option v-for="continent in continentList" :key="continent.code" :label="continent.name"
+                    :value="continent.code" />
                 </el-select>
               </el-col>
               <el-col :span="12">
-                <el-select v-model="form.country" placeholder="请选择国家" @change="handleCountryChange" :disabled="!selectedContinent" class="area-select">
-                  <el-option
-                    v-for="country in countryList"
-                    :key="country.id"
-                    :label="country.countryName"
-                    :value="country.id"
-                  />
+                <el-select v-model="form.country" placeholder="请选择国家" @change="handleCountryChange"
+                  :disabled="!selectedContinent" class="area-select">
+                  <el-option v-for="country in countryList" :key="country.id" :label="country.countryName"
+                    :value="country.id" />
                 </el-select>
               </el-col>
             </el-row>
@@ -145,7 +140,8 @@ import { ref, reactive, onMounted, computed, nextTick } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import type { FormInstance } from 'element-plus'
 import { listExhibition, getExhibition, delExhibition, saveExhibition, findGlobalArea } from '@/api/exhibition'
-import type { Exhibition, ExhibitionQuery, GlobalArea } from '@/types/exhibition'
+import type { Exhibition, ExhibitionQuery, GlobalArea, ExhibitionType } from '@/types/exhibition'
+import { ExhibitionTypeMap } from '@/types/exhibition'
 import Pagination from '@/components/Pagination/index.vue'
 import Editor from '@/components/Editor/index.vue'
 
@@ -161,11 +157,13 @@ const queryParams = reactive<ExhibitionQuery>({
   pageNum: 1,
   pageSize: 10,
   name: undefined,
-  country: undefined
+  country: undefined,
+  exhibitionType: undefined
 })
 
 // 表单参数
 const form = reactive<Exhibition>({
+  id: 0,
   name: '',
   content: '',
   location: '',
@@ -174,12 +172,14 @@ const form = reactive<Exhibition>({
   month: '',
   sort: 0,
   country: 0,
-  countryName: ''
+  countryName: '',
+  exhibitionType: ExhibitionType.ENERGY
 })
 
 // 表单验证规则
 const rules = reactive({
   name: [{ required: true, message: '展会名称不能为空', trigger: 'blur' }],
+  exhibitionType: [{ required: true, message: '请选择展会类型', trigger: 'change' }],
   content: [{ required: true, message: '展会内容不能为空', trigger: 'blur' }],
   time: [{ required: true, message: '请选择时间', trigger: 'change' }],
   country: [{ required: true, message: '请选择国家', trigger: 'change' }],
@@ -304,7 +304,7 @@ const handleUpdate = async (row: Exhibition) => {
     }
 
     const res = await getExhibition(row.id!)
-    
+
     // 设置选中的大洲和国家
     if (res.data.country) {
       const country = areaOptions.value.find(item => item.id === res.data.country)
@@ -315,10 +315,10 @@ const handleUpdate = async (row: Exhibition) => {
         res.data.countryName = country.countryName
       }
     }
-    
+
     // 设置表单数据
     Object.assign(form, res.data)
-    
+
     title.value = '修改展会'
     open.value = true
   } catch (error) {
@@ -356,9 +356,19 @@ const handleDelete = async (row: Exhibition) => {
   }
 }
 
+/** 获取展会类型标签颜色 */
+const getExhibitionTypeTagType = (type: ExhibitionType) => {
+  const tagMap = {
+    [ExhibitionType.ENERGY]: 'success',
+    [ExhibitionType.ELEVATOR]: 'warning',
+    [ExhibitionType.MEDICAL]: 'primary'
+  }
+  return tagMap[type] || 'info'
+}
+
 /** 表单重置 */
 const reset = () => {
-  form.id = undefined
+  form.id = 0
   form.name = ''
   form.location = ''
   form.time = ''
@@ -367,6 +377,7 @@ const reset = () => {
   form.sort = 0
   form.country = 0
   form.countryName = ''
+  form.exhibitionType = ExhibitionType.ENERGY
   selectedContinent.value = ''
   exhibitionRef.value?.resetFields()
 }
@@ -440,4 +451,4 @@ onMounted(() => {
   display: flex;
   justify-content: flex-end;
 }
-</style> 
+</style>

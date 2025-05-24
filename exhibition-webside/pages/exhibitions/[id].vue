@@ -21,13 +21,20 @@
         <div class="prose max-w-none" v-html="exhibition.content"></div>
       </div>
 
-      <!-- 返回按钮 -->
-      <div class="p-8 border-t">
-        <NuxtLink to="/exhibitions" 
-                 class="inline-flex items-center px-6 py-3 bg-neutral-100 text-neutral-700 rounded-lg hover:bg-neutral-200 transition-colors">
+      <!-- 操作按钮区域 -->
+      <div class="p-8 border-t flex justify-between items-center">
+        <NuxtLink to="/exhibitions"
+          class="inline-flex items-center px-6 py-3 bg-neutral-100 text-neutral-700 rounded-lg hover:bg-neutral-200 transition-colors">
           <i class="fas fa-arrow-left mr-2"></i>
           返回展会列表
         </NuxtLink>
+
+        <!-- 报名按钮 -->
+        <el-button type="primary" @click="openRegistrationModal"
+          class="!bg-primary-500 !border-primary-500 hover:!bg-primary-600 px-8 py-3">
+          <i class="fas fa-user-plus mr-2"></i>
+          立即报名
+        </el-button>
       </div>
     </div>
 
@@ -35,15 +42,23 @@
     <div v-else class="flex justify-center items-center h-64">
       <el-skeleton :rows="10" animated />
     </div>
+
+    <!-- 报名弹窗 -->
+    <RegistrationModal v-model="showRegistrationModal" :exhibition="exhibition" @submit="handleRegistration" />
   </div>
 </template>
 
 <script setup lang="ts">
 import type { Exhibition } from '~/types/exhibition'
+import RegistrationModal from '~/components/common/RegistrationModal.vue'
+import { ElMessage } from 'element-plus'
 
 const route = useRoute()
 const api = useApi()
 const exhibition = ref<Exhibition | null>(null)
+
+// 报名功能相关
+const showRegistrationModal = ref(false)
 
 // 获取展会详情
 const fetchExhibition = async () => {
@@ -54,6 +69,26 @@ const fetchExhibition = async () => {
     }
   } catch (error) {
     console.error('Failed to fetch exhibition details:', error)
+  }
+}
+
+// 打开报名弹窗
+const openRegistrationModal = () => {
+  showRegistrationModal.value = true
+}
+
+// 处理报名提交
+const handleRegistration = async (data: any) => {
+  try {
+    await $fetch('/api/exhibition/registration/submit', {
+      method: 'POST',
+      body: data
+    })
+    ElMessage.success('报名成功')
+    showRegistrationModal.value = false
+  } catch (error) {
+    console.error('报名失败:', error)
+    ElMessage.error('报名失败')
   }
 }
 
@@ -115,4 +150,4 @@ onMounted(() => {
 .prose code {
   @apply bg-neutral-50 px-2 py-1 rounded text-neutral-700;
 }
-</style> 
+</style>

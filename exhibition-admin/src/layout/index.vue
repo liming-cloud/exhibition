@@ -43,6 +43,16 @@ const menuItems = [
     icon: 'Collection',
     title: '案例管理',
     path: '/admin/cases'
+  },
+  {
+    icon: 'UserFilled',
+    title: '报名管理',
+    path: '/admin/registration'
+  },
+  {
+    icon: 'Phone',
+    title: '联系信息管理',
+    path: '/admin/contact'
   }
 ]
 </script>
@@ -50,27 +60,16 @@ const menuItems = [
 <template>
   <el-container class="layout-container">
     <el-aside :width="isCollapse ? '64px' : '220px'" class="aside-container">
-      <el-menu
-        :collapse="isCollapse"
-        router
-        :default-active="$route.path"
-        class="menu-container"
-        :collapse-transition="false"
-        background-color="#001529"
-        text-color="#fff"
-        active-text-color="#409EFF"
-      >
+      <el-menu :collapse="isCollapse" router :default-active="$route.path" class="menu-container"
+        :collapse-transition="false" background-color="#001529" text-color="#fff" active-text-color="#409EFF">
         <div class="logo-container">
           <!-- <img src="@/assets/logo.png" alt="Logo" class="logo-image" v-if="!isCollapse"> -->
           <span v-if="!isCollapse" class="logo-text">展会管理系统</span>
         </div>
-        <el-menu-item
-          v-for="item in menuItems"
-          :key="item.path"
-          :index="item.path"
-          class="menu-item"
-        >
-          <el-icon><component :is="item.icon" /></el-icon>
+        <el-menu-item v-for="item in menuItems" :key="item.path" :index="item.path" class="menu-item">
+          <el-icon>
+            <component :is="item.icon" />
+          </el-icon>
           <template #title>{{ item.title }}</template>
         </el-menu-item>
       </el-menu>
@@ -79,10 +78,7 @@ const menuItems = [
     <el-container>
       <el-header class="header-container">
         <div class="header-left">
-          <el-icon
-            class="collapse-icon"
-            @click="isCollapse = !isCollapse"
-          >
+          <el-icon class="collapse-icon" @click="isCollapse = !isCollapse">
             <Fold v-if="!isCollapse" />
             <Expand v-else />
           </el-icon>
@@ -228,4 +224,4 @@ const menuItems = [
 .fade-leave-to {
   opacity: 0;
 }
-</style> 
+</style>

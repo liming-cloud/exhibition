@@ -1,88 +1,102 @@
 <template>
   <div class="container mx-auto px-4 py-8">
-    <!-- 筛选区域 -->
-    <div class="bg-white rounded-lg shadow-md p-6 mb-8">
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <!-- 年份选择 -->
-        <div>
-          <label class="block text-sm font-medium text-neutral-700 mb-2">年份</label>
-          <el-select v-model="query.year" placeholder="请选择年份" clearable @change="handleSearch" class="w-full">
-            <el-option v-for="year in years" :key="year" :label="year" :value="year" />
-          </el-select>
-        </div>
-        
-        <!-- 大洲选择 -->
-        <div>
-          <label class="block text-sm font-medium text-neutral-700 mb-2">大洲</label>
-          <el-select v-model="selectedContinent" placeholder="请选择大洲" clearable @change="handleContinentChange" class="w-full">
-            <el-option v-for="continent in continents" :key="continent" :label="continent" :value="continent" />
-          </el-select>
-        </div>
-        
-        <!-- 国家选择 -->
-        <div>
-          <label class="block text-sm font-medium text-neutral-700 mb-2">国家</label>
-          <el-select v-model="query.country" placeholder="请选择国家" clearable @change="handleSearch" class="w-full">
-            <el-option 
-              v-for="area in filteredAreas" 
-              :key="area.id" 
-              :label="area.countryName" 
-              :value="area.id" 
-            />
-          </el-select>
-        </div>
+    <!-- 搜索筛选区 -->
+    <div class="bg-white rounded-lg shadow-soft p-6 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+        <el-input v-model="query.name" placeholder="搜索展会名称" clearable>
+          <template #prefix>
+            <i class="fas fa-search text-neutral-400"></i>
+          </template>
+        </el-input>
+
+        <!-- 新增展会类型筛选 -->
+        <el-select v-model="query.exhibitionType" placeholder="展会类型" clearable>
+          <el-option label="全部类型" value="" />
+          <el-option v-for="(label, value) in ExhibitionTypeMap" :key="value" :label="label" :value="value" />
+        </el-select>
+
+        <el-select v-model="selectedContinent" placeholder="选择大洲" @change="handleContinentChange">
+          <el-option label="全部大洲" value="" />
+          <el-option v-for="continent in continents" :key="continent" :label="continent" :value="continent" />
+        </el-select>
+
+        <el-select v-model="query.country" placeholder="选择国家" :disabled="!filteredAreas.length">
+          <el-option label="全部国家" :value="undefined" />
+          <el-option v-for="area in filteredAreas" :key="area.id" :label="area.countryName" :value="area.id" />
+        </el-select>
       </div>
-      
-      <!-- 搜索按钮 -->
-      <div class="flex justify-end mt-6">
-        <el-button type="primary" @click="handleSearch">搜索</el-button>
-        <el-button @click="handleReset" class="ml-4">重置</el-button>
+
+      <!-- 搜索按钮改为橙色 -->
+      <div class="text-center">
+        <el-button type="primary" @click="handleSearch"
+          class="!bg-primary-500 !border-primary-500 hover:!bg-primary-600 px-8 py-2">
+          <i class="fas fa-search mr-2"></i>
+          搜索展会
+        </el-button>
       </div>
     </div>
 
-    <!-- 展会列表 -->
+    <!-- 展会卡片列表 - 增加背景颜色 -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-      <div v-for="exhibition in exhibitions" :key="exhibition.id" 
-           class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
-        <div class="p-6">
-          <h3 class="text-xl font-bold mb-4 text-neutral-800">{{ exhibition.name }}</h3>
-          <div class="space-y-2 text-neutral-600">
+      <div v-for="exhibition in exhibitions" :key="exhibition.id"
+        class="bg-gradient-to-br from-white to-neutral-50 rounded-xl shadow-elegant hover:shadow-modern overflow-hidden transition-all duration-500 border border-neutral-100">
+
+        <div class="p-6 relative">
+          <!-- 展会类型标签 -->
+          <div class="absolute top-4 right-4">
+            <span class="px-3 py-1 bg-gradient-to-r from-primary-500 to-primary-600 text-white text-sm rounded-full">
+              {{ ExhibitionTypeMap[exhibition.exhibitionType] || '能源展' }}
+            </span>
+          </div>
+
+          <h3 class="text-xl font-bold mb-4 text-neutral-800 pr-20">{{ exhibition.name }}</h3>
+
+          <div class="space-y-3 text-neutral-600 mb-6">
             <p class="flex items-center">
-              <i class="fas fa-map-marker-alt w-6"></i>
+              <i class="fas fa-map-marker-alt w-6 text-primary-500"></i>
               {{ exhibition.countryName }} - {{ exhibition.location }}
             </p>
             <p class="flex items-center">
-              <i class="fas fa-calendar-alt w-6"></i>
+              <i class="fas fa-calendar-alt w-6 text-primary-500"></i>
               {{ exhibition.time }}
             </p>
           </div>
-          <NuxtLink :to="`/exhibitions/${exhibition.id}`" 
-                   class="inline-block mt-6 px-6 py-2 bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-lg hover:shadow-lg transition-all duration-300">
-            查看详情
-          </NuxtLink>
+
+          <!-- 操作按钮区域 -->
+          <div class="flex justify-between items-center">
+            <NuxtLink :to="`/exhibitions/${exhibition.id}`"
+              class="inline-flex items-center px-6 py-2 bg-gradient-to-r from-neutral-600 to-neutral-700 text-white rounded-lg hover:shadow-lg transition-all duration-300">
+              查看详情
+            </NuxtLink>
+
+            <!-- 新增报名按钮 -->
+            <el-button type="primary" @click="openRegistrationModal(exhibition)"
+              class="!bg-primary-500 !border-primary-500 hover:!bg-primary-600">
+              <i class="fas fa-user-plus mr-2"></i>
+              立即报名
+            </el-button>
+          </div>
         </div>
       </div>
     </div>
 
+    <!-- 报名弹窗 -->
+    <RegistrationModal v-model="showRegistrationModal" :exhibition="selectedExhibition" @submit="handleRegistration" />
+
     <!-- 分页 -->
     <div class="mt-8 flex justify-center">
-      <el-pagination
-        v-model:current-page="query.pageNum"
-        v-model:page-size="query.pageSize"
-        :total="total"
-        :page-sizes="[10, 20, 50]"
-        layout="total, sizes, prev, pager, next"
-        :pager-count="5"
-        locale="zh-cn"
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-      />
+      <el-pagination v-model:current-page="query.pageNum" v-model:page-size="query.pageSize" :total="total"
+        :page-sizes="[10, 20, 50]" layout="total, sizes, prev, pager, next" :pager-count="5" locale="zh-cn"
+        @size-change="handleSizeChange" @current-change="handleCurrentChange" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import type { Exhibition, ExhibitionQuery, GlobalArea } from '~/types/exhibition'
+import type { Exhibition, ExhibitionQuery, GlobalArea, ExhibitionType } from '~/types/exhibition'
+import { ExhibitionTypeMap } from '~/types/exhibition'
+import RegistrationModal from '~/components/common/RegistrationModal.vue'
+import { ElMessage } from 'element-plus'
 
 interface QueryState extends ExhibitionQuery {
   year: string
@@ -90,6 +104,8 @@ interface QueryState extends ExhibitionQuery {
   country?: number
   pageNum: number
   pageSize: number
+  name?: string
+  exhibitionType?: ExhibitionType | ''
 }
 
 const api = useApi()
@@ -100,8 +116,14 @@ const query = ref<QueryState>({
   pageSize: 10,
   year: '',
   continent: '',
-  country: undefined
+  country: undefined,
+  name: '',
+  exhibitionType: ''
 })
+
+// 报名功能相关
+const showRegistrationModal = ref(false)
+const selectedExhibition = ref<Exhibition | null>(null)
 
 // 展会列表数据
 const allExhibitions = ref<Exhibition[]>([]) // 存储所有展会数据
@@ -140,6 +162,18 @@ const filteredAreas = computed(() => {
 // 筛选展会数据
 const filterExhibitions = () => {
   let filtered = [...allExhibitions.value]
+
+  // 按名称筛选
+  if (query.value.name && query.value.name.trim() !== '') {
+    filtered = filtered.filter(item =>
+      item.name.toLowerCase().includes(query.value.name!.toLowerCase())
+    )
+  }
+
+  // 按展会类型筛选
+  if (query.value.exhibitionType && query.value.exhibitionType.trim() !== '') {
+    filtered = filtered.filter(item => item.exhibitionType === query.value.exhibitionType)
+  }
 
   // 按年份筛选
   if (query.value.year && query.value.year.trim() !== '') {
@@ -214,10 +248,34 @@ const handleReset = () => {
     pageSize: 10,
     year: '',
     continent: '',
-    country: undefined
+    country: undefined,
+    name: '',
+    exhibitionType: ''
   }
   selectedContinent.value = ''
   filterExhibitions()
+}
+
+// 打开报名弹窗
+const openRegistrationModal = (exhibition: Exhibition) => {
+  selectedExhibition.value = exhibition
+  showRegistrationModal.value = true
+}
+
+// 处理报名提交
+const handleRegistration = async (data: any) => {
+  try {
+    // 这里调用报名接口
+    await $fetch('/api/exhibition/registration/submit', {
+      method: 'POST',
+      body: data
+    })
+    ElMessage.success('报名成功')
+    showRegistrationModal.value = false
+  } catch (error) {
+    console.error('报名失败:', error)
+    ElMessage.error('报名失败')
+  }
 }
 
 // 处理每页数量变化
@@ -259,4 +317,4 @@ onMounted(async () => {
 .el-date-picker {
   width: 100%;
 }
-</style> 
+</style>

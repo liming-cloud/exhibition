@@ -1,5 +1,6 @@
 package cn.exhibition.admin.domain.entity;
 
+import cn.exhibition.admin.domain.enums.ExhibitionType;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -62,4 +63,10 @@ public class ExhibitionDetailPo {
      */
     @TableField(value = "country_name")
     private String countryName;
+
+    /**
+     * 展会类型
+     */
+    @TableField(value = "exhibition_type")
+    private ExhibitionType exhibitionType;
 }
