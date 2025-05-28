@@ -1,5 +1,6 @@
 package cn.exhibition.admin.domain.enums;
 
+import com.baomidou.mybatisplus.annotation.EnumValue;
 import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Getter;
 
@@ -13,6 +14,7 @@ public enum ContactProgress {
     CLOSED("CLOSED", "已成交"),
     CANCELLED("CANCELLED", "已取消");
 
+    @EnumValue
     private final String code;
     @Getter
     private final String description;

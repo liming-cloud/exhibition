@@ -1,5 +1,6 @@
 package cn.exhibition.admin.domain.enums;
 
+import com.baomidou.mybatisplus.annotation.EnumValue;
 import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Getter;
 
@@ -11,6 +12,7 @@ public enum ExhibitionType {
     ELEVATOR("ELEVATOR", "电梯展"),
     MEDICAL("MEDICAL", "医疗展");
 
+    @EnumValue
     private final String code;
     @Getter
     private final String description;
@@ -23,30 +25,6 @@ public enum ExhibitionType {
     @JsonValue
     public String getCode() {
         return code;
-    }
-
-    /**
-     * 根据代码获取枚举
-     */
-    public static ExhibitionType fromCode(String code) {
-        for (ExhibitionType type : ExhibitionType.values()) {
-            if (type.getCode().equals(code)) {
-                return type;
-            }
-        }
-        throw new IllegalArgumentException("Unknown exhibition type code: " + code);
-    }
-
-    /**
-     * 根据描述获取枚举
-     */
-    public static ExhibitionType fromDescription(String description) {
-        for (ExhibitionType type : ExhibitionType.values()) {
-            if (type.getDescription().equals(description)) {
-                return type;
-            }
-        }
-        throw new IllegalArgumentException("Unknown exhibition type description: " + description);
     }
 
     @Override

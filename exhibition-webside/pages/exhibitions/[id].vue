@@ -23,8 +23,8 @@
 
       <!-- 操作按钮区域 -->
       <div class="p-8 border-t flex justify-between items-center">
-        <NuxtLink to="/exhibitions"
-          class="inline-flex items-center px-6 py-3 bg-neutral-100 text-neutral-700 rounded-lg hover:bg-neutral-200 transition-colors">
+        <NuxtLink to="/exhibitions" 
+                 class="inline-flex items-center px-6 py-3 bg-neutral-100 text-neutral-700 rounded-lg hover:bg-neutral-200 transition-colors">
           <i class="fas fa-arrow-left mr-2"></i>
           返回展会列表
         </NuxtLink>
@@ -150,4 +150,4 @@ onMounted(() => {
 .prose code {
   @apply bg-neutral-50 px-2 py-1 rounded text-neutral-700;
 }
-</style>
+</style> 

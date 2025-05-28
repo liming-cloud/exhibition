@@ -13,19 +13,19 @@
         <el-select v-model="query.exhibitionType" placeholder="展会类型" clearable>
           <el-option label="全部类型" value="" />
           <el-option v-for="(label, value) in ExhibitionTypeMap" :key="value" :label="label" :value="value" />
-        </el-select>
+          </el-select>
 
         <el-select v-model="selectedContinent" placeholder="选择大洲" @change="handleContinentChange">
           <el-option label="全部大洲" value="" />
-          <el-option v-for="continent in continents" :key="continent" :label="continent" :value="continent" />
-        </el-select>
+            <el-option v-for="continent in continents" :key="continent" :label="continent" :value="continent" />
+          </el-select>
 
         <el-select v-model="query.country" placeholder="选择国家" :disabled="!filteredAreas.length">
           <el-option label="全部国家" :value="undefined" />
           <el-option v-for="area in filteredAreas" :key="area.id" :label="area.countryName" :value="area.id" />
-        </el-select>
+          </el-select>
       </div>
-
+      
       <!-- 搜索按钮改为橙色 -->
       <div class="text-center">
         <el-button type="primary" @click="handleSearch"
@@ -38,7 +38,7 @@
 
     <!-- 展会卡片列表 - 增加背景颜色 -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-      <div v-for="exhibition in exhibitions" :key="exhibition.id"
+      <div v-for="exhibition in exhibitions" :key="exhibition.id" 
         class="bg-gradient-to-br from-white to-neutral-50 rounded-xl shadow-elegant hover:shadow-modern overflow-hidden transition-all duration-500 border border-neutral-100">
 
         <div class="p-6 relative">
@@ -64,10 +64,10 @@
 
           <!-- 操作按钮区域 -->
           <div class="flex justify-between items-center">
-            <NuxtLink :to="`/exhibitions/${exhibition.id}`"
+          <NuxtLink :to="`/exhibitions/${exhibition.id}`" 
               class="inline-flex items-center px-6 py-2 bg-gradient-to-r from-neutral-600 to-neutral-700 text-white rounded-lg hover:shadow-lg transition-all duration-300">
-              查看详情
-            </NuxtLink>
+            查看详情
+          </NuxtLink>
 
             <!-- 新增报名按钮 -->
             <el-button type="primary" @click="openRegistrationModal(exhibition)"
@@ -317,4 +317,4 @@ onMounted(async () => {
 .el-date-picker {
   width: 100%;
 }
-</style>
+</style> 
