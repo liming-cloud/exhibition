@@ -1,5 +1,5 @@
 import type { Exhibition, ExhibitionQuery, GlobalArea } from '~/types/exhibition'
-import type { TableDataInfo, ApiResponse } from '~/types/common'
+import type { ApiResponse, TableDataInfo } from '~/types/common'
 
 export const useExhibitionApi = () => {
   return {
@@ -39,4 +39,4 @@ export const useExhibitionApi = () => {
       return data.value?.data || []
     }
   }
-} 
+}

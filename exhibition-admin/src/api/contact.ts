@@ -1,22 +1,33 @@
-import { http } from '@/utils/http'
+import request from '@/utils/request'
+import type { ApiResponse } from '@/types/common'
 
 // 联系信息接口类型定义
 export interface ContactInfo {
     id?: number
     address: string
-    phone: string
-    mobile: string
+    phone: string[]
     contactPerson: string
+    workingHours: string
+    holidayArrangement: string
+    email: string
+    companyProfile: string
     createTime?: string
     updateTime?: string
 }
 
 // 获取联系信息
 export function getContactInfo() {
-    return http.get<ContactInfo>('/contact/info')
+    return request<ApiResponse<ContactInfo>>({
+        url: '/contact/info',
+        method: 'get'
+    })
 }
 
 // 更新联系信息
 export function updateContactInfo(data: ContactInfo) {
-    return http.put('/contact/update', data)
+    return request<ApiResponse<void>>({
+        url: '/contact/update',
+        method: 'put',
+        data
+    })
 } 

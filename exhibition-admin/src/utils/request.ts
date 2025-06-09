@@ -1,6 +1,6 @@
+import type {AxiosInstance, AxiosRequestConfig, AxiosResponse} from 'axios'
 import axios from 'axios'
-import type { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios'
-import { ElMessage } from 'element-plus'
+import {ElMessage} from 'element-plus'
 
 /** 获取图片完整URL */
 export function getImageUrl(path: string) {

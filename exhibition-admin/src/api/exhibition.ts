@@ -1,6 +1,6 @@
 import request from '@/utils/request'
-import type { Exhibition, ExhibitionQuery, GlobalArea } from '@/types/exhibition'
-import type { ApiResponse, TableDataInfo } from '@/types/common'
+import type {Exhibition, ExhibitionQuery, GlobalArea} from '@/types/exhibition'
+import type {ApiResponse, TableDataInfo} from '@/types/common'
 
 /** 查询展会列表 */
 export function listExhibition(query: ExhibitionQuery) {

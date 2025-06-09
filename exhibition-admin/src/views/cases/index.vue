@@ -110,17 +110,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
-import { ElMessage, ElMessageBox, type FormInstance } from 'element-plus'
-import { Plus, Picture } from '@element-plus/icons-vue'
-import { getImageUrl } from '@/utils/request'
-import type { Cases, CasesQuery } from '@/types/cases'
-import {
-  listCases,
-  getCases,
-  saveCases,
-  deleteCases
-} from '@/api/cases'
+import {onMounted, reactive, ref} from 'vue'
+import {ElMessage, ElMessageBox, type FormInstance} from 'element-plus'
+import {Picture, Plus} from '@element-plus/icons-vue'
+import {getImageUrl} from '@/utils/request'
+import type {Cases, CasesQuery} from '@/types/cases'
+import {deleteCases, getCases, listCases, saveCases} from '@/api/cases'
 import Editor from '@/components/Editor/index.vue'
 import Pagination from '@/components/Pagination/index.vue'
 

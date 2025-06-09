@@ -60,5 +60,5 @@ export default defineNuxtConfig({
     '~/plugins/echarts.ts'
   ],
 
-  compatibilityDate: '2024-12-23'
+  compatibilityDate: '2025-06-09'
 })

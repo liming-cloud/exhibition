@@ -48,7 +48,7 @@
         <el-table-column type="index" label="序号" width="50" />
         <el-table-column prop="name" label="展会名称" />
         <el-table-column prop="exhibitionType" label="展会类型" width="120" align="center">
-          <template #default="scope">
+          <template #default="scope: { row: Exhibition }">
             <el-tag size="small" :type="getExhibitionTypeTagType(scope.row.exhibitionType)">
               {{ ExhibitionTypeMap[scope.row.exhibitionType] }}
             </el-tag>
@@ -136,12 +136,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted, computed, nextTick } from 'vue'
-import { ElMessage, ElMessageBox } from 'element-plus'
-import type { FormInstance } from 'element-plus'
-import { listExhibition, getExhibition, delExhibition, saveExhibition, findGlobalArea } from '@/api/exhibition'
-import type { Exhibition, ExhibitionQuery, GlobalArea, ExhibitionType } from '@/types/exhibition'
-import { ExhibitionTypeMap } from '@/types/exhibition'
+import {computed, nextTick, onMounted, reactive, ref} from 'vue'
+import type {FormInstance} from 'element-plus'
+import {ElMessage, ElMessageBox} from 'element-plus'
+import {delExhibition, findGlobalArea, getExhibition, listExhibition, saveExhibition} from '@/api/exhibition'
+import type {Exhibition, ExhibitionQuery, GlobalArea} from '@/types/exhibition'
+import {ExhibitionType, ExhibitionTypeMap} from '@/types/exhibition'
 import Pagination from '@/components/Pagination/index.vue'
 import Editor from '@/components/Editor/index.vue'
 
@@ -358,12 +358,16 @@ const handleDelete = async (row: Exhibition) => {
 
 /** 获取展会类型标签颜色 */
 const getExhibitionTypeTagType = (type: ExhibitionType) => {
-  const tagMap = {
-    [ExhibitionType.ENERGY]: 'success',
-    [ExhibitionType.ELEVATOR]: 'warning',
-    [ExhibitionType.MEDICAL]: 'primary'
+  switch (type) {
+    case ExhibitionType.ENERGY:
+      return 'success'
+    case ExhibitionType.ELEVATOR:
+      return 'warning'
+    case ExhibitionType.MEDICAL:
+      return 'danger'
+    default:
+      return 'info'
   }
-  return tagMap[type] || 'info'
 }
 
 /** 表单重置 */

@@ -9,7 +9,7 @@ import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
 
 // 配置 Element Plus
 const config = {
-  locale: zhCn,
+  locale: zhCn
 }
 
 // 提供给子组件

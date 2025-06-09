@@ -1,27 +1,37 @@
-import { http } from '@/utils/http'
-import type { Registration, RegistrationQuery, ContactProgress } from '@/types/registration'
+import request from '@/utils/request'
+import type { ContactProgress, Registration, RegistrationQuery } from '@/types/registration'
+import type { ApiResponse, TableDataInfo } from '@/types/common'
 
 // 获取报名列表
 export function listRegistration(query: RegistrationQuery) {
-    return http.get<{
-        rows: Registration[]
-        total: number
-    }>('/exhibition/registration/page', { params: query })
+    return request<TableDataInfo<Registration>>({
+        url: '/exhibition/registration/page',
+        method: 'get',
+        params: query
+    })
 }
 
 // 更新联系进度
 export function updateProgress(id: number, progress: ContactProgress) {
-    return http.put(`/exhibition/registration/update-progress/${id}`, null, {
+    return request<ApiResponse<void>>({
+        url: `/exhibition/registration/update-progress/${id}`,
+        method: 'put',
         params: { progress }
     })
 }
 
 // 获取报名详情
 export function getRegistration(id: number) {
-    return http.get<Registration>(`/exhibition/registration/detail/${id}`)
+    return request<ApiResponse<Registration>>({
+        url: `/exhibition/registration/detail/${id}`,
+        method: 'get'
+    })
 }
 
 // 删除报名记录
 export function delRegistration(id: number) {
-    return http.delete(`/exhibition/registration/delete/${id}`)
+    return request<ApiResponse<void>>({
+        url: `/exhibition/registration/delete/${id}`,
+        method: 'delete'
+    })
 } 

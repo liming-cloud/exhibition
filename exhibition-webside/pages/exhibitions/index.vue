@@ -12,24 +12,46 @@
         <!-- 新增展会类型筛选 -->
         <el-select v-model="query.exhibitionType" placeholder="展会类型" clearable>
           <el-option label="全部类型" value="" />
-          <el-option v-for="(label, value) in ExhibitionTypeMap" :key="value" :label="label" :value="value" />
-          </el-select>
+          <el-option
+            v-for="(label, value) in ExhibitionTypeMap"
+            :key="value"
+            :label="label"
+            :value="value"
+          />
+        </el-select>
 
-        <el-select v-model="selectedContinent" placeholder="选择大洲" @change="handleContinentChange">
+        <el-select
+          v-model="selectedContinent"
+          placeholder="选择大洲"
+          @change="handleContinentChange"
+        >
           <el-option label="全部大洲" value="" />
-            <el-option v-for="continent in continents" :key="continent" :label="continent" :value="continent" />
-          </el-select>
+          <el-option
+            v-for="continent in continents"
+            :key="continent"
+            :label="continent"
+            :value="continent"
+          />
+        </el-select>
 
         <el-select v-model="query.country" placeholder="选择国家" :disabled="!filteredAreas.length">
-          <el-option label="全部国家" :value="undefined" />
-          <el-option v-for="area in filteredAreas" :key="area.id" :label="area.countryName" :value="area.id" />
-          </el-select>
+          <el-option label="全部国家" value="" />
+          <el-option
+            v-for="area in filteredAreas"
+            :key="area.id"
+            :label="area.countryName"
+            :value="area.id"
+          />
+        </el-select>
       </div>
-      
+
       <!-- 搜索按钮改为橙色 -->
       <div class="text-center">
-        <el-button type="primary" @click="handleSearch"
-          class="!bg-primary-500 !border-primary-500 hover:!bg-primary-600 px-8 py-2">
+        <el-button
+          type="primary"
+          @click="handleSearch"
+          class="!bg-primary-500 !border-primary-500 hover:!bg-primary-600 px-8 py-2"
+        >
           <i class="fas fa-search mr-2"></i>
           搜索展会
         </el-button>
@@ -38,13 +60,17 @@
 
     <!-- 展会卡片列表 - 增加背景颜色 -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-      <div v-for="exhibition in exhibitions" :key="exhibition.id" 
-        class="bg-gradient-to-br from-white to-neutral-50 rounded-xl shadow-elegant hover:shadow-modern overflow-hidden transition-all duration-500 border border-neutral-100">
-
+      <div
+        v-for="exhibition in exhibitions"
+        :key="exhibition.id"
+        class="bg-gradient-to-br from-white to-neutral-50 rounded-xl shadow-elegant hover:shadow-modern overflow-hidden transition-all duration-500 border border-neutral-100"
+      >
         <div class="p-6 relative">
           <!-- 展会类型标签 -->
           <div class="absolute top-4 right-4">
-            <span class="px-3 py-1 bg-gradient-to-r from-primary-500 to-primary-600 text-white text-sm rounded-full">
+            <span
+              class="px-3 py-1 bg-gradient-to-r from-primary-500 to-primary-600 text-white text-sm rounded-full"
+            >
               {{ ExhibitionTypeMap[exhibition.exhibitionType] || '能源展' }}
             </span>
           </div>
@@ -64,14 +90,19 @@
 
           <!-- 操作按钮区域 -->
           <div class="flex justify-between items-center">
-          <NuxtLink :to="`/exhibitions/${exhibition.id}`" 
-              class="inline-flex items-center px-6 py-2 bg-gradient-to-r from-neutral-600 to-neutral-700 text-white rounded-lg hover:shadow-lg transition-all duration-300">
-            查看详情
-          </NuxtLink>
+            <NuxtLink
+              :to="`/exhibitions/${exhibition.id}`"
+              class="inline-flex items-center px-6 py-2 bg-gradient-to-r from-neutral-600 to-neutral-700 text-white rounded-lg hover:shadow-lg transition-all duration-300"
+            >
+              查看详情
+            </NuxtLink>
 
             <!-- 新增报名按钮 -->
-            <el-button type="primary" @click="openRegistrationModal(exhibition)"
-              class="!bg-primary-500 !border-primary-500 hover:!bg-primary-600">
+            <el-button
+              type="primary"
+              @click="openRegistrationModal(exhibition)"
+              class="!bg-primary-500 !border-primary-500 hover:!bg-primary-600"
+            >
               <i class="fas fa-user-plus mr-2"></i>
               立即报名
             </el-button>
@@ -81,31 +112,44 @@
     </div>
 
     <!-- 报名弹窗 -->
-    <RegistrationModal v-model="showRegistrationModal" :exhibition="selectedExhibition" @submit="handleRegistration" />
+    <RegistrationModal
+      v-model="showRegistrationModal"
+      :exhibition="selectedExhibition"
+      @submit="handleRegistration"
+    />
 
     <!-- 分页 -->
     <div class="mt-8 flex justify-center">
-      <el-pagination v-model:current-page="query.pageNum" v-model:page-size="query.pageSize" :total="total"
-        :page-sizes="[10, 20, 50]" layout="total, sizes, prev, pager, next" :pager-count="5" locale="zh-cn"
-        @size-change="handleSizeChange" @current-change="handleCurrentChange" />
+      <el-pagination
+        v-model:current-page="query.pageNum"
+        v-model:page-size="query.pageSize"
+        :total="total"
+        :page-sizes="[10, 20, 50]"
+        layout="total, sizes, prev, pager, next"
+        :pager-count="5"
+        locale="zh-cn"
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+      />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import type { Exhibition, ExhibitionQuery, GlobalArea, ExhibitionType } from '~/types/exhibition'
+import { computed } from 'vue'
+import type { Exhibition, GlobalArea, ExhibitionType } from '~/types/exhibition'
 import { ExhibitionTypeMap } from '~/types/exhibition'
 import RegistrationModal from '~/components/common/RegistrationModal.vue'
 import { ElMessage } from 'element-plus'
 
-interface QueryState extends ExhibitionQuery {
+interface QueryState {
   year: string
   continent: string
-  country?: number
+  country: number | ''
   pageNum: number
   pageSize: number
   name?: string
-  exhibitionType?: ExhibitionType | ''
+  exhibitionType: ExhibitionType | ''
 }
 
 const api = useApi()
@@ -116,7 +160,7 @@ const query = ref<QueryState>({
   pageSize: 10,
   year: '',
   continent: '',
-  country: undefined,
+  country: '',
   name: '',
   exhibitionType: ''
 })
@@ -139,18 +183,18 @@ const years = Array.from({ length: 7 }, (_, i) => (2024 + i).toString())
 
 // 获取所有大洲
 const continents = computed(() => {
-  console.log('Computing continents from global areas:', globalAreas.value)
   const continentSet = new Set<string>()
   globalAreas.value.forEach(area => {
-    console.log('Processing area:', area)
-    if (area && area.continentName && typeof area.continentName === 'string' && area.continentName.trim() !== '') {
-      console.log('Adding continent:', area.continentName.trim())
+    if (
+      area &&
+      area.continentName &&
+      typeof area.continentName === 'string' &&
+      area.continentName.trim() !== ''
+    ) {
       continentSet.add(area.continentName.trim())
     }
   })
-  const result = Array.from(continentSet).sort()
-  console.log('Final continents list:', result)
-  return result
+  return Array.from(continentSet).sort()
 })
 
 // 根据选中的大洲筛选国家
@@ -171,7 +215,7 @@ const filterExhibitions = () => {
   }
 
   // 按展会类型筛选
-  if (query.value.exhibitionType && query.value.exhibitionType.trim() !== '') {
+  if (query.value.exhibitionType) {
     filtered = filtered.filter(item => item.exhibitionType === query.value.exhibitionType)
   }
 
@@ -181,7 +225,7 @@ const filterExhibitions = () => {
   }
 
   // 按国家筛选
-  if (query.value.country !== undefined) {
+  if (query.value.country) {
     filtered = filtered.filter(item => item.country === query.value.country)
   }
 
@@ -231,7 +275,7 @@ const fetchGlobalAreas = async () => {
 
 // 处理大洲变化
 const handleContinentChange = () => {
-  query.value.country = undefined
+  query.value.country = ''
   filterExhibitions()
 }
 
@@ -248,7 +292,7 @@ const handleReset = () => {
     pageSize: 10,
     year: '',
     continent: '',
-    country: undefined,
+    country: '',
     name: '',
     exhibitionType: ''
   }
@@ -299,11 +343,13 @@ onMounted(async () => {
   const route = useRoute()
   if (route.query.country) {
     const countryId = Number(route.query.country)
-    const country = globalAreas.value.find(area => area.id === countryId)
-    if (country) {
-      selectedContinent.value = country.continentName
-      query.value.country = countryId
-      filterExhibitions()
+    if (!isNaN(countryId)) {
+      const country = globalAreas.value.find(area => area.id === countryId)
+      if (country) {
+        selectedContinent.value = country.continentName
+        query.value.country = countryId
+        filterExhibitions()
+      }
     }
   }
 })
@@ -317,4 +363,4 @@ onMounted(async () => {
 .el-date-picker {
   width: 100%;
 }
-</style> 
+</style>

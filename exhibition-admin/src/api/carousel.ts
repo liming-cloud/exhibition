@@ -1,6 +1,6 @@
 import request from '@/utils/request'
-import type { Carousel, CarouselQuery } from '@/types/carousel'
-import type { ApiResponse, TableDataInfo } from '@/types/common'
+import type {Carousel, CarouselQuery} from '@/types/carousel'
+import type {ApiResponse, TableDataInfo} from '@/types/common'
 
 /** 查询轮播图列表 */
 export function listCarousel(query: CarouselQuery) {

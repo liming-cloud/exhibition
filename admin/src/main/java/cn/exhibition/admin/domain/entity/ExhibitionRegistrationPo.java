@@ -18,6 +18,9 @@ public class ExhibitionRegistrationPo {
     @TableField(value = "exhibition_id")
     private Integer exhibitionId;
 
+    @TableField(value = "exhibition_name")
+    private String exhibitionName;
+
     @TableField(value = "company_or_personal_name")
     private String companyOrPersonalName;
 
@@ -36,7 +39,4 @@ public class ExhibitionRegistrationPo {
     @TableField(value = "update_time")
     private LocalDateTime updateTime;
 
-    // 关联展会信息
-    @TableField(exist = false)
-    private String exhibitionName;
 }

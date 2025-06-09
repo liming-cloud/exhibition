@@ -14,7 +14,8 @@
         <!-- 导航链接 -->
         <div class="hidden md:flex items-center space-x-2">
           <NuxtLink v-for="item in navItems" :key="item.path" :to="item.path"
-            class="px-4 py-2 text-neutral-700 hover:text-primary-500 rounded-xl transition-all duration-300 relative after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-primary-500 after:transition-all after:duration-300 hover:after:w-full"
+            @click="handleNavClick(item)"
+            class="px-4 py-2 text-neutral-700 hover:text-primary-500 rounded-xl transition-all duration-300"
             active-class="text-primary-500 font-semibold">
             {{ item.name }}
           </NuxtLink>
@@ -36,7 +37,7 @@
       <div v-show="isMenuOpen" class="md:hidden py-4 space-y-2 animate-slide-down">
         <NuxtLink v-for="item in navItems" :key="item.path" :to="item.path"
           class="block px-4 py-3 text-neutral-700 hover:text-primary-500 hover:bg-primary-50 rounded-xl transition-all duration-300"
-          active-class="text-primary-500 font-semibold bg-primary-50" @click="isMenuOpen = false">
+          active-class="text-primary-500 font-semibold bg-primary-50" @click="handleMobileNavClick(item)">
           {{ item.name }}
         </NuxtLink>
         <div class="px-4 pt-4">
@@ -53,7 +54,12 @@
 <script setup lang="ts">
 const isMenuOpen = ref(false)
 
-const navItems = [
+interface NavItem {
+  name: string
+  path: string
+}
+
+const navItems: NavItem[] = [
   { name: '首页', path: '/' },
   { name: '展会列表', path: '/exhibitions' }, // 改名：展会资讯 -> 展会列表
   { name: '行业动态', path: '/news' }, // 改名：新闻动态 -> 行业动态
@@ -66,6 +72,21 @@ const navItems = [
 watch(() => useRoute().path, () => {
   isMenuOpen.value = false
 })
+
+const handleNavClick = async (item: NavItem) => {
+  console.log(`Clicked on ${item.name}, navigating to ${item.path}`)
+  try {
+    await navigateTo(item.path)
+    console.log(`Navigation to ${item.path} completed`)
+  } catch (error) {
+    console.error(`Navigation failed:`, error)
+  }
+}
+
+const handleMobileNavClick = async (item: NavItem) => {
+  isMenuOpen.value = false
+  await handleNavClick(item)
+}
 </script>
 
 <style scoped>

@@ -3,19 +3,23 @@
     <!-- 加载状态 -->
     <div v-if="loading" class="py-8">
       <div class="flex justify-center items-center space-x-3">
-        <div class="w-10 h-10 rounded-full border-2 border-primary-500 border-t-transparent animate-spin"></div>
+        <div
+          class="w-10 h-10 rounded-full border-2 border-primary-500 border-t-transparent animate-spin"
+        ></div>
         <span class="text-neutral-500">加载中...</span>
       </div>
     </div>
 
     <!-- 错误状态 -->
     <div v-else-if="error" class="py-8 text-center">
-      <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-primary-50 flex items-center justify-center">
+      <div
+        class="w-16 h-16 mx-auto mb-4 rounded-full bg-primary-50 flex items-center justify-center"
+      >
         <i class="fas fa-exclamation-circle text-primary-500 text-2xl"></i>
       </div>
       <p class="text-neutral-600 mb-4">{{ error }}</p>
-      <button 
-        @click="fetchSubsidiesList" 
+      <button
+        @click="fetchSubsidiesList"
         class="btn btn-secondary inline-flex items-center text-sm group"
       >
         <i class="fas fa-redo mr-2 group-hover:rotate-180 transition-transform duration-500"></i>
@@ -26,13 +30,12 @@
     <!-- 数据列表 -->
     <template v-else>
       <div class="space-y-4">
-        <div v-for="item in subsidiesList" 
-             :key="item.id" 
-             class="list-item group"
-        >
+        <div v-for="item in subsidiesList" :key="item.id" class="list-item group">
           <div class="flex-1 min-w-0">
             <NuxtLink :to="'/subsidies/' + item.id" class="block group">
-              <h3 class="text-neutral-800 group-hover:text-primary-500 truncate pr-4 font-medium transition-colors">
+              <h3
+                class="text-neutral-800 group-hover:text-primary-500 truncate pr-4 font-medium transition-colors"
+              >
                 {{ item.title }}
               </h3>
               <div class="flex items-center justify-between mt-2">
@@ -57,7 +60,9 @@
 
       <!-- 空状态 -->
       <div v-if="subsidiesList.length === 0" class="py-12 text-center">
-        <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-primary-50 flex items-center justify-center">
+        <div
+          class="w-16 h-16 mx-auto mb-4 rounded-full bg-primary-50 flex items-center justify-center"
+        >
           <i class="fas fa-inbox text-primary-500 text-2xl"></i>
         </div>
         <p class="text-neutral-600">暂无政策</p>
@@ -67,7 +72,9 @@
       <div class="pt-4 text-center">
         <NuxtLink to="/subsidies" class="btn btn-secondary inline-flex items-center group">
           查看更多
-          <i class="fas fa-arrow-right ml-2 transform transition-transform group-hover:translate-x-1"></i>
+          <i
+            class="fas fa-arrow-right ml-2 transform transition-transform group-hover:translate-x-1"
+          ></i>
         </NuxtLink>
       </div>
     </template>
@@ -75,7 +82,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
 import type { Subsidies } from '~/types/subsidies'
 import { formatDate } from '~/utils/date'
 
@@ -93,7 +100,7 @@ const formatPrice = (price: number) => {
 const fetchSubsidiesList = async () => {
   loading.value = true
   error.value = ''
-  
+
   try {
     const res = await api.subsidies.getList({
       pageNum: 1,
@@ -115,4 +122,4 @@ const fetchSubsidiesList = async () => {
 onMounted(() => {
   fetchSubsidiesList()
 })
-</script> 
+</script>

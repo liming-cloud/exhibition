@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { ElMessageBox } from 'element-plus'
-import { Fold, Expand, ArrowDown, SwitchButton } from '@element-plus/icons-vue'
+import {ref} from 'vue'
+import {useRouter} from 'vue-router'
+import {ElMessageBox} from 'element-plus'
+import {ArrowDown, Expand, Fold, SwitchButton} from '@element-plus/icons-vue'
 
 const router = useRouter()
 const isCollapse = ref(false)

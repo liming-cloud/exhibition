@@ -1,6 +1,9 @@
 <template>
   <div class="container mx-auto px-4 py-8">
-    <div v-if="subsidyDetail" class="max-w-4xl mx-auto bg-white rounded-lg shadow-md overflow-hidden">
+    <div
+      v-if="subsidyDetail"
+      class="max-w-4xl mx-auto bg-white rounded-lg shadow-md overflow-hidden"
+    >
       <!-- 内容区域 -->
       <div class="p-8">
         <div class="flex justify-between items-start mb-6">
@@ -11,14 +14,19 @@
         </div>
         <div class="text-gray-500 text-sm mb-8">
           <i class="far fa-calendar-alt mr-2"></i>
-          <span>申请时间：{{ formatDate(subsidyDetail.startTime) }} - {{ formatDate(subsidyDetail.endTime) }}</span>
+          <span
+            >申请时间：{{ formatDate(subsidyDetail.startTime) }} -
+            {{ formatDate(subsidyDetail.endTime) }}</span
+          >
         </div>
         <div class="prose max-w-none" v-html="subsidyDetail.content"></div>
       </div>
       <!-- 返回按钮 -->
       <div class="p-8 border-t">
-        <router-link to="/subsidies" 
-                   class="inline-flex items-center px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
+        <router-link
+          to="/subsidies"
+          class="inline-flex items-center px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+        >
           <i class="fas fa-arrow-left mr-2"></i>
           返回补贴列表
         </router-link>
@@ -28,7 +36,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import type { Subsidies } from '~/types/subsidies'
 
@@ -65,4 +73,4 @@ const formatDate = (dateStr?: string) => {
 onMounted(() => {
   getSubsidyDetail()
 })
-</script> 
+</script>

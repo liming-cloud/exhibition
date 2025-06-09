@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 联系信息服务实现类
@@ -29,8 +30,7 @@ public class ContactInfoServiceImpl implements ContactInfoService {
             // 创建默认联系信息
             contactInfo = new ContactInfoPo();
             contactInfo.setAddress("北京市海淀区三里河路9号住建部大院");
-            contactInfo.setPhone("010-53630591/2/3");
-            contactInfo.setMobile("18310336602");
+            contactInfo.setPhone(List.of("010-53630591/2/3"));
             contactInfo.setContactPerson("林琳");
             contactInfo.setCreateTime(LocalDateTime.now());
             contactInfo.setUpdateTime(LocalDateTime.now());

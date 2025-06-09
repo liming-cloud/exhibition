@@ -127,13 +127,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
-import { ElMessage, ElMessageBox } from 'element-plus'
-import type { FormInstance, UploadProps } from 'element-plus'
-import { Picture, Plus } from '@element-plus/icons-vue'
-import { listCarousel, getCarousel, delCarousel, saveCarousel } from '@/api/carousel'
-import type { Carousel, CarouselQuery } from '@/types/carousel'
-import { getImageUrl } from '@/utils/request'
+import {onMounted, reactive, ref} from 'vue'
+import type {FormInstance, UploadProps} from 'element-plus'
+import {ElMessage, ElMessageBox} from 'element-plus'
+import {Picture, Plus} from '@element-plus/icons-vue'
+import {delCarousel, getCarousel, listCarousel, saveCarousel} from '@/api/carousel'
+import type {Carousel, CarouselQuery} from '@/types/carousel'
+import {getImageUrl} from '@/utils/request'
 import Pagination from '@/components/Pagination/index.vue'
 
 const loading = ref(false)

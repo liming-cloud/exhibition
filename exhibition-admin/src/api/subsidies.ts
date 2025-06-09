@@ -1,6 +1,6 @@
 import request from '@/utils/request'
-import type { Subsidies, SubsidiesQuery } from '@/types/subsidies'
-import type { ApiResponse, TableDataInfo } from '@/types/common'
+import type {Subsidies, SubsidiesQuery} from '@/types/subsidies'
+import type {ApiResponse, TableDataInfo} from '@/types/common'
 
 
 /** 查询补贴信息列表 */

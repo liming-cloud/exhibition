@@ -2,12 +2,19 @@
   <div class="relative">
     <el-carousel v-if="carouselList.length > 0" height="500px" :interval="5000" arrow="always">
       <el-carousel-item v-for="item in carouselList" :key="item.id">
-        <img :src="`/api/file/preview?path=${encodeURIComponent(item.imageUrl)}`" 
-             :alt="item.title" 
-             class="w-full h-full object-cover">
+        <img
+          :src="`/api/file/preview?path=${encodeURIComponent(item.imageUrl)}`"
+          :alt="item.title"
+          class="w-full h-full object-cover"
+        />
         <div class="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white p-4">
           <h3 class="text-xl font-bold">{{ item.title }}</h3>
-          <a v-if="item.link" :href="item.link" target="_blank" class="text-blue-400 hover:text-blue-300 mt-2 inline-block">
+          <a
+            v-if="item.link"
+            :href="item.link"
+            target="_blank"
+            class="text-blue-400 hover:text-blue-300 mt-2 inline-block"
+          >
             了解更多
           </a>
         </div>
@@ -20,7 +27,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { onBeforeUnmount, onMounted, ref } from 'vue'
 import type { Carousel } from '~/types/carousel'
 
 const api = useApi()
@@ -30,12 +37,12 @@ const loading = ref(true)
 const fetchCarouselList = async () => {
   try {
     loading.value = true
-    const res = await api.carousel.getList({ 
-      pageNum: 1, 
-      pageSize: 10, 
+    const res = await api.carousel.getList({
+      pageNum: 1,
+      pageSize: 10,
       status: 1
     })
-    
+
     if (res?.code === 200 && res?.rows && Array.isArray(res.rows)) {
       carouselList.value = res.rows
     } else {
@@ -87,4 +94,4 @@ onBeforeUnmount(() => {
 :deep(.el-carousel__button--active) {
   background-color: white;
 }
-</style> 
+</style>

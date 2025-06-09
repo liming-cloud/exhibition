@@ -11,43 +11,55 @@
             <!-- 当前联系信息展示 -->
             <div class="contact-info-display">
                 <el-descriptions :column="2" border size="large">
+                    <el-descriptions-item label="公司简介" :span="2">
+                        <div class="info-item">
+                            <el-icon><Tickets /></el-icon>
+                            <pre class="info-pre">{{ contactInfo.companyProfile || '暂无公司简介' }}</pre>
+                        </div>
+                    </el-descriptions-item>
                     <el-descriptions-item label="公司地址" :span="2">
                         <div class="info-item">
-                            <el-icon>
-                                <Location />
-                            </el-icon>
+                            <el-icon><Location /></el-icon>
                             <span>{{ contactInfo.address || '暂无地址信息' }}</span>
                         </div>
                     </el-descriptions-item>
-                    <el-descriptions-item label="联系电话">
-                        <div class="info-item">
-                            <el-icon>
-                                <Phone />
-                            </el-icon>
-                            <span>{{ contactInfo.phone || '暂无电话信息' }}</span>
+                    <el-descriptions-item label="联系电话" :span="2">
+                        <div class="info-item" v-for="(p, index) in contactInfo.phone" :key="index">
+                            <el-icon><Phone /></el-icon>
+                            <span>{{ p }}</span>
+                        </div>
+                         <div v-if="!contactInfo.phone || contactInfo.phone.length === 0" class="info-item">
+                            <el-icon><Phone /></el-icon>
+                            <span>暂无电话信息</span>
                         </div>
                     </el-descriptions-item>
-                    <el-descriptions-item label="手机号码">
+                    <el-descriptions-item label="联系人">
                         <div class="info-item">
-                            <el-icon>
-                                <Cellphone />
-                            </el-icon>
-                            <span>{{ contactInfo.mobile || '暂无手机信息' }}</span>
-                        </div>
-                    </el-descriptions-item>
-                    <el-descriptions-item label="联系人" :span="2">
-                        <div class="info-item">
-                            <el-icon>
-                                <User />
-                            </el-icon>
+                            <el-icon><User /></el-icon>
                             <span>{{ contactInfo.contactPerson || '暂无联系人信息' }}</span>
+                        </div>
+                    </el-descriptions-item>
+                    <el-descriptions-item label="邮箱">
+                        <div class="info-item">
+                            <el-icon><Message /></el-icon>
+                            <span>{{ contactInfo.email || '暂无邮箱信息' }}</span>
+                        </div>
+                    </el-descriptions-item>
+                     <el-descriptions-item label="工作时间">
+                        <div class="info-item">
+                            <el-icon><Clock /></el-icon>
+                            <span>{{ contactInfo.workingHours || '暂无工作时间' }}</span>
+                        </div>
+                    </el-descriptions-item>
+                    <el-descriptions-item label="节假日安排">
+                        <div class="info-item">
+                            <el-icon><Calendar /></el-icon>
+                            <span>{{ contactInfo.holidayArrangement || '暂无节假日安排' }}</span>
                         </div>
                     </el-descriptions-item>
                     <el-descriptions-item label="最后更新时间" :span="2">
                         <div class="info-item">
-                            <el-icon>
-                                <Clock />
-                            </el-icon>
+                            <el-icon><Clock /></el-icon>
                             <span>{{ contactInfo.updateTime || '暂无更新时间' }}</span>
                         </div>
                     </el-descriptions-item>
@@ -67,23 +79,36 @@
             </el-alert>
 
             <!-- 编辑对话框 -->
-            <el-dialog title="编辑联系信息" v-model="editOpen" width="600px" append-to-body :close-on-click-modal="false">
-                <el-form ref="contactFormRef" :model="editForm" :rules="rules" label-width="100px" class="contact-form">
+            <el-dialog title="编辑联系信息" v-model="editOpen" width="700px" append-to-body :close-on-click-modal="false">
+                <el-form ref="contactFormRef" :model="editForm" :rules="rules" label-width="120px" class="contact-form">
+                    <el-form-item label="公司简介" prop="companyProfile">
+                        <el-input v-model="editForm.companyProfile" type="textarea" :rows="5" placeholder="请输入公司简介"
+                            maxlength="2000" show-word-limit />
+                    </el-form-item>
                     <el-form-item label="公司地址" prop="address">
                         <el-input v-model="editForm.address" type="textarea" :rows="3" placeholder="请输入公司详细地址"
                             maxlength="500" show-word-limit />
                     </el-form-item>
 
-                    <el-form-item label="联系电话" prop="phone">
-                        <el-input v-model="editForm.phone" placeholder="请输入联系电话，如：010-12345678" maxlength="100" />
+                    <el-form-item v-for="(phone, index) in editForm.phone" :key="index" :label="`联系电话 ${index + 1}`" :prop="`phone.${index}`" :rules="rules.phone_item">
+                         <el-input v-model="editForm.phone[index]" placeholder="请输入联系电话" style="width: 80%; margin-right: 10px;"></el-input>
+                         <el-button @click.prevent="removePhone(index)" type="danger" :icon="Delete"></el-button>
                     </el-form-item>
-
-                    <el-form-item label="手机号码" prop="mobile">
-                        <el-input v-model="editForm.mobile" placeholder="请输入手机号码，如：138-0000-0000" maxlength="50" />
+                     <el-form-item>
+                        <el-button @click="addPhone" type="primary" plain>添加电话</el-button>
                     </el-form-item>
 
                     <el-form-item label="联系人" prop="contactPerson">
                         <el-input v-model="editForm.contactPerson" placeholder="请输入主要联系人姓名" maxlength="100" />
+                    </el-form-item>
+                    <el-form-item label="邮箱" prop="email">
+                        <el-input v-model="editForm.email" placeholder="请输入联系邮箱" maxlength="100" />
+                    </el-form-item>
+                    <el-form-item label="工作时间" prop="workingHours">
+                        <el-input v-model="editForm.workingHours" placeholder="例如：周一至周五 9:00-18:00" maxlength="100" />
+                    </el-form-item>
+                    <el-form-item label="节假日安排" prop="holidayArrangement">
+                        <el-input v-model="editForm.holidayArrangement" placeholder="例如：节假日需提前预约" maxlength="100" />
                     </el-form-item>
                 </el-form>
 
@@ -99,13 +124,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
-import { ElMessage } from 'element-plus'
-import { Edit, Location, Phone, Cellphone, User, Clock } from '@element-plus/icons-vue'
+import { onMounted, reactive, ref } from 'vue'
 import type { FormInstance, FormRules } from 'element-plus'
-import { getContactInfo, updateContactInfo, type ContactInfo } from '@/api/contact'
-
-// ContactInfo类型已从API导入
+import { ElMessage } from 'element-plus'
+import { Calendar, Clock, Delete, Edit, Location, Message, Phone, Tickets, User } from '@element-plus/icons-vue'
+import { type ContactInfo, getContactInfo, updateContactInfo } from '@/api/contact'
 
 const editOpen = ref(false)
 const submitLoading = ref(false)
@@ -113,102 +136,124 @@ const contactFormRef = ref<FormInstance>()
 
 // 当前联系信息
 const contactInfo = ref<ContactInfo>({
-    address: '',
-    phone: '',
-    mobile: '',
-    contactPerson: ''
+  address: '',
+  phone: [],
+  contactPerson: '',
+  companyProfile: '',
+  email: '',
+  workingHours: '',
+  holidayArrangement: ''
 })
 
 // 编辑表单
 const editForm = reactive<ContactInfo>({
-    address: '',
-    phone: '',
-    mobile: '',
-    contactPerson: ''
+  address: '',
+  phone: [],
+  contactPerson: '',
+  companyProfile: '',
+  email: '',
+  workingHours: '',
+  holidayArrangement: ''
 })
 
 // 表单验证规则
-const rules: FormRules = {
-    address: [
-        { required: true, message: '请输入公司地址', trigger: 'blur' },
-        { min: 5, max: 500, message: '地址长度应在5-500个字符之间', trigger: 'blur' }
-    ],
-    phone: [
-        { required: true, message: '请输入联系电话', trigger: 'blur' },
-        { pattern: /^[\d\-\s\(\)]+$/, message: '请输入有效的电话号码格式', trigger: 'blur' }
-    ],
-    mobile: [
-        { pattern: /^[\d\-\s\(\)]*$/, message: '请输入有效的手机号码格式', trigger: 'blur' }
-    ],
-    contactPerson: [
-        { required: true, message: '请输入联系人姓名', trigger: 'blur' },
-        { min: 2, max: 100, message: '联系人姓名长度应在2-100个字符之间', trigger: 'blur' }
-    ]
-}
+const rules = reactive<FormRules>({
+  companyProfile: [
+      { required: true, message: '请输入公司简介', trigger: 'blur' }
+  ],
+  address: [
+    { required: true, message: '请输入公司地址', trigger: 'blur' },
+    { min: 5, max: 500, message: '地址长度应在5-500个字符之间', trigger: 'blur' }
+  ],
+  phone_item: [ // 对电话数组中的每个项目应用此规则
+    { required: true, message: '请输入联系电话', trigger: 'blur' },
+    { pattern: /^[\d\-\s()]+$/, message: '请输入有效的电话号码格式', trigger: 'blur' }
+  ],
+  contactPerson: [
+    { required: true, message: '请输入联系人姓名', trigger: 'blur' },
+    { min: 2, max: 100, message: '联系人姓名长度应在2-100个字符之间', trigger: 'blur' }
+  ],
+  email: [
+      { required: true, message: '请输入邮箱地址', trigger: 'blur' },
+      { type: 'email', message: '请输入有效的邮箱地址', trigger: 'blur' }
+  ],
+  workingHours: [
+      { required: true, message: '请输入工作时间', trigger: 'blur' }
+  ],
+  holidayArrangement: [
+      { required: true, message: '请输入节假日安排', trigger: 'blur' }
+  ]
+})
 
 // 获取联系信息
 const fetchContactInfo = async () => {
-    try {
-        const result = await getContactInfo()
-        if (result.data) {
-            contactInfo.value = result.data
-        } else {
-            // 如果没有数据，使用默认值
-            contactInfo.value = {
-                address: '北京市海淀区三里河路9号住建部大院',
-                phone: '010-53630591/2/3',
-                mobile: '18310336602',
-                contactPerson: '林琳'
-            }
-        }
-    } catch (error) {
-        console.error('获取联系信息失败:', error)
-        ElMessage.error('获取联系信息失败')
+  try {
+    const result = await getContactInfo()
+    if (result.data) {
+      contactInfo.value = result.data
     }
+  }
+  catch (error) {
+    console.error('获取联系信息失败:', error)
+    ElMessage.error('获取联系信息失败')
+  }
 }
 
 // 编辑联系信息
 const handleEdit = () => {
-    // 复制当前信息到编辑表单
-    Object.assign(editForm, {
-        id: contactInfo.value.id,
-        address: contactInfo.value.address,
-        phone: contactInfo.value.phone,
-        mobile: contactInfo.value.mobile,
-        contactPerson: contactInfo.value.contactPerson
-    })
-    editOpen.value = true
+  // 深拷贝，防止修改 editForm 时影响到 contactInfo
+  editForm.id = contactInfo.value.id
+  editForm.address = contactInfo.value.address
+  editForm.phone = JSON.parse(JSON.stringify(contactInfo.value.phone || []))
+  editForm.contactPerson = contactInfo.value.contactPerson
+  editForm.companyProfile = contactInfo.value.companyProfile
+  editForm.email = contactInfo.value.email
+  editForm.workingHours = contactInfo.value.workingHours
+  editForm.holidayArrangement = contactInfo.value.holidayArrangement
+  
+  editOpen.value = true
 }
 
 // 取消编辑
 const cancelEdit = () => {
-    contactFormRef.value?.resetFields()
-    editOpen.value = false
+  contactFormRef.value?.resetFields()
+  editOpen.value = false
 }
 
 // 提交编辑
 const submitEdit = async () => {
-    if (!contactFormRef.value) return
+  if (!contactFormRef.value) return
 
-    try {
-        await contactFormRef.value.validate()
-        submitLoading.value = true
+  try {
+    await contactFormRef.value.validate()
+    submitLoading.value = true
 
-        await updateContactInfo(editForm)
-        ElMessage.success('联系信息更新成功')
-        editOpen.value = false
-        // 重新获取最新信息
-        await fetchContactInfo()
-    } catch (error) {
-        console.error('更新联系信息失败:', error)
-        ElMessage.error('更新联系信息失败')
-    } finally {
-        submitLoading.value = false
-    }
+    await updateContactInfo(editForm)
+    ElMessage.success('联系信息更新成功')
+    editOpen.value = false
+    await fetchContactInfo()
+  }
+  catch (error) {
+    console.error('更新联系信息失败:', error)
+    ElMessage.error('更新联系信息失败')
+  }
+  finally {
+    submitLoading.value = false
+  }
+}
+
+// 添加电话
+const addPhone = () => {
+  editForm.phone.push('')
+}
+
+// 移除电话
+const removePhone = (index: number) => {
+  editForm.phone.splice(index, 1)
 }
 
 onMounted(() => {
-    fetchContactInfo()
+  fetchContactInfo()
 })
 </script>
 

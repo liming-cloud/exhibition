@@ -1,5 +1,5 @@
 import type { Carousel, CarouselQuery } from '~/types/carousel'
-import type { TableDataInfo, ApiResponse } from '~/types/common'
+import type { ApiResponse, TableDataInfo } from '~/types/common'
 
 export const useCarouselApi = () => {
   return {
@@ -13,10 +13,13 @@ export const useCarouselApi = () => {
       if (params.title) queryParams.append('title', params.title)
       if (params.status !== undefined) queryParams.append('status', params.status.toString())
 
-      const { data } = await useHttp<TableDataInfo<Carousel>>(`/carousel/page?${queryParams.toString()}`, {
-        method: 'GET'
-      })
-        return data.value || { total: 0, rows: [], code: 0, msg: '' }
+      const { data } = await useHttp<TableDataInfo<Carousel>>(
+        `/carousel/page?${queryParams.toString()}`,
+        {
+          method: 'GET'
+        }
+      )
+      return data.value || { total: 0, rows: [], code: 0, msg: '' }
     },
 
     /**
@@ -29,4 +32,4 @@ export const useCarouselApi = () => {
       return data.value?.data
     }
   }
-} 
+}

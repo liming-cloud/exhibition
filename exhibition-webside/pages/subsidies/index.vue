@@ -2,8 +2,11 @@
   <div class="container mx-auto px-4 py-8">
     <h1 class="text-3xl font-bold mb-8">补贴政策</h1>
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <div v-for="item in subsidiesList" :key="item.id" 
-           class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+      <div
+        v-for="item in subsidiesList"
+        :key="item.id"
+        class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300"
+      >
         <div class="p-6">
           <div class="mb-4">
             <h2 class="text-xl font-semibold mb-2 line-clamp-2">{{ item.title }}</h2>
@@ -17,8 +20,10 @@
               <i class="far fa-calendar-alt mr-2"></i>
               <span>{{ formatDate(item.startTime) }} - {{ formatDate(item.endTime) }}</span>
             </div>
-            <router-link :to="`/subsidies/${item.id}`" 
-                        class="text-blue-600 hover:text-blue-700 inline-flex items-center">
+            <router-link
+              :to="`/subsidies/${item.id}`"
+              class="text-blue-600 hover:text-blue-700 inline-flex items-center"
+            >
               查看详情 <i class="fas fa-arrow-right ml-1"></i>
             </router-link>
           </div>
@@ -43,7 +48,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
+import { onMounted, reactive, ref } from 'vue'
 import type { Subsidies } from '~/types/subsidies'
 
 const api = useApi()
@@ -110,4 +115,4 @@ onMounted(() => {
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
-</style> 
+</style>

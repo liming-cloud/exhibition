@@ -8,7 +8,6 @@ import cn.hutool.extra.spring.SpringUtil;
 import io.github.linpeilie.Converter;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.springframework.context.support.AbstractApplicationContext;
 
 import java.util.List;
 import java.util.Map;

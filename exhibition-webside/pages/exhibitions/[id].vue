@@ -23,15 +23,20 @@
 
       <!-- 操作按钮区域 -->
       <div class="p-8 border-t flex justify-between items-center">
-        <NuxtLink to="/exhibitions" 
-                 class="inline-flex items-center px-6 py-3 bg-neutral-100 text-neutral-700 rounded-lg hover:bg-neutral-200 transition-colors">
+        <NuxtLink
+          to="/exhibitions"
+          class="inline-flex items-center px-6 py-3 bg-neutral-100 text-neutral-700 rounded-lg hover:bg-neutral-200 transition-colors"
+        >
           <i class="fas fa-arrow-left mr-2"></i>
           返回展会列表
         </NuxtLink>
 
         <!-- 报名按钮 -->
-        <el-button type="primary" @click="openRegistrationModal"
-          class="!bg-primary-500 !border-primary-500 hover:!bg-primary-600 px-8 py-3">
+        <el-button
+          type="primary"
+          @click="openRegistrationModal"
+          class="!bg-primary-500 !border-primary-500 hover:!bg-primary-600 px-8 py-3"
+        >
           <i class="fas fa-user-plus mr-2"></i>
           立即报名
         </el-button>
@@ -44,7 +49,11 @@
     </div>
 
     <!-- 报名弹窗 -->
-    <RegistrationModal v-model="showRegistrationModal" :exhibition="exhibition" @submit="handleRegistration" />
+    <RegistrationModal
+      v-model="showRegistrationModal"
+      :exhibition="exhibition"
+      @submit="handleRegistration"
+    />
   </div>
 </template>
 
@@ -150,4 +159,4 @@ onMounted(() => {
 .prose code {
   @apply bg-neutral-50 px-2 py-1 rounded text-neutral-700;
 }
-</style> 
+</style>

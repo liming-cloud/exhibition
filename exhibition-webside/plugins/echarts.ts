@@ -7,4 +7,4 @@ export default defineNuxtPlugin(async () => {
   } catch (error) {
     console.error('Failed to load world map data:', error)
   }
-}) 
+})

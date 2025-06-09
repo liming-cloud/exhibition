@@ -3,8 +3,10 @@
     <!-- 页面标题 -->
     <div class="text-center mb-12">
       <h1
-        class="text-5xl font-bold bg-gradient-to-r from-accent-500 to-primary-500 bg-clip-text text-transparent mb-6 animate-pulse">
-        成功案例</h1>
+        class="text-5xl font-bold bg-gradient-to-r from-accent-500 to-primary-500 bg-clip-text text-transparent mb-6 animate-pulse"
+      >
+        成功案例
+      </h1>
       <p class="text-lg text-neutral-600 max-w-2xl mx-auto">
         展示我们的服务成果，分享客户的成功故事
       </p>
@@ -12,17 +14,25 @@
 
     <!-- 成功案例卡片列表 - 参照展会列表样式 -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-      <div v-for="item in casesList" :key="item.id"
-        class="bg-gradient-to-br from-white to-neutral-50 rounded-xl shadow-elegant hover:shadow-modern overflow-hidden transition-all duration-500 border border-neutral-100 group">
-
+      <div
+        v-for="item in casesList"
+        :key="item.id"
+        class="bg-gradient-to-br from-white to-neutral-50 rounded-xl shadow-elegant hover:shadow-modern overflow-hidden transition-all duration-500 border border-neutral-100 group"
+      >
         <!-- 案例图片 -->
         <div class="relative overflow-hidden h-64">
-          <img :src="`/api/file/preview?path=${encodeURIComponent(item.coverUrl)}`" :alt="item.title"
-            class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+          <img
+            :src="`/api/file/preview?path=${encodeURIComponent(item.coverUrl)}`"
+            :alt="item.title"
+            class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+          />
           <div
-            class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+          >
             <div class="absolute bottom-4 left-4 text-white">
-              <span class="px-3 py-1 bg-gradient-to-r from-accent-500 to-accent-600 text-white text-sm rounded-full">
+              <span
+                class="px-3 py-1 bg-gradient-to-r from-accent-500 to-accent-600 text-white text-sm rounded-full"
+              >
                 成功案例
               </span>
             </div>
@@ -37,8 +47,10 @@
 
           <!-- 查看详情按钮 -->
           <div class="flex justify-center">
-            <NuxtLink :to="`/cases/${item.id}`"
-              class="inline-flex items-center px-6 py-2 bg-gradient-to-r from-accent-500 to-accent-600 text-white rounded-lg hover:shadow-glow transition-all duration-300">
+            <NuxtLink
+              :to="`/cases/${item.id}`"
+              class="inline-flex items-center px-6 py-2 bg-gradient-to-r from-accent-500 to-accent-600 text-white rounded-lg hover:shadow-glow transition-all duration-300"
+            >
               查看详情
               <i class="fas fa-arrow-right ml-2"></i>
             </NuxtLink>
@@ -48,15 +60,23 @@
     </div>
     <!-- 分页 -->
     <div class="mt-8 flex justify-center">
-      <el-pagination v-model:current-page="queryParams.pageNum" v-model:page-size="queryParams.pageSize" :total="total"
-        :page-sizes="[12, 24, 36]" layout="total, sizes, prev, pager, next" :pager-count="5" locale="zh-cn"
-        @size-change="handleSizeChange" @current-change="handleCurrentChange" />
+      <el-pagination
+        v-model:current-page="queryParams.pageNum"
+        v-model:page-size="queryParams.pageSize"
+        :total="total"
+        :page-sizes="[12, 24, 36]"
+        layout="total, sizes, prev, pager, next"
+        :pager-count="5"
+        locale="zh-cn"
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+      />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
+import { onMounted, reactive, ref } from 'vue'
 import type { Cases } from '~/types/cases'
 
 const api = useApi()

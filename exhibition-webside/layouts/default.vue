@@ -11,4 +11,4 @@
 <script setup lang="ts">
 import TheNavbar from '~/components/layout/TheNavbar.vue'
 import TheFooter from '~/components/layout/TheFooter.vue'
-</script> 
+</script>

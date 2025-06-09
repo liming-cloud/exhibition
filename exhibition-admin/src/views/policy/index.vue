@@ -105,15 +105,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
-import { ElMessage, ElMessageBox, type FormInstance } from 'element-plus'
-import type { Subsidies, SubsidiesQuery } from '@/types/subsidies'
-import {
-  listSubsidies,
-  getSubsidies,
-  saveCarousel,
-  deleteSubsidies
-} from '@/api/subsidies'
+import {onMounted, reactive, ref} from 'vue'
+import {ElMessage, ElMessageBox, type FormInstance} from 'element-plus'
+import type {Subsidies, SubsidiesQuery} from '@/types/subsidies'
+import {deleteSubsidies, getSubsidies, listSubsidies, saveCarousel} from '@/api/subsidies'
 import Editor from '@/components/Editor/index.vue'
 import Pagination from '@/components/Pagination/index.vue'
 

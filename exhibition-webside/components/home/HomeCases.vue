@@ -14,12 +14,14 @@
     <!-- 错误状态 -->
     <template v-else-if="error">
       <div class="col-span-full py-12 text-center">
-        <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-primary-50 flex items-center justify-center">
+        <div
+          class="w-16 h-16 mx-auto mb-4 rounded-full bg-primary-50 flex items-center justify-center"
+        >
           <i class="fas fa-exclamation-circle text-primary-500 text-2xl"></i>
         </div>
         <p class="text-neutral-600 mb-4">{{ error }}</p>
-        <button 
-          @click="getCasesList" 
+        <button
+          @click="getCasesList"
           class="btn btn-secondary inline-flex items-center text-sm group"
         >
           <i class="fas fa-redo mr-2 group-hover:rotate-180 transition-transform duration-500"></i>
@@ -30,29 +32,36 @@
 
     <!-- 数据列表 -->
     <template v-else>
-      <div v-for="item in casesList" 
-           :key="item.id" 
-           class="group overflow-hidden rounded-2xl bg-white shadow-modern hover:shadow-hover transition-all duration-300 hover:-translate-y-1"
+      <div
+        v-for="item in casesList"
+        :key="item.id"
+        class="group overflow-hidden rounded-2xl bg-white shadow-modern hover:shadow-hover transition-all duration-300 hover:-translate-y-1"
       >
         <div class="aspect-w-4 aspect-h-3 overflow-hidden">
-          <img 
-            :src="`/api/file/preview?path=${encodeURIComponent(item.coverUrl)}`" 
-            :alt="item.title" 
+          <img
+            :src="`/api/file/preview?path=${encodeURIComponent(item.coverUrl)}`"
+            :alt="item.title"
             class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-          >
-          <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          />
+          <div
+            class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+          ></div>
         </div>
         <div class="p-6">
-          <h3 class="text-lg font-semibold text-neutral-900 mb-2 line-clamp-1 group-hover:text-primary-500 transition-colors">
+          <h3
+            class="text-lg font-semibold text-neutral-900 mb-2 line-clamp-1 group-hover:text-primary-500 transition-colors"
+          >
             {{ item.title }}
           </h3>
           <p class="text-neutral-600 text-sm line-clamp-2 mb-4" v-html="item.content"></p>
-          <NuxtLink 
-            :to="'/cases/' + item.id" 
+          <NuxtLink
+            :to="'/cases/' + item.id"
             class="inline-flex items-center text-sm text-primary-500 hover:text-primary-600 font-medium group/link"
           >
             查看详情
-            <i class="fas fa-arrow-right ml-2 transform transition-transform group-hover/link:translate-x-1"></i>
+            <i
+              class="fas fa-arrow-right ml-2 transform transition-transform group-hover/link:translate-x-1"
+            ></i>
           </NuxtLink>
         </div>
       </div>
@@ -60,7 +69,9 @@
       <!-- 空状态 -->
       <template v-if="casesList.length === 0">
         <div class="col-span-full py-12 text-center">
-          <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-primary-50 flex items-center justify-center">
+          <div
+            class="w-16 h-16 mx-auto mb-4 rounded-full bg-primary-50 flex items-center justify-center"
+          >
             <i class="fas fa-inbox text-primary-500 text-2xl"></i>
           </div>
           <p class="text-neutral-600">暂无案例</p>
@@ -71,7 +82,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
 import type { Cases } from '~/types/cases'
 
 const api = useApi()
@@ -133,4 +144,4 @@ onMounted(() => {
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
-</style> 
+</style>

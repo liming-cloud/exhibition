@@ -91,11 +91,10 @@
 <script setup lang="ts">
 const quickLinks = [
   { name: '首页', path: '/' },
-  { name: '展会信息', path: '/exhibitions' },
-  { name: '项目案例', path: '/cases' },
-  { name: '补贴信息', path: '/subsidies' },
-  { name: '市场咨询', path: '/news' },
-  { name: '联系我们', path: '/contact' }
+  { name: '展会列表', path: '/exhibitions' },
+  { name: '行业动态', path: '/news' }, 
+  { name: '成功案例', path: '/cases' },
+  { name: '关于我们', path: '/about' },
 ]
 
 const socialMedia = [

@@ -1,6 +1,6 @@
 import request from '@/utils/request'
-import type { Information, InformationQuery } from '@/types/information'
-import type { ApiResponse, TableDataInfo } from '@/types/common'
+import type {Information, InformationQuery} from '@/types/information'
+import type {ApiResponse, TableDataInfo} from '@/types/common'
 
 
 /** 查询市场资讯列表 */

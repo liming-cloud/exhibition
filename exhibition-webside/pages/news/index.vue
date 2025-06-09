@@ -1,20 +1,24 @@
 <template>
   <div class="container mx-auto px-4 py-8">
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <div v-for="item in newsList" :key="item.id" 
-           class="bg-white rounded-lg shadow-md overflow-hidden">
+      <div
+        v-for="item in newsList"
+        :key="item.id"
+        class="bg-white rounded-lg shadow-md overflow-hidden"
+      >
         <div class="aspect-w-16 aspect-h-9">
-          <img :src="`/api/file/preview?path=${encodeURIComponent(item.coverUrl || '')}`" 
-               :alt="item.title" 
-               class="w-full h-full object-cover">
+          <img
+            :src="`/api/file/preview?path=${encodeURIComponent(item.coverUrl || '')}`"
+            :alt="item.title"
+            class="w-full h-full object-cover"
+          />
         </div>
         <div class="p-6">
           <h2 class="text-xl font-semibold mb-2">{{ item.title }}</h2>
           <p class="text-gray-600 mb-4 line-clamp-3" v-html="item.content"></p>
           <div class="flex justify-between items-center">
             <span class="text-gray-500 text-sm">{{ formatDate(item.createTime) }}</span>
-            <router-link :to="`/news/${item.id}`" 
-                        class="text-blue-600 hover:text-blue-700">
+            <router-link :to="`/news/${item.id}`" class="text-blue-600 hover:text-blue-700">
               查看详情 <i class="fas fa-arrow-right ml-1"></i>
             </router-link>
           </div>
@@ -37,7 +41,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
+import { onMounted, reactive, ref } from 'vue'
 import type { Information } from '~/types/information'
 
 const api = useApi()
@@ -93,4 +97,4 @@ onMounted(() => {
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
-</style> 
+</style>

@@ -18,11 +18,11 @@
 </template>
 
 <script lang="ts" setup>
-import { onBeforeUnmount, ref, shallowRef, watch, nextTick } from 'vue'
-import { Editor, Toolbar } from '@wangeditor/editor-for-vue'
+import {nextTick, onBeforeUnmount, ref, shallowRef, watch} from 'vue'
+import {Editor, Toolbar} from '@wangeditor/editor-for-vue'
 import '@wangeditor/editor/dist/css/style.css'
-import { ElMessage } from 'element-plus'
-import { getImageUrl } from '@/utils/request'
+import {ElMessage} from 'element-plus'
+import {getImageUrl} from '@/utils/request'
 
 const props = defineProps({
   modelValue: {

@@ -1,8 +1,10 @@
 package cn.exhibition.admin.service.impl;
 
 import cn.exhibition.admin.database.PageQuery;
+import cn.exhibition.admin.domain.entity.ExhibitionDetailPo;
 import cn.exhibition.admin.domain.entity.ExhibitionRegistrationPo;
 import cn.exhibition.admin.domain.enums.ContactProgress;
+import cn.exhibition.admin.mapper.ExhibitionDetailMapper;
 import cn.exhibition.admin.mapper.ExhibitionRegistrationMapper;
 import cn.exhibition.admin.service.ExhibitionRegistrationService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -22,12 +24,16 @@ import java.time.LocalDateTime;
 public class ExhibitionRegistrationServiceImpl implements ExhibitionRegistrationService {
 
     private final ExhibitionRegistrationMapper registrationMapper;
+    private final ExhibitionDetailMapper exhibitionDetailMapper;
 
     @Override
     public void save(ExhibitionRegistrationPo registration) {
         registration.setContactProgress(ContactProgress.UNCONTACTED);
         registration.setCreateTime(LocalDateTime.now());
         registration.setUpdateTime(LocalDateTime.now());
+
+        ExhibitionDetailPo exhibitionDetailPo = exhibitionDetailMapper.selectById(registration.getExhibitionId());
+        registration.setExhibitionName(exhibitionDetailPo.getName());
         registrationMapper.insert(registration);
     }
 
@@ -38,8 +44,6 @@ public class ExhibitionRegistrationServiceImpl implements ExhibitionRegistration
         LambdaQueryWrapper<ExhibitionRegistrationPo> queryWrapper = new LambdaQueryWrapper<ExhibitionRegistrationPo>()
                 .orderByDesc(ExhibitionRegistrationPo::getCreateTime);
 
-        // 可以根据需要添加查询条件
-        // 这里先返回基础查询，后续可以扩展为联表查询获取展会名称
         return registrationMapper.selectPage(page, queryWrapper);
     }
 

@@ -10,12 +10,14 @@
 
     <!-- 错误状态 -->
     <div v-else-if="error" class="py-8 text-center">
-      <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-primary-50 flex items-center justify-center">
+      <div
+        class="w-16 h-16 mx-auto mb-4 rounded-full bg-primary-50 flex items-center justify-center"
+      >
         <i class="fas fa-exclamation-circle text-primary-500 text-2xl"></i>
       </div>
       <p class="text-neutral-600 mb-4">{{ error }}</p>
-      <button 
-        @click="fetchInformationList" 
+      <button
+        @click="fetchInformationList"
         class="btn btn-secondary inline-flex items-center text-sm group"
       >
         <i class="fas fa-redo mr-2 group-hover:rotate-180 transition-transform duration-500"></i>
@@ -26,13 +28,12 @@
     <!-- 数据列表 -->
     <template v-else>
       <div class="space-y-4">
-        <div v-for="(item, index) in informationList" 
-             :key="item.id" 
-             class="list-item group"
-        >
+        <div v-for="(item, index) in informationList" :key="item.id" class="list-item group">
           <div class="flex-1 min-w-0">
             <NuxtLink :to="'/news/' + item.id" class="block group">
-              <h3 class="text-neutral-800 group-hover:text-primary-500 truncate pr-4 font-medium transition-colors">
+              <h3
+                class="text-neutral-800 group-hover:text-primary-500 truncate pr-4 font-medium transition-colors"
+              >
                 {{ item.title }}
               </h3>
               <p class="text-neutral-500 text-sm mt-1 flex items-center">
@@ -51,7 +52,9 @@
 
       <!-- 空状态 -->
       <div v-if="informationList.length === 0" class="py-12 text-center">
-        <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-primary-50 flex items-center justify-center">
+        <div
+          class="w-16 h-16 mx-auto mb-4 rounded-full bg-primary-50 flex items-center justify-center"
+        >
           <i class="fas fa-inbox text-primary-500 text-2xl"></i>
         </div>
         <p class="text-neutral-600">暂无资讯</p>
@@ -61,7 +64,9 @@
       <div class="pt-4 text-center">
         <NuxtLink to="/news" class="btn btn-secondary inline-flex items-center group">
           查看更多
-          <i class="fas fa-arrow-right ml-2 transform transition-transform group-hover:translate-x-1"></i>
+          <i
+            class="fas fa-arrow-right ml-2 transform transition-transform group-hover:translate-x-1"
+          ></i>
         </NuxtLink>
       </div>
     </template>
@@ -69,7 +74,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
 import type { Information } from '~/types/information'
 import { formatDate } from '~/utils/date'
 
@@ -81,7 +86,7 @@ const error = ref('')
 const fetchInformationList = async () => {
   loading.value = true
   error.value = ''
-  
+
   try {
     const res = await api.information.getList({
       pageNum: 1,
@@ -103,4 +108,4 @@ const fetchInformationList = async () => {
 onMounted(() => {
   fetchInformationList()
 })
-</script> 
+</script>

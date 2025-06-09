@@ -1,5 +1,5 @@
 import type { Cases, CasesQuery } from '~/types/cases'
-import type { TableDataInfo, ApiResponse } from '~/types/common'
+import type { ApiResponse, TableDataInfo } from '~/types/common'
 
 export const useCasesApi = () => {
   return {
@@ -12,9 +12,12 @@ export const useCasesApi = () => {
       if (params.pageNum) queryParams.append('pageNum', params.pageNum.toString())
       if (params.title) queryParams.append('title', params.title)
 
-      const { data } = await useHttp<TableDataInfo<Cases>>(`/cases/page?${queryParams.toString()}`, {
-        method: 'GET'
-      })
+      const { data } = await useHttp<TableDataInfo<Cases>>(
+        `/cases/page?${queryParams.toString()}`,
+        {
+          method: 'GET'
+        }
+      )
       return data.value || { total: 0, rows: [], code: 0, msg: '' }
     },
 
@@ -28,4 +31,4 @@ export const useCasesApi = () => {
       return data.value?.data
     }
   }
-} 
+}

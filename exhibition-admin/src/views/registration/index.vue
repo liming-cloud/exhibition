@@ -48,7 +48,7 @@
                 <el-table-column prop="contactName" label="联系人" width="100" />
                 <el-table-column prop="contactPhone" label="联系电话" width="130" />
                 <el-table-column prop="contactProgress" label="联系进度" width="100" align="center">
-                    <template #default="scope">
+                    <template #default="scope: { row: Registration }">
                         <el-tag :type="ContactProgressTagMap[scope.row.contactProgress]" size="small">
                             {{ ContactProgressMap[scope.row.contactProgress] }}
                         </el-tag>
@@ -121,13 +121,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
-import { ElMessage, ElMessageBox } from 'element-plus'
-import type { FormInstance } from 'element-plus'
+import {onMounted, reactive, ref} from 'vue'
+import type {FormInstance} from 'element-plus'
+import {ElMessage, ElMessageBox} from 'element-plus'
 import Pagination from '@/components/Pagination/index.vue'
-import { listRegistration, updateProgress, delRegistration } from '@/api/registration'
-import type { Registration, RegistrationQuery, ContactProgress } from '@/types/registration'
-import { ContactProgressMap, ContactProgressTagMap } from '@/types/registration'
+import {delRegistration, listRegistration, updateProgress} from '@/api/registration'
+import type {Registration, RegistrationQuery} from '@/types/registration'
+import {ContactProgress, ContactProgressMap, ContactProgressTagMap} from '@/types/registration'
 
 // 统计数据接口
 interface Statistics {
@@ -174,15 +174,13 @@ const progressForm = reactive({
 
 const queryRef = ref<FormInstance>()
 
-// 删除getProgressTagType函数，使用ContactProgressTagMap替代
-
 // 获取报名列表
 const getList = async () => {
     loading.value = true
     try {
         const result = await listRegistration(queryParams)
-        registrationList.value = result.data.rows || []
-        total.value = result.data.total || 0
+        registrationList.value = result.rows || []
+        total.value = result.total || 0
 
         // 计算统计数据
         calculateStatistics()
@@ -196,7 +194,7 @@ const getList = async () => {
 
 // 计算统计数据
 const calculateStatistics = () => {
-    statistics.value.total = registrationList.value.length
+    statistics.value.total = total.value
     statistics.value.uncontacted = registrationList.value.filter(item => item.contactProgress === ContactProgress.UNCONTACTED).length
     statistics.value.contacted = registrationList.value.filter(item => [ContactProgress.CONTACTED, ContactProgress.REPLIED].includes(item.contactProgress)).length
     statistics.value.closed = registrationList.value.filter(item => item.contactProgress === ContactProgress.CLOSED).length
