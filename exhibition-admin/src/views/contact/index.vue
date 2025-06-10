@@ -90,7 +90,7 @@
                             maxlength="500" show-word-limit />
                     </el-form-item>
 
-                    <el-form-item v-for="(phone, index) in editForm.phone" :key="index" :label="`联系电话 ${index + 1}`" :prop="`phone.${index}`" :rules="rules.phone_item">
+                    <el-form-item v-for="(_, index) in editForm.phone" :key="index" :label="`联系电话 ${index + 1}`" :prop="`phone.${index}`" :rules="rules.phone_item">
                          <el-input v-model="editForm.phone[index]" placeholder="请输入联系电话" style="width: 80%; margin-right: 10px;"></el-input>
                          <el-button @click.prevent="removePhone(index)" type="danger" :icon="Delete"></el-button>
                     </el-form-item>
