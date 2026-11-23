@@ -22,7 +22,7 @@ const handleLogin = () => {
   
   loading.value = true
   // 模拟登录，这里使用前端写死的账号密码
-  if (loginForm.username === 'admin' && loginForm.password === '***REMOVED***') {
+  if (loginForm.username === 'admin' && loginForm.password === import.meta.env.VITE_ADMIN_PASSWORD) {
     localStorage.setItem('token', 'mock-token')
     ElMessage.success('登录成功')
     const redirect = route.query.redirect as string
