@@ -5,7 +5,7 @@ import path from 'path'
 // https://vitejs.dev/config/
 export default defineConfig({
   base: '/admin/',
-  plugins: [vue()],
+  plugins: [vue() as any],
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src')
