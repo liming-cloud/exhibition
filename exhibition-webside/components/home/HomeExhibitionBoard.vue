@@ -58,7 +58,7 @@
           <p class="font-medium text-neutral-900 line-clamp-2 group-hover:text-primary-700">
             <span
               v-if="e.featured"
-              class="mr-1.5 align-[2px] inline-block px-1.5 py-0.5 rounded bg-accent-500 text-white text-[11px] leading-none"
+              class="mr-1.5 align-[2px] inline-block px-1.5 py-0.5 rounded bg-accent-600 text-white text-[11px] leading-none"
               >重点推荐</span
             >
             {{ e.name }}
