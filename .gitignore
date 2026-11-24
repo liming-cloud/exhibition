@@ -59,3 +59,11 @@ dist-ssr
 /.idea/
 /.vscode/
 /exhibition-admin/node_modules/
+
+# 部署本地数据与配置（数据库导出、上传文件、密码）
+/deploy/.env
+/deploy/local-data/
+/.machine
+
+# 部署包构建产物
+/deploy/out/
