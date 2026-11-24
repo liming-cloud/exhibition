@@ -39,7 +39,7 @@
       </NuxtLink>
     </div>
 
-    <div v-if="shown.length" class="mt-4 grid gap-3 lg:grid-cols-2">
+    <div v-if="shown.length" class="mt-4 grid grid-cols-1 gap-3 lg:grid-cols-2">
       <NuxtLink
         v-for="e in shown"
         :key="e.id"

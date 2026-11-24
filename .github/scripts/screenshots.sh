@@ -43,7 +43,14 @@ for item in "${PAGES[@]}"; do
     npx -y playwright@1 screenshot --full-page --viewport-size="$size" --wait-for-timeout=2500 \
       "$BASE$path" "$OUT/$file" >/dev/null
   done
-  ROWS+="<section><h2>$name <a href=\"..$path\" target=\"_blank\">打开页面</a></h2>"
+  # 手机截图宽度超过 375 说明页面有横向溢出
+  width=$(python3 -c 'import struct,sys; f=open(sys.argv[1],"rb"); f.read(16); print(struct.unpack(">I", f.read(4))[0])' "$OUT/$name-375.png")
+  warn=""
+  if [ "$width" -gt 375 ]; then
+    echo "::warning::$name 手机端横向溢出：页面宽 ${width}px"
+    warn="<span class=\"warn\">手机端横向溢出（${width}px）</span>"
+  fi
+  ROWS+="<section><h2>$name <a href=\"..$path\" target=\"_blank\">打开页面</a>$warn</h2>"
   ROWS+="<div class=\"pair\"><img src=\"$name-1440.png\" loading=\"lazy\"><img class=\"m\" src=\"$name-375.png\" loading=\"lazy\"></div></section>"
 done
 
@@ -53,7 +60,7 @@ cat > "$OUT/index.html" <<EOF
 <style>
 body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;margin:24px;background:#f4f4f5;color:#18181b}
 h1{font-size:22px}h2{font-size:16px;margin:32px 0 12px}h2 a{font-size:13px;margin-left:12px}
-.pair{display:flex;gap:16px;align-items:flex-start}.pair img{width:72%;border:1px solid #d4d4d8;background:#fff}.pair img.m{width:22%}
+.warn{color:#dc2626;font-size:13px;margin-left:12px}.pair{display:flex;gap:16px;align-items:flex-start}.pair img{width:72%;border:1px solid #d4d4d8;background:#fff}.pair img.m{width:22%}
 </style></head><body>
 <h1>官网原型截图（桌面 1440 / 手机 375）</h1>
 <p>生成时间：$(TZ=Asia/Shanghai date '+%Y-%m-%d %H:%M')，提交 ${GITHUB_SHA:-local}。图片为整页截图，点「打开页面」可直接操作。</p>
