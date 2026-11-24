@@ -32,8 +32,9 @@ export default {
         }
       },
       fontFamily: {
-        sans: ['"Noto Sans SC"', 'Inter', 'system-ui', 'sans-serif'],
-        display: ['"Noto Sans SC"', 'Inter', 'system-ui', 'sans-serif'],
+        // 使用系统中文字体，不加载外部字体文件
+        sans: ['-apple-system', 'BlinkMacSystemFont', '"PingFang SC"', '"Microsoft YaHei"', '"Helvetica Neue"', 'sans-serif'],
+        display: ['-apple-system', 'BlinkMacSystemFont', '"PingFang SC"', '"Microsoft YaHei"', '"Helvetica Neue"', 'sans-serif'],
       },
       boxShadow: {
         'soft': '0 2px 15px -3px rgba(0, 0, 0, 0.04), 0 4px 6px -2px rgba(0, 0, 0, 0.02)',

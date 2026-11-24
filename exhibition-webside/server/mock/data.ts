@@ -400,13 +400,16 @@ export const exhibitions = exhibitionRows.map(
 )
 
 export const carousels = [
-  { title: '2027 海外重点展会全面招展', imageUrl: 'mock/banner-1.jpg' },
-  { title: '一站式参展服务 让出海更简单', imageUrl: 'mock/banner-2.jpg' },
-  { title: '符合条件企业可申请展会补贴', imageUrl: 'mock/banner-3.jpg' }
+  { title: '德国电梯展 interlift 中国展团', imageUrl: 'mock/banner-1.jpg', link: '/exhibitions/4' },
+  {
+    title: 'Intersolar Europe 2026 雅博展团',
+    imageUrl: 'mock/banner-2.jpg',
+    link: '/exhibitions/1'
+  },
+  { title: '一站式出展服务 助力企业开拓国际市场', imageUrl: 'mock/banner-3.jpg', link: '' }
 ].map((item, i) => ({
   id: i + 1,
   ...item,
-  link: '',
   sort: i + 1,
   status: 1,
   createTime: '2026-10-01 10:00:00',
@@ -493,14 +496,14 @@ export const subsidies = subsidyTitles.map((title, i) => ({
 }))
 
 export const contactInfo = {
-  address: '浙江省杭州市西湖区文三路 000 号 雅博大厦 12 楼',
-  phone: ['0571-0000 0000', '138 0000 0000'],
+  address: '北京市海淀区三里河路9号住建部大院',
+  phone: ['010-53630591/2/3', '18310336602'],
   contactPerson: '王经理',
   workingHours: '周一至周五 9:00-18:00',
   holidayArrangement: '法定节假日按国家规定安排，假期可电话或微信联系值班顾问',
   email: 'service@topexpo.com.cn',
   companyProfile:
-    '雅博展览专注国际展会组展与参展服务十余年，是多个海外知名展会的中国区代理。\n我们为企业提供展位预订、特装搭建、展品物流、签证行程与展后跟进等一站式服务，已帮助上千家中国企业走向海外市场。'
+    '雅博国际展览（天津）有限公司专业从事境外展会的组展工作，为参展企业提供定制化一站式出展服务，助力企业开拓国际市场。\n我们是多个海外知名能源、电梯、医疗展会的中国区代理，提供展位预订、展台设计搭建、签证行程、展品物流与补贴申请等全流程服务。'
 }
 
 // 新增约定：多顾问联系人（GET /contact/consultants）

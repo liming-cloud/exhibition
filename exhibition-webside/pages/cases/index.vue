@@ -64,7 +64,7 @@
         v-model:current-page="queryParams.pageNum"
         v-model:page-size="queryParams.pageSize"
         :total="total"
-        :page-sizes="[12, 24, 36]"
+        :page-sizes="[6, 12, 24]"
         layout="total, sizes, prev, pager, next"
         :pager-count="5"
         locale="zh-cn"
@@ -83,7 +83,7 @@ const api = useApi()
 
 const queryParams = reactive({
   pageNum: 1,
-  pageSize: 12
+  pageSize: 6
 })
 
 const { data } = await useAsyncData('cases-list', () => api.cases.getList(queryParams), {

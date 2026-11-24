@@ -1,48 +1,83 @@
 <template>
-  <nav class="sticky top-0 z-50 bg-white/80 backdrop-blur-modern border-b border-neutral-200/50">
-    <div class="container">
-      <div class="flex justify-between items-center h-20">
-        <!-- Logo -->
-        <NuxtLink to="/" class="flex items-center space-x-3 group">
-          <div
-            class="w-10 h-10 bg-gradient-to-br from-primary-400 to-primary-600 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-glow transition-all duration-300 group-hover:scale-105">
-            YB
-          </div>
-          <span class="text-xl font-bold text-neutral-900 group-hover:text-primary-500 transition-colors">雅博展览</span>
+  <!-- 顶部联系条：只在桌面显示，滚动后随页面上移 -->
+  <div class="hidden md:block bg-neutral-900 text-neutral-300 text-xs">
+    <div class="container flex items-center justify-between h-9">
+      <span>专注境外展会组展与参展服务</span>
+      <div class="flex items-center gap-6">
+        <a
+          v-if="contact.hotline"
+          :href="`tel:${contact.hotline.split('/')[0]}`"
+          class="hover:text-white"
+        >
+          <i class="fas fa-phone-alt mr-1.5 text-primary-400"></i>服务热线 {{ contact.hotline }}
+        </a>
+        <a v-if="contact.mobile" :href="`tel:${contact.mobile}`" class="hover:text-white">
+          <i class="fab fa-weixin mr-1.5 text-primary-400"></i>手机 / 微信 {{ contact.mobile }}
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <nav class="sticky top-0 z-50 bg-white border-b border-neutral-200">
+    <div class="container flex items-center justify-between h-16 md:h-20">
+      <NuxtLink to="/" class="flex items-center shrink-0" :aria-label="site.name">
+        <img :src="site.logo" :alt="site.name" class="h-9 md:h-11 w-auto" />
+      </NuxtLink>
+
+      <div class="hidden md:flex items-center h-full">
+        <NuxtLink
+          v-for="item in navItems"
+          :key="item.path"
+          :to="item.path"
+          class="nav-link"
+          :class="{ 'nav-link-active': isActive(item.path) }"
+        >
+          <span class="text-[15px] font-medium">{{ item.name }}</span>
+          <span class="text-[10px] tracking-wider text-neutral-400 uppercase">{{ item.en }}</span>
         </NuxtLink>
-
-        <!-- 导航链接 -->
-        <div class="hidden md:flex items-center space-x-2">
-          <NuxtLink v-for="item in navItems" :key="item.path" :to="item.path"
-            class="px-4 py-2 text-neutral-700 hover:text-primary-500 rounded-xl transition-all duration-300"
-            active-class="text-primary-500 font-semibold">
-            {{ item.name }}
-          </NuxtLink>
-          <NuxtLink to="/contact" class="btn btn-primary ml-4 group">
-            联系我们
-            <i class="fas fa-arrow-right ml-2 transform transition-transform group-hover:translate-x-1"></i>
-          </NuxtLink>
-        </div>
-
-        <!-- 移动端菜单按钮 -->
-        <button
-          class="md:hidden w-10 h-10 flex items-center justify-center text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 rounded-xl transition-colors focus:outline-none"
-          @click="isMenuOpen = !isMenuOpen">
-          <i class="fas" :class="isMenuOpen ? 'fa-times' : 'fa-bars'"></i>
-        </button>
+        <NuxtLink
+          to="/contact"
+          class="ml-6 inline-flex items-center h-10 px-5 rounded-md bg-primary-600 text-white text-sm font-medium hover:bg-primary-700 transition-colors"
+        >
+          联系我们
+        </NuxtLink>
       </div>
 
-      <!-- 移动端菜单 -->
-      <div v-show="isMenuOpen" class="md:hidden py-4 space-y-2 animate-slide-down">
-        <NuxtLink v-for="item in navItems" :key="item.path" :to="item.path"
-          class="block px-4 py-3 text-neutral-700 hover:text-primary-500 hover:bg-primary-50 rounded-xl transition-all duration-300"
-          active-class="text-primary-500 font-semibold bg-primary-50">
+      <button
+        class="md:hidden w-10 h-10 -mr-2 flex items-center justify-center text-neutral-700"
+        :aria-label="isMenuOpen ? '关闭菜单' : '打开菜单'"
+        @click="isMenuOpen = !isMenuOpen"
+      >
+        <i class="fas text-lg" :class="isMenuOpen ? 'fa-times' : 'fa-bars'"></i>
+      </button>
+    </div>
+
+    <!-- 手机端菜单 -->
+    <div v-show="isMenuOpen" class="md:hidden border-t border-neutral-200 bg-white">
+      <div class="container py-2">
+        <NuxtLink
+          v-for="item in navItems"
+          :key="item.path"
+          :to="item.path"
+          class="flex items-center justify-between py-3 border-b border-neutral-100 text-neutral-800"
+          :class="{ 'text-primary-600 font-semibold': isActive(item.path) }"
+        >
           {{ item.name }}
+          <i class="fas fa-chevron-right text-xs text-neutral-300"></i>
         </NuxtLink>
-        <div class="px-4 pt-4">
-          <NuxtLink to="/contact" class="btn btn-primary w-full group">
+        <div class="grid grid-cols-2 gap-3 py-4">
+          <a
+            v-if="contact.mobile"
+            :href="`tel:${contact.mobile}`"
+            class="h-11 inline-flex items-center justify-center rounded-md border border-primary-600 text-primary-600 text-sm"
+          >
+            <i class="fas fa-phone-alt mr-2"></i>电话咨询
+          </a>
+          <NuxtLink
+            to="/contact"
+            class="h-11 inline-flex items-center justify-center rounded-md bg-primary-600 text-white text-sm"
+          >
             联系我们
-            <i class="fas fa-arrow-right ml-2 transform transition-transform group-hover:translate-x-1"></i>
           </NuxtLink>
         </div>
       </div>
@@ -51,43 +86,41 @@
 </template>
 
 <script setup lang="ts">
+import { site } from '~/constants/site'
+
+const route = useRoute()
+const contact = useSiteContact()
 const isMenuOpen = ref(false)
 
-interface NavItem {
-  name: string
-  path: string
-}
-
-const navItems: NavItem[] = [
-  { name: '首页', path: '/' },
-  { name: '展会列表', path: '/exhibitions' }, // 改名：展会资讯 -> 展会列表
-  { name: '行业动态', path: '/news' }, // 改名：新闻动态 -> 行业动态
-  { name: '成功案例', path: '/cases' },
-  { name: '关于我们', path: '/about' },
-  // 删除：补贴政策
+const navItems = [
+  { name: '首页', en: 'Home', path: '/' },
+  { name: '展会列表', en: 'Exhibitions', path: '/exhibitions' },
+  { name: '市场简讯', en: 'News', path: '/news' },
+  { name: '成功案例', en: 'Cases', path: '/cases' },
+  { name: '关于我们', en: 'About', path: '/about' }
 ]
 
-// 监听路由变化，关闭移动端菜单
-watch(() => useRoute().path, () => {
-  isMenuOpen.value = false
-})
+const isActive = (path: string) => (path === '/' ? route.path === '/' : route.path.startsWith(path))
+
+watch(
+  () => route.path,
+  () => {
+    isMenuOpen.value = false
+  }
+)
 </script>
 
 <style scoped>
-/* 移动端菜单动画 */
-.animate-slide-down {
-  animation: slideDown 0.3s ease-out;
+.nav-link {
+  @apply relative flex flex-col items-center justify-center h-full px-5 text-neutral-700 hover:text-primary-600 transition-colors;
 }
 
-@keyframes slideDown {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
+.nav-link-active {
+  @apply text-primary-600;
+}
 
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.nav-link-active::after {
+  content: '';
+  @apply absolute left-5 right-5 bottom-0 h-0.5 bg-primary-600;
 }
 </style>

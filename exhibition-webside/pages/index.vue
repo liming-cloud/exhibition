@@ -1,65 +1,64 @@
 <template>
-  <div class="min-h-screen bg-white">
-    <!-- 轮播图 -->
+  <div>
+    <!-- 1 通栏轮播（R2） -->
     <HomeCarousel />
 
-    <!-- 服务介绍 - 加大标题字体，增加特效，减小间距 -->
-    <section class="py-12">
-      <!-- 原py-20改为py-12 -->
+    <!-- 2 全球展会分布 + 3 展会项目（R5）：共用同一份展会数据，点地图或国家标签都会筛选下方列表 -->
+    <section class="py-12 md:py-16 bg-neutral-50">
       <div class="container">
-        <div class="text-center mb-8">
-          <!-- 原mb-12改为mb-8 -->
-          <h2
-            class="text-5xl font-bold bg-gradient-to-r from-primary-500 to-primary-600 bg-clip-text text-transparent mb-6"
-          >
-            我们的服务
-          </h2>
-          <p class="text-lg text-neutral-600 max-w-2xl mx-auto">
-            为您提供专业的展会服务，助力企业开拓国际市场
-          </p>
+        <div class="flex flex-wrap items-end justify-between gap-6">
+          <div>
+            <p class="section-eyebrow">Global Network</p>
+            <h2 class="section-title">全球展会分布</h2>
+            <p class="section-desc">点击地图上的国家，查看该国展会</p>
+          </div>
+          <dl class="flex gap-8 md:gap-12">
+            <div v-for="stat in stats" :key="stat.label">
+              <dt class="text-xs text-neutral-500">{{ stat.label }}</dt>
+              <dd class="mt-1 text-3xl font-bold text-primary-600">{{ stat.value }}</dd>
+            </div>
+          </dl>
+        </div>
+
+        <div class="mt-6 rounded-lg bg-white border border-neutral-200 overflow-hidden">
+          <ClientOnly>
+            <WorldMap
+              :exhibitions="exhibitions"
+              :selected="selectedCountry"
+              @select="selectFromMap"
+            />
+            <template #fallback>
+              <div class="h-[260px] sm:h-[360px] lg:h-[440px]"></div>
+            </template>
+          </ClientOnly>
+        </div>
+
+        <div ref="boardRef" class="mt-10 scroll-mt-24">
+          <p class="section-eyebrow">Our Projects</p>
+          <h2 class="section-title">展会项目</h2>
+          <p class="section-desc mb-6">我们代理和组织的海外展会，按国家查看</p>
+          <HomeExhibitionBoard
+            v-model="selectedCountry"
+            :exhibitions="exhibitions"
+            :areas="areas"
+          />
+        </div>
+      </div>
+    </section>
+
+    <!-- 4 我们的服务（R3）：放在最后，紧凑一行 -->
+    <section class="py-12">
+      <div class="container">
+        <div class="flex flex-wrap items-end justify-between gap-4 mb-6">
+          <div>
+            <p class="section-eyebrow">Our Services</p>
+            <h2 class="section-title">我们的服务</h2>
+          </div>
+          <NuxtLink to="/contact" class="text-sm text-primary-600 hover:text-primary-700">
+            咨询参展方案<i class="fas fa-arrow-right ml-1 text-xs"></i>
+          </NuxtLink>
         </div>
         <HomeServices />
-      </div>
-    </section>
-
-    <!-- 世界地图 - 加大标题字体，增加特效，减小间距 -->
-    <section class="py-12 bg-gradient-to-b from-neutral-50/50">
-      <!-- 原py-20改为py-12 -->
-      <div class="container">
-        <div class="text-center mb-8">
-          <!-- 原mb-12改为mb-8 -->
-          <h2
-            class="text-5xl font-bold bg-gradient-to-r from-primary-500 to-accent-500 bg-clip-text text-transparent mb-6"
-          >
-            全球展会分布
-          </h2>
-          <p class="text-lg text-neutral-600 max-w-2xl mx-auto">
-            覆盖全球主要展会地区，为您提供全方位的展会信息
-          </p>
-        </div>
-        <WorldMap />
-      </div>
-    </section>
-
-    <!-- 删除展会资讯和补贴政策部分 -->
-
-    <!-- 成功案例 - 只展示主图，加大标题字体，增加特效，减小间距 -->
-    <section class="py-12 bg-gradient-to-b from-neutral-50/50">
-      <!-- 原py-20改为py-12 -->
-      <div class="container">
-        <div class="text-center mb-8">
-          <!-- 原mb-12改为mb-8 -->
-          <h2
-            class="text-5xl font-bold bg-gradient-to-r from-accent-500 to-primary-500 bg-clip-text text-transparent mb-6"
-          >
-            成功案例
-          </h2>
-          <p class="text-lg text-neutral-600 max-w-2xl mx-auto">
-            展示我们的服务成果，分享客户的成功故事
-          </p>
-        </div>
-        <HomeCasesPreview />
-        <!-- 新组件：只展示主图 -->
       </div>
     </section>
   </div>
@@ -68,12 +67,32 @@
 <script setup lang="ts">
 import HomeCarousel from '~/components/home/HomeCarousel.vue'
 import HomeServices from '~/components/home/HomeServices.vue'
+import HomeExhibitionBoard from '~/components/home/HomeExhibitionBoard.vue'
 import WorldMap from '~/components/home/WorldMap.vue'
-import HomeCasesPreview from '~/components/home/HomeCasesPreview.vue' // 新组件
-</script>
 
-<style scoped>
-.container {
-  max-width: 1280px;
+const api = useApi()
+
+// 首页展会数据服务端取一次，地图与展会项目板块共用
+const { data } = await useAsyncData('home-exhibitions', async () => {
+  const [areas, list] = await Promise.all([
+    api.exhibition.getGlobalArea(),
+    api.exhibition.getList({ pageNum: 1, pageSize: 999 })
+  ])
+  return { areas, rows: list.rows }
+})
+const exhibitions = computed(() => data.value?.rows ?? [])
+const areas = computed(() => data.value?.areas ?? [])
+
+const stats = computed(() => [
+  { label: '覆盖国家', value: new Set(exhibitions.value.map(e => e.country)).size },
+  { label: '即将开展', value: exhibitions.value.filter(e => isUpcoming(e)).length }
+])
+
+const selectedCountry = ref<number | null>(null)
+const boardRef = ref<HTMLElement | null>(null)
+
+const selectFromMap = (countryId: number) => {
+  selectedCountry.value = countryId
+  boardRef.value?.scrollIntoView({ behavior: 'smooth', block: 'start' })
 }
-</style>
+</script>
