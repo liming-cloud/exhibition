@@ -21,7 +21,7 @@
   <nav class="sticky top-0 z-50 bg-white border-b border-neutral-200">
     <div class="container flex items-center justify-between h-16 md:h-20">
       <NuxtLink to="/" class="flex items-center shrink-0" :aria-label="site.name">
-        <img :src="site.logo" :alt="site.name" class="h-9 md:h-11 w-auto" />
+        <img :src="assetUrl(site.logo)" :alt="site.name" class="h-9 md:h-11 w-auto" />
       </NuxtLink>
 
       <div class="hidden md:flex items-center h-full">

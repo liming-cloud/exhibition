@@ -91,7 +91,7 @@ const openRegistrationModal = () => {
 // 处理报名提交
 const handleRegistration = async (data: any) => {
   try {
-    await $fetch('/api/exhibition/registration/submit', {
+    await $fetch(assetUrl('/api/exhibition/registration/submit'), {
       method: 'POST',
       body: data
     })

@@ -1,0 +1,55 @@
+# 原型预览：master 更新后用 mock 数据静态生成官网并逐页截图，发布到 GitHub Pages
+# 地址：https://liming-cloud.github.io/exhibition/ ，截图：/exhibition/screenshots/
+name: Prototype preview
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: exhibition-webside
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: exhibition-webside/pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+      - name: 静态生成（mock 数据）
+        run: npx nuxi generate
+        env:
+          NUXT_PUBLIC_MOCK: '1'
+          NUXT_APP_BASE_URL: /exhibition/
+      - name: 逐页截图
+        run: bash ../.github/scripts/screenshots.sh .output/public
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: exhibition-webside/.output/public
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

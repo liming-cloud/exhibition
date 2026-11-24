@@ -11,7 +11,7 @@
     >
       <el-carousel-item v-for="(item, index) in slides" :key="item.id">
         <img
-          :src="`/api/file/preview?path=${encodeURIComponent(item.imageUrl)}`"
+          :src="fileUrl(item.imageUrl)"
           :alt="item.title"
           class="w-full h-full object-cover"
           :loading="index === 0 ? 'eager' : 'lazy'"

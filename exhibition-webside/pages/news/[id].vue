@@ -4,7 +4,7 @@
       <!-- 封面图 -->
       <div class="aspect-w-16 aspect-h-9">
         <img
-          :src="`/api/file/preview?path=${encodeURIComponent(newsDetail.coverUrl || '')}`"
+          :src="fileUrl(newsDetail.coverUrl)"
           :alt="newsDetail.title"
           class="w-full h-full object-cover"
         />

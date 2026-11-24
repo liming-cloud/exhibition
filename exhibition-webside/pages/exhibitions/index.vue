@@ -292,7 +292,7 @@ const openRegistrationModal = (exhibition: Exhibition) => {
 const handleRegistration = async (data: any) => {
   try {
     // 这里调用报名接口
-    await $fetch('/api/exhibition/registration/submit', {
+    await $fetch(assetUrl('/api/exhibition/registration/submit'), {
       method: 'POST',
       body: data
     })

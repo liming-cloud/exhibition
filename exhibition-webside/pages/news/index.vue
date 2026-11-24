@@ -8,7 +8,7 @@
       >
         <div class="aspect-w-16 aspect-h-9">
           <img
-            :src="`/api/file/preview?path=${encodeURIComponent(item.coverUrl || '')}`"
+            :src="fileUrl(item.coverUrl)"
             :alt="item.title"
             class="w-full h-full object-cover"
           />
