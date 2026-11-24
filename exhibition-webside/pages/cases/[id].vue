@@ -37,10 +37,10 @@ const { data: caseDetail, error } = await useAsyncData(`case-${route.params.id}`
   api.cases.getDetail(Number(route.params.id))
 )
 if (error.value) {
-  throw createError({ statusCode: 500, statusMessage: '获取案例详情失败', fatal: true })
+  throw createError({ statusCode: 500, message: '获取案例详情失败', fatal: true })
 }
 if (!caseDetail.value) {
-  throw createError({ statusCode: 404, statusMessage: '案例不存在', fatal: true })
+  throw createError({ statusCode: 404, message: '案例不存在', fatal: true })
 }
 
 useSeoMeta({

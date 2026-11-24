@@ -8,7 +8,7 @@ const detailSources = [
 
 export default defineEventHandler(async (event) => {
   const { apiBase } = useRuntimeConfig(event)
-  const origin = getRequestURL(event).origin
+  const origin = getRequestURL(event, { xForwardedProto: true }).origin
 
   const staticPaths = ['/', '/exhibitions', '/news', '/cases', '/subsidies', '/about', '/contact']
   const detailPaths = await Promise.all(

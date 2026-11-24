@@ -44,10 +44,10 @@ const { data: subsidyDetail, error } = await useAsyncData(`subsidy-${route.param
   api.subsidies.getDetail(Number(route.params.id))
 )
 if (error.value) {
-  throw createError({ statusCode: 500, statusMessage: '获取补贴详情失败', fatal: true })
+  throw createError({ statusCode: 500, message: '获取补贴详情失败', fatal: true })
 }
 if (!subsidyDetail.value) {
-  throw createError({ statusCode: 404, statusMessage: '政策不存在', fatal: true })
+  throw createError({ statusCode: 404, message: '政策不存在', fatal: true })
 }
 
 useSeoMeta({

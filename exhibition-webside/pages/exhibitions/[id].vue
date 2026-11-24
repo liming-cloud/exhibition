@@ -72,10 +72,10 @@ const { data: exhibition, error } = await useAsyncData(`exhibition-${route.param
   api.exhibition.getDetail(Number(route.params.id))
 )
 if (error.value) {
-  throw createError({ statusCode: 500, statusMessage: '获取展会详情失败', fatal: true })
+  throw createError({ statusCode: 500, message: '获取展会详情失败', fatal: true })
 }
 if (!exhibition.value) {
-  throw createError({ statusCode: 404, statusMessage: '展会不存在', fatal: true })
+  throw createError({ statusCode: 404, message: '展会不存在', fatal: true })
 }
 
 useSeoMeta({

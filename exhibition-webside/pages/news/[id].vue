@@ -40,10 +40,10 @@ const { data: newsDetail, error } = await useAsyncData(`news-${route.params.id}`
   api.information.getDetail(Number(route.params.id))
 )
 if (error.value) {
-  throw createError({ statusCode: 500, statusMessage: '获取资讯详情失败', fatal: true })
+  throw createError({ statusCode: 500, message: '获取资讯详情失败', fatal: true })
 }
 if (!newsDetail.value) {
-  throw createError({ statusCode: 404, statusMessage: '资讯不存在', fatal: true })
+  throw createError({ statusCode: 404, message: '资讯不存在', fatal: true })
 }
 
 useSeoMeta({
