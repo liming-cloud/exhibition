@@ -393,20 +393,20 @@ export const exhibitions = exhibitionRows.map(
       exhibitionType,
       // 新增约定：主推展会标记、封面图、一句话介绍
       featured,
-      coverUrl: `mock/exhibition-${i + 1}.jpg`,
+      coverUrl: 'mock/exhibition.svg',
       summary: `${countryName}${location}举办，雅博展览为中国区代理，提供展位预订与全程参展服务。`
     }
   }
 )
 
 export const carousels = [
-  { title: '德国电梯展 interlift 中国展团', imageUrl: 'mock/banner-1.jpg', link: '/exhibitions/4' },
+  { title: '德国电梯展 interlift 中国展团', imageUrl: 'mock/banner-1.svg', link: '/exhibitions/4' },
   {
     title: 'Intersolar Europe 2026 雅博展团',
-    imageUrl: 'mock/banner-2.jpg',
+    imageUrl: 'mock/banner-2.svg',
     link: '/exhibitions/1'
   },
-  { title: '一站式出展服务 助力企业开拓国际市场', imageUrl: 'mock/banner-3.jpg', link: '' }
+  { title: '一站式出展服务 助力企业开拓国际市场', imageUrl: 'mock/banner-3.svg', link: '' }
 ].map((item, i) => ({
   id: i + 1,
   ...item,
@@ -450,7 +450,7 @@ export const informations = informationTitles.map((title, i) => {
     id: i + 1,
     title,
     content: articleContent(title),
-    coverUrl: `mock/news-${i + 1}.jpg`,
+    coverUrl: 'mock/news.svg',
     createTime: `2026-10-${day} 09:30:00`,
     updateTime: `2026-10-${day} 09:30:00`
   }
@@ -472,7 +472,7 @@ export const cases = caseTitles.map((title, i) => ({
   id: i + 1,
   title,
   content: `<p>${title}。从展会选择、展位设计、展品物流到展后客户跟进，雅博展览全程协助，帮助客户把展会投入转化为实际订单。</p><p>客户评价：服务专业、响应及时，明年继续合作。</p>`,
-  coverUrl: `mock/case-${i + 1}.jpg`,
+  coverUrl: 'mock/case.svg',
   createTime: `2026-0${(i % 9) + 1}-15 10:00:00`
 }))
 

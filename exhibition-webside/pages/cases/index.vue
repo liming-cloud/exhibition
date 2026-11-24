@@ -22,7 +22,7 @@
         <!-- 案例图片 -->
         <div class="relative overflow-hidden h-64">
           <img
-            :src="`/api/file/preview?path=${encodeURIComponent(item.coverUrl)}`"
+            :src="fileUrl(item.coverUrl)"
             :alt="item.title"
             class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
           />

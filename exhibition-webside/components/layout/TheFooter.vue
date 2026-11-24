@@ -42,7 +42,7 @@
       <div class="md:col-span-2">
         <h3 class="footer-title">关注我们</h3>
         <img
-          :src="site.qrcode"
+          :src="assetUrl(site.qrcode)"
           alt="微信二维码"
           class="w-32 h-32 rounded bg-white p-1.5"
           loading="lazy"
