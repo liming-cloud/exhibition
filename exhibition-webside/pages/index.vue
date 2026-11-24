@@ -10,7 +10,7 @@
         <div class="text-center mb-8">
           <!-- 原mb-12改为mb-8 -->
           <h2
-            class="text-5xl font-bold bg-gradient-to-r from-primary-500 to-primary-600 bg-clip-text text-transparent mb-6 animate-pulse"
+            class="text-5xl font-bold bg-gradient-to-r from-primary-500 to-primary-600 bg-clip-text text-transparent mb-6"
           >
             我们的服务
           </h2>
@@ -29,7 +29,7 @@
         <div class="text-center mb-8">
           <!-- 原mb-12改为mb-8 -->
           <h2
-            class="text-5xl font-bold bg-gradient-to-r from-primary-500 to-accent-500 bg-clip-text text-transparent mb-6 animate-bounce"
+            class="text-5xl font-bold bg-gradient-to-r from-primary-500 to-accent-500 bg-clip-text text-transparent mb-6"
           >
             全球展会分布
           </h2>
@@ -50,7 +50,7 @@
         <div class="text-center mb-8">
           <!-- 原mb-12改为mb-8 -->
           <h2
-            class="text-5xl font-bold bg-gradient-to-r from-accent-500 to-primary-500 bg-clip-text text-transparent mb-6 animate-pulse"
+            class="text-5xl font-bold bg-gradient-to-r from-accent-500 to-primary-500 bg-clip-text text-transparent mb-6"
           >
             成功案例
           </h2>

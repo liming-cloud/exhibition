@@ -14,6 +14,10 @@ const config = {
 
 // 提供给子组件
 provide('ep-locale', config)
+
+useHead({
+  titleTemplate: title => (title ? `${title} - 雅博展览` : '雅博展览 - 专业国际展会服务')
+})
 </script>
 
 <style>

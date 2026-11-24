@@ -27,42 +27,24 @@
 </template>
 
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref } from 'vue'
-import type { Carousel } from '~/types/carousel'
+import { computed, onBeforeUnmount, onMounted } from 'vue'
 
 const api = useApi()
-const carouselList = ref<Carousel[]>([])
-const loading = ref(true)
-
-const fetchCarouselList = async () => {
-  try {
-    loading.value = true
-    const res = await api.carousel.getList({
-      pageNum: 1,
-      pageSize: 10,
-      status: 1
-    })
-
-    if (res?.code === 200 && res?.rows && Array.isArray(res.rows)) {
-      carouselList.value = res.rows
-    } else {
-      carouselList.value = []
-    }
-  } catch (error) {
-    console.error('获取轮播图数据失败:', error)
-    carouselList.value = []
-  } finally {
-    loading.value = false
-  }
-}
+const { data, pending: loading, refresh } = await useAsyncData('home-carousel', () =>
+  api.carousel.getList({
+    pageNum: 1,
+    pageSize: 10,
+    status: 1
+  })
+)
+const carouselList = computed(() => data.value?.rows ?? [])
 
 // 定期刷新数据
 let refreshInterval: NodeJS.Timeout | null = null
 
 onMounted(() => {
-  fetchCarouselList()
   // 每5分钟刷新一次数据
-  refreshInterval = setInterval(fetchCarouselList, 5 * 60 * 1000)
+  refreshInterval = setInterval(refresh, 5 * 60 * 1000)
 })
 
 onBeforeUnmount(() => {

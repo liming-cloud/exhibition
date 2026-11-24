@@ -41,29 +41,26 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, reactive, ref } from 'vue'
+import { computed, reactive } from 'vue'
 import type { Information } from '~/types/information'
 
 const api = useApi()
-const newsList = ref<Information[]>([])
-const total = ref(0)
 
 const queryParams = reactive({
   pageNum: 1,
   pageSize: 12
 })
 
-const getNewsList = async () => {
-  try {
-    const res = await api.information.getList(queryParams)
-    if (res.code === 200) {
-      newsList.value = res.rows
-      total.value = res.total
-    }
-  } catch (error) {
-    console.error('获取资讯列表失败:', error)
-  }
-}
+const { data } = await useAsyncData('news-list', () => api.information.getList(queryParams), {
+  watch: [queryParams]
+})
+const newsList = computed(() => data.value?.rows ?? [])
+const total = computed(() => data.value?.total ?? 0)
+
+useSeoMeta({
+  title: '行业动态',
+  description: '海外展会与外贸行业最新资讯'
+})
 
 const formatDate = (dateStr?: string) => {
   if (!dateStr) return ''
@@ -77,17 +74,11 @@ const formatDate = (dateStr?: string) => {
 
 const handleSizeChange = (val: number) => {
   queryParams.pageSize = val
-  getNewsList()
 }
 
 const handleCurrentChange = (val: number) => {
   queryParams.pageNum = val
-  getNewsList()
 }
-
-onMounted(() => {
-  getNewsList()
-})
 </script>
 
 <style scoped>

@@ -98,10 +98,8 @@
 
 <script setup lang="ts">
 import { useApi } from '~/composables/useApi'
-import type { ContactInfo } from '~/types/contact'
 
 const api = useApi()
-const contactInfo = ref<ContactInfo | null>(null)
 
 const photos = [
   { url: '/images/team/image1.png', alt: '展团照片1' },
@@ -109,22 +107,13 @@ const photos = [
 ]
 
 // 获取联系信息
-async function fetchContactInfo() {
-  try {
-    const data = await api.contact.getInfo()
-    if (data) {
-      contactInfo.value = data
-    }
-    else {
-      console.error('获取联系信息失败或信息为空')
-    }
-  }
-  catch (error) {
-    console.error('获取联系信息时发生错误:', error)
-  }
-}
+const { data: contactInfo } = await useAsyncData('contact-info', () => api.contact.getInfo())
 
-onMounted(fetchContactInfo)
+useSeoMeta({
+  title: '关于我们',
+  description: '了解雅博展览：团队、服务与联系方式'
+})
+
 </script>
 
 <style scoped>

@@ -22,24 +22,9 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
-import type { Cases } from '~/types/cases'
+import { computed } from 'vue'
 
 const api = useApi()
-const cases = ref<Cases[]>([])
-
-const fetchCases = async () => {
-    try {
-        const res = await api.cases.getList({ pageNum: 1, pageSize: 3 })
-        if (res.code === 200) {
-            cases.value = res.rows
-        } else {
-            console.error('获取成功案例失败:', res.msg)
-        }
-    } catch (error) {
-        console.error('获取成功案例失败:', error)
-    }
-}
-
-onMounted(fetchCases)
+const { data } = await useAsyncData('home-cases', () => api.cases.getList({ pageNum: 1, pageSize: 3 }))
+const cases = computed(() => data.value?.rows ?? [])
 </script>

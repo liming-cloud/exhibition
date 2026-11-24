@@ -105,27 +105,15 @@
 
 <script setup lang="ts">
 import { useApi } from '~/composables/useApi'
-import type { ContactInfo } from '~/types/contact'
 
 const api = useApi()
-const contactInfo = ref<ContactInfo | null>(null)
 
 // 获取联系信息
-async function fetchContactInfo() {
-  try {
-    const data = await api.contact.getInfo()
-    if (data) {
-      contactInfo.value = data
-    }
-    else {
-      console.error('获取联系信息失败或信息为空')
-    }
-  }
-  catch (error) {
-    console.error('获取联系信息时发生错误:', error)
-  }
-}
+const { data: contactInfo } = await useAsyncData('contact-info', () => api.contact.getInfo())
 
-// 在组件挂载时获取数据
-onMounted(fetchContactInfo)
+useSeoMeta({
+  title: '联系我们',
+  description: '雅博展览联系方式：地址、电话与联系人'
+})
+
 </script> 

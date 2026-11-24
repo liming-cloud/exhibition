@@ -36,25 +36,24 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
-import type { Subsidies } from '~/types/subsidies'
 
 const route = useRoute()
 const api = useApi()
-const subsidyDetail = ref<Subsidies>()
-
-const getSubsidyDetail = async () => {
-  try {
-    const id = Number(route.params.id)
-    const res = await api.subsidies.getDetail(id)
-    if (res) {
-      subsidyDetail.value = res
-    }
-  } catch (error) {
-    console.error('获取补贴详情失败:', error)
-  }
+const { data: subsidyDetail, error } = await useAsyncData(`subsidy-${route.params.id}`, () =>
+  api.subsidies.getDetail(Number(route.params.id))
+)
+if (error.value) {
+  throw createError({ statusCode: 500, statusMessage: '获取补贴详情失败', fatal: true })
 }
+if (!subsidyDetail.value) {
+  throw createError({ statusCode: 404, statusMessage: '政策不存在', fatal: true })
+}
+
+useSeoMeta({
+  title: () => subsidyDetail.value?.title,
+  description: () => toSummary(subsidyDetail.value?.content)
+})
 
 const formatPrice = (price: number) => {
   return `¥ ${(price / 10000).toFixed(2)}万`
@@ -69,8 +68,4 @@ const formatDate = (dateStr?: string) => {
     day: '2-digit'
   })
 }
-
-onMounted(() => {
-  getSubsidyDetail()
-})
 </script>

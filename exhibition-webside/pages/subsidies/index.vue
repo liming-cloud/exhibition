@@ -48,29 +48,26 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, reactive, ref } from 'vue'
+import { computed, reactive } from 'vue'
 import type { Subsidies } from '~/types/subsidies'
 
 const api = useApi()
-const subsidiesList = ref<Subsidies[]>([])
-const total = ref(0)
 
 const queryParams = reactive({
   pageNum: 1,
   pageSize: 12
 })
 
-const getSubsidiesList = async () => {
-  try {
-    const res = await api.subsidies.getList(queryParams)
-    if (res.code === 200) {
-      subsidiesList.value = res.rows
-      total.value = res.total
-    }
-  } catch (error) {
-    console.error('获取补贴政策列表失败:', error)
-  }
-}
+const { data } = await useAsyncData('subsidies-list', () => api.subsidies.getList(queryParams), {
+  watch: [queryParams]
+})
+const subsidiesList = computed(() => data.value?.rows ?? [])
+const total = computed(() => data.value?.total ?? 0)
+
+useSeoMeta({
+  title: '补贴政策',
+  description: '出海参展补贴政策汇总'
+})
 
 const formatPrice = (price: number) => {
   return `¥ ${(price / 10000).toFixed(2)}万`
@@ -88,17 +85,11 @@ const formatDate = (dateStr?: string) => {
 
 const handleSizeChange = (val: number) => {
   queryParams.pageSize = val
-  getSubsidiesList()
 }
 
 const handleCurrentChange = (val: number) => {
   queryParams.pageNum = val
-  getSubsidiesList()
 }
-
-onMounted(() => {
-  getSubsidiesList()
-})
 </script>
 
 <style scoped>
