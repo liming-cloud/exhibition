@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 @layer base {
-  /* 橙色方案（现有品牌色）：主色 #ff5a1f，强调色青色 */
+  /* 橙色方案（现有品牌色）：主色 #ff5a1f，强调色玫红（类似色，色相差 30°；见设计规范第 1 节） */
   :root, [data-theme='orange'] {
     --color-primary-50: 255 248 241;
     --color-primary-100: 254 236 220;
@@ -15,19 +15,19 @@
     --color-primary-700: 201 61 16;
     --color-primary-800: 154 47 12;
     --color-primary-900: 119 30 7;
-    --color-accent-50: 240 253 250;
-    --color-accent-100: 204 251 241;
-    --color-accent-200: 153 246 228;
-    --color-accent-300: 94 234 212;
-    --color-accent-400: 45 212 191;
-    --color-accent-500: 20 184 166;
-    --color-accent-600: 13 148 136;
-    --color-accent-700: 15 118 110;
-    --color-accent-800: 17 94 89;
-    --color-accent-900: 19 78 74;
+    --color-accent-50: 255 241 242;
+    --color-accent-100: 255 228 230;
+    --color-accent-200: 254 205 211;
+    --color-accent-300: 253 164 175;
+    --color-accent-400: 251 113 133;
+    --color-accent-500: 244 63 94;
+    --color-accent-600: 225 29 72;
+    --color-accent-700: 190 18 60;
+    --color-accent-800: 159 18 57;
+    --color-accent-900: 136 19 55;
   }
 
-  /* 蓝色方案（参考 maifexpo.com）：主色 #0784c9，强调色琥珀色 */
+  /* 蓝色方案（参考 maifexpo.com）：主色 #0784c9，强调色靛蓝（类似色，色相差 42°；见设计规范第 1 节） */
   [data-theme='blue'] {
     --color-primary-50: 239 248 254;
     --color-primary-100: 219 239 252;
@@ -39,16 +39,16 @@
     --color-primary-700: 7 85 133;
     --color-primary-800: 11 71 109;
     --color-primary-900: 15 59 90;
-    --color-accent-50: 255 251 235;
-    --color-accent-100: 254 243 199;
-    --color-accent-200: 253 230 138;
-    --color-accent-300: 252 211 77;
-    --color-accent-400: 251 191 36;
-    --color-accent-500: 245 158 11;
-    --color-accent-600: 217 119 6;
-    --color-accent-700: 180 83 9;
-    --color-accent-800: 146 64 14;
-    --color-accent-900: 120 53 15;
+    --color-accent-50: 238 242 255;
+    --color-accent-100: 224 231 255;
+    --color-accent-200: 199 210 254;
+    --color-accent-300: 165 180 252;
+    --color-accent-400: 129 140 248;
+    --color-accent-500: 99 102 241;
+    --color-accent-600: 79 70 229;
+    --color-accent-700: 67 56 202;
+    --color-accent-800: 55 48 163;
+    --color-accent-900: 49 46 129;
   }
 
   /* Element Plus 跟随主色；选择器比 element-plus 自带的 :root 更具体，避免被后加载的样式覆盖 */
@@ -175,7 +175,7 @@
   }
 
   .btn-accent {
-    @apply bg-accent-500 text-white hover:bg-accent-600;
+    @apply bg-accent-600 text-white hover:bg-accent-700;
   }
 
   .btn-ghost {
@@ -192,7 +192,7 @@
   }
 
   .tag-accent {
-    @apply bg-accent-500 text-white;
+    @apply bg-accent-600 text-white;
   }
 
   .tag-success {
