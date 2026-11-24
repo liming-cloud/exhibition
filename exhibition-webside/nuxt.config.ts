@@ -47,6 +47,10 @@ export default defineNuxtConfig({
   },
 
   nitro: {
+    // element-plus 通过 npm 别名依赖 @popperjs/core，按包名追踪会漏掉，直接打进产物
+    externals: {
+      inline: ['@popperjs/core']
+    },
     devProxy: {
       '/api': {
         target: 'http://127.0.0.1:8080',
