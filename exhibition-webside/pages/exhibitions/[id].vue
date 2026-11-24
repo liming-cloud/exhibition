@@ -58,28 +58,30 @@
 </template>
 
 <script setup lang="ts">
-import type { Exhibition } from '~/types/exhibition'
 import RegistrationModal from '~/components/common/RegistrationModal.vue'
 import { ElMessage } from 'element-plus'
 
 const route = useRoute()
 const api = useApi()
-const exhibition = ref<Exhibition | null>(null)
 
 // 报名功能相关
 const showRegistrationModal = ref(false)
 
 // 获取展会详情
-const fetchExhibition = async () => {
-  try {
-    const id = parseInt(route.params.id as string)
-    if (!isNaN(id)) {
-      exhibition.value = await api.exhibition.getDetail(id)
-    }
-  } catch (error) {
-    console.error('Failed to fetch exhibition details:', error)
-  }
+const { data: exhibition, error } = await useAsyncData(`exhibition-${route.params.id}`, () =>
+  api.exhibition.getDetail(Number(route.params.id))
+)
+if (error.value) {
+  throw createError({ statusCode: 500, message: '获取展会详情失败', fatal: true })
 }
+if (!exhibition.value) {
+  throw createError({ statusCode: 404, message: '展会不存在', fatal: true })
+}
+
+useSeoMeta({
+  title: () => exhibition.value?.name,
+  description: () => toSummary(exhibition.value?.content)
+})
 
 // 打开报名弹窗
 const openRegistrationModal = () => {
@@ -100,11 +102,6 @@ const handleRegistration = async (data: any) => {
     ElMessage.error('报名失败')
   }
 }
-
-// 页面加载时获取数据
-onMounted(() => {
-  fetchExhibition()
-})
 </script>
 
 <style>

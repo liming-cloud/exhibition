@@ -1,39 +1,18 @@
-import type { UseFetchOptions } from 'nuxt/app'
 import { ref, type Ref } from 'vue'
 
-export const useHttp = <T = any>(url: string, opts: UseFetchOptions<T> = {}) => {
-  const config = useRuntimeConfig()
-  const baseURL = '/api'
+interface HttpOptions {
+  method?: 'GET' | 'POST' | 'PUT' | 'DELETE'
+  params?: Record<string, any>
+  body?: Record<string, any>
+}
 
-  return new Promise<{ data: Ref<T> }>(async (resolve, reject) => {
-    try {
-      console.log('发送请求:', baseURL + url)
-      const response = await fetch(baseURL + url, {
-        method: (opts.method || 'GET') as string,
-        headers: {
-          'Content-Type': 'application/json',
-          'Cache-Control': 'no-cache, no-store, must-revalidate',
-          Pragma: 'no-cache',
-          Expires: '0',
-          ...(opts.headers as Record<string, string>)
-        },
-        body: opts.body ? JSON.stringify(opts.body) : undefined,
-        cache: 'no-cache'
-      })
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
-      }
-
-      const jsonData = await response.json()
-      console.log('请求响应:', jsonData)
-
-      resolve({
-        data: ref(jsonData) as Ref<T>
-      })
-    } catch (error) {
-      console.error('请求失败:', error)
-      reject(error)
-    }
+// 请求统一走 /api，由 server/routes/api 转发到后端；SSR 时 $fetch 直接在服务端内部调用该路由
+export const useHttp = async <T = any>(url: string, opts: HttpOptions = {}) => {
+  const data = await $fetch<T>(url, {
+    baseURL: '/api',
+    method: opts.method,
+    query: opts.params,
+    body: opts.body
   })
+  return { data: ref(data) as Ref<T> }
 }

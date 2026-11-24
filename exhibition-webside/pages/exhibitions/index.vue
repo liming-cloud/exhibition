@@ -137,7 +137,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { Exhibition, GlobalArea, ExhibitionType } from '~/types/exhibition'
+import type { Exhibition, ExhibitionType } from '~/types/exhibition'
 import { ExhibitionTypeMap } from '~/types/exhibition'
 import RegistrationModal from '~/components/common/RegistrationModal.vue'
 import { ElMessage } from 'element-plus'
@@ -169,13 +169,20 @@ const query = ref<QueryState>({
 const showRegistrationModal = ref(false)
 const selectedExhibition = ref<Exhibition | null>(null)
 
-// 展会列表数据
-const allExhibitions = ref<Exhibition[]>([]) // 存储所有展会数据
+// 展会与全球区域数据（服务端取数，筛选分页在前端完成）
+const { data } = await useAsyncData('exhibition-list', async () => {
+  const [areas, list] = await Promise.all([
+    api.exhibition.getGlobalArea(),
+    api.exhibition.getList({ pageSize: 999, pageNum: 1 })
+  ])
+  return { areas, rows: list.rows }
+})
+const allExhibitions = computed(() => data.value?.rows ?? [])
 const exhibitions = ref<Exhibition[]>([])
 const total = ref(0)
 
 // 全球区域数据
-const globalAreas = ref<GlobalArea[]>([])
+const globalAreas = computed(() => data.value?.areas ?? [])
 const selectedContinent = ref('')
 
 // 年份选项（2024-2030）
@@ -248,31 +255,6 @@ const filterExhibitions = () => {
   exhibitions.value = filtered.slice(start, end)
 }
 
-// 获取展会列表
-const fetchExhibitions = async () => {
-  try {
-    const res = await api.exhibition.getList({
-      pageSize: 999, // 获取所有数据
-      pageNum: 1
-    })
-    allExhibitions.value = res.rows
-    filterExhibitions()
-  } catch (error) {
-    console.error('Failed to fetch exhibitions:', error)
-  }
-}
-
-// 获取全球区域列表
-const fetchGlobalAreas = async () => {
-  try {
-    const res = await api.exhibition.getGlobalArea()
-    globalAreas.value = res
-  } catch (error) {
-    console.error('Failed to fetch global areas:', error)
-    globalAreas.value = []
-  }
-}
-
 // 处理大洲变化
 const handleContinentChange = () => {
   query.value.country = ''
@@ -334,24 +316,19 @@ const handleCurrentChange = (val: number) => {
   filterExhibitions()
 }
 
-// 页面加载时获取数据
-onMounted(async () => {
-  await fetchGlobalAreas()
-  await fetchExhibitions()
+// 处理路由参数（如首页地图跳转带 country）
+const route = useRoute()
+const countryId = Number(route.query.country)
+const country = globalAreas.value.find(area => area.id === countryId)
+if (country) {
+  selectedContinent.value = country.continentName
+  query.value.country = countryId
+}
+filterExhibitions()
 
-  // 处理路由参数
-  const route = useRoute()
-  if (route.query.country) {
-    const countryId = Number(route.query.country)
-    if (!isNaN(countryId)) {
-      const country = globalAreas.value.find(area => area.id === countryId)
-      if (country) {
-        selectedContinent.value = country.continentName
-        query.value.country = countryId
-        filterExhibitions()
-      }
-    }
-  }
+useSeoMeta({
+  title: '展会列表',
+  description: '全球能源、电梯、医疗等行业国际展会目录，按大洲、国家、年份筛选'
 })
 </script>
 

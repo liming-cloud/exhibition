@@ -29,27 +29,22 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
-import type { Cases } from '~/types/cases'
 
 const route = useRoute()
 const api = useApi()
-const caseDetail = ref<Cases>()
-
-const getCaseDetail = async () => {
-  try {
-    const id = Number(route.params.id)
-    const res = await api.cases.getDetail(id)
-    if (res) {
-      caseDetail.value = res
-    }
-  } catch (error) {
-    console.error('获取案例详情失败:', error)
-  }
+const { data: caseDetail, error } = await useAsyncData(`case-${route.params.id}`, () =>
+  api.cases.getDetail(Number(route.params.id))
+)
+if (error.value) {
+  throw createError({ statusCode: 500, message: '获取案例详情失败', fatal: true })
+}
+if (!caseDetail.value) {
+  throw createError({ statusCode: 404, message: '案例不存在', fatal: true })
 }
 
-onMounted(() => {
-  getCaseDetail()
+useSeoMeta({
+  title: () => caseDetail.value?.title,
+  description: () => toSummary(caseDetail.value?.content)
 })
 </script>

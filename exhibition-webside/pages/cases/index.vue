@@ -76,43 +76,34 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, reactive, ref } from 'vue'
+import { computed, reactive } from 'vue'
 import type { Cases } from '~/types/cases'
 
 const api = useApi()
-const casesList = ref<Cases[]>([])
-const total = ref(0)
 
 const queryParams = reactive({
   pageNum: 1,
   pageSize: 12
 })
 
-const getCasesList = async () => {
-  try {
-    const res = await api.cases.getList(queryParams)
-    if (res.code === 200) {
-      casesList.value = res.rows
-      total.value = res.total
-    }
-  } catch (error) {
-    console.error('获取案例列表失败:', error)
-  }
-}
+const { data } = await useAsyncData('cases-list', () => api.cases.getList(queryParams), {
+  watch: [queryParams]
+})
+const casesList = computed(() => data.value?.rows ?? [])
+const total = computed(() => data.value?.total ?? 0)
+
+useSeoMeta({
+  title: '成功案例',
+  description: '雅博展览服务过的海外展会成功案例'
+})
 
 const handleSizeChange = (val: number) => {
   queryParams.pageSize = val
-  getCasesList()
 }
 
 const handleCurrentChange = (val: number) => {
   queryParams.pageNum = val
-  getCasesList()
 }
-
-onMounted(() => {
-  getCasesList()
-})
 </script>
 
 <style scoped>

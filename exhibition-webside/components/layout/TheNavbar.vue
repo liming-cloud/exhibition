@@ -14,7 +14,6 @@
         <!-- 导航链接 -->
         <div class="hidden md:flex items-center space-x-2">
           <NuxtLink v-for="item in navItems" :key="item.path" :to="item.path"
-            @click="handleNavClick(item)"
             class="px-4 py-2 text-neutral-700 hover:text-primary-500 rounded-xl transition-all duration-300"
             active-class="text-primary-500 font-semibold">
             {{ item.name }}
@@ -37,7 +36,7 @@
       <div v-show="isMenuOpen" class="md:hidden py-4 space-y-2 animate-slide-down">
         <NuxtLink v-for="item in navItems" :key="item.path" :to="item.path"
           class="block px-4 py-3 text-neutral-700 hover:text-primary-500 hover:bg-primary-50 rounded-xl transition-all duration-300"
-          active-class="text-primary-500 font-semibold bg-primary-50" @click="handleMobileNavClick(item)">
+          active-class="text-primary-500 font-semibold bg-primary-50">
           {{ item.name }}
         </NuxtLink>
         <div class="px-4 pt-4">
@@ -72,21 +71,6 @@ const navItems: NavItem[] = [
 watch(() => useRoute().path, () => {
   isMenuOpen.value = false
 })
-
-const handleNavClick = async (item: NavItem) => {
-  console.log(`Clicked on ${item.name}, navigating to ${item.path}`)
-  try {
-    await navigateTo(item.path)
-    console.log(`Navigation to ${item.path} completed`)
-  } catch (error) {
-    console.error(`Navigation failed:`, error)
-  }
-}
-
-const handleMobileNavClick = async (item: NavItem) => {
-  isMenuOpen.value = false
-  await handleNavClick(item)
-}
 </script>
 
 <style scoped>

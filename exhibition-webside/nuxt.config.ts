@@ -27,11 +27,11 @@ export default defineNuxtConfig({
 
   app: {
     head: {
-      title: '展会官网',
+      htmlAttrs: { lang: 'zh-CN' },
       meta: [
         { charset: 'utf-8' },
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-        { hid: 'description', name: 'description', content: '展会官网 - 您的专业展会服务平台' }
+        { name: 'description', content: '雅博展览，专注国际展会组展与参展服务，助力中国企业开拓海外市场' }
       ],
       link: [
         { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
@@ -41,6 +41,8 @@ export default defineNuxtConfig({
   },
 
   runtimeConfig: {
+    // 后端地址，部署时用环境变量 NUXT_API_BASE 覆盖
+    apiBase: 'http://127.0.0.1:8080',
     public: {
       baseURL: '/'
     }
@@ -50,13 +52,6 @@ export default defineNuxtConfig({
     // element-plus 通过 npm 别名依赖 @popperjs/core，按包名追踪会漏掉，直接打进产物
     externals: {
       inline: ['@popperjs/core']
-    },
-    devProxy: {
-      '/api': {
-        target: 'http://127.0.0.1:8080',
-        changeOrigin: true,
-        ws: true
-      }
     }
   },
 

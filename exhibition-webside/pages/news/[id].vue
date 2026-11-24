@@ -32,25 +32,24 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
-import type { Information } from '~/types/information'
 
 const route = useRoute()
 const api = useApi()
-const newsDetail = ref<Information>()
-
-const getNewsDetail = async () => {
-  try {
-    const id = Number(route.params.id)
-    const res = await api.information.getDetail(id)
-    if (res) {
-      newsDetail.value = res
-    }
-  } catch (error) {
-    console.error('获取资讯详情失败:', error)
-  }
+const { data: newsDetail, error } = await useAsyncData(`news-${route.params.id}`, () =>
+  api.information.getDetail(Number(route.params.id))
+)
+if (error.value) {
+  throw createError({ statusCode: 500, message: '获取资讯详情失败', fatal: true })
 }
+if (!newsDetail.value) {
+  throw createError({ statusCode: 404, message: '资讯不存在', fatal: true })
+}
+
+useSeoMeta({
+  title: () => newsDetail.value?.title,
+  description: () => toSummary(newsDetail.value?.content)
+})
 
 const formatDate = (dateStr?: string) => {
   if (!dateStr) return ''
@@ -61,8 +60,4 @@ const formatDate = (dateStr?: string) => {
     day: '2-digit'
   })
 }
-
-onMounted(() => {
-  getNewsDetail()
-})
 </script>
