@@ -32,6 +32,8 @@ PAGES=(
   "10-补贴详情|/subsidies/1?theme=blue"
   "11-关于我们|/about?theme=blue"
   "12-联系我们|/contact?theme=blue"
+  "13-设计规范|/styleguide?theme=blue"
+  "14-设计规范-橙色|/styleguide?theme=orange"
 )
 
 ROWS=""

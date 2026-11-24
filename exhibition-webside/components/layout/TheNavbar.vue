@@ -19,12 +19,13 @@
   </div>
 
   <nav class="sticky top-0 z-50 bg-white border-b border-neutral-200">
-    <div class="container flex items-center justify-between h-16 md:h-20">
+    <div class="container flex items-center justify-between h-16 lg:h-20">
       <NuxtLink to="/" class="flex items-center shrink-0" :aria-label="site.name">
         <img :src="assetUrl(site.logo)" :alt="site.name" class="h-9 md:h-11 w-auto" />
       </NuxtLink>
 
-      <div class="hidden md:flex items-center h-full">
+      <!-- 6 项导航在 1024 以下放不下，平板与手机用折叠菜单 -->
+      <div class="hidden lg:flex items-center h-full">
         <NuxtLink
           v-for="item in navItems"
           :key="item.path"
@@ -44,7 +45,7 @@
       </div>
 
       <button
-        class="md:hidden w-10 h-10 -mr-2 flex items-center justify-center text-neutral-700"
+        class="lg:hidden w-10 h-10 -mr-2 flex items-center justify-center text-neutral-700"
         :aria-label="isMenuOpen ? '关闭菜单' : '打开菜单'"
         @click="isMenuOpen = !isMenuOpen"
       >
@@ -53,7 +54,7 @@
     </div>
 
     <!-- 手机端菜单 -->
-    <div v-show="isMenuOpen" class="md:hidden border-t border-neutral-200 bg-white">
+    <div v-show="isMenuOpen" class="lg:hidden border-t border-neutral-200 bg-white">
       <div class="container py-2">
         <NuxtLink
           v-for="item in navItems"
@@ -97,6 +98,7 @@ const navItems = [
   { name: '展会列表', en: 'Exhibitions', path: '/exhibitions' },
   { name: '市场简讯', en: 'News', path: '/news' },
   { name: '成功案例', en: 'Cases', path: '/cases' },
+  { name: '补贴政策', en: 'Subsidies', path: '/subsidies' },
   { name: '关于我们', en: 'About', path: '/about' }
 ]
 
