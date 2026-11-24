@@ -35,13 +35,24 @@ const scatterData = computed(() => {
     .map(([name, { id, count }]) => ({
       name,
       countryId: id,
-      value: [...countryCoordinates[name].coordinates, count],
-      itemStyle: id === props.selected ? { color: themeColor(700), borderWidth: 3 } : undefined
+      value: [...countryCoordinates[name].coordinates, count]
     }))
 })
 
+// 颜色每次渲染时从当前配色读取；选中的国家用深色加粗边框
 const render = () => {
-  chart?.setOption({ series: [{ data: scatterData.value }] })
+  chart?.setOption({
+    series: [
+      {
+        itemStyle: { color: themeColor(500) },
+        data: scatterData.value.map(item =>
+          item.countryId === props.selected
+            ? { ...item, itemStyle: { color: themeColor(700), borderWidth: 3 } }
+            : item
+        )
+      }
+    ]
+  })
 }
 
 onMounted(() => {
@@ -66,7 +77,7 @@ onMounted(() => {
         type: 'scatter',
         coordinateSystem: 'geo',
         symbolSize: (val: number[]) => Math.min(14 + val[2] * 4, 34),
-        itemStyle: { color: themeColor(500), borderColor: '#fff', borderWidth: 1.5 },
+        itemStyle: { borderColor: '#fff', borderWidth: 1.5 },
         label: {
           show: true,
           formatter: (p: any) => p.data.value[2],
@@ -86,12 +97,16 @@ onMounted(() => {
 
   const onResize = () => chart?.resize()
   window.addEventListener('resize', onResize)
+  // 配色切换（html 的 data-theme 变化）后重新取色
+  const themeObserver = new MutationObserver(render)
+  themeObserver.observe(document.documentElement, { attributeFilter: ['data-theme'] })
   onUnmounted(() => {
+    themeObserver.disconnect()
     window.removeEventListener('resize', onResize)
     chart?.dispose()
     chart = null
   })
 })
 
-watch(scatterData, render)
+watch([scatterData, () => props.selected], render)
 </script>
