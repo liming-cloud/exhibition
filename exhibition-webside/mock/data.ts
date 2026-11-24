@@ -400,13 +400,13 @@ export const exhibitions = exhibitionRows.map(
 )
 
 export const carousels = [
-  { title: '德国电梯展 interlift 中国展团', imageUrl: 'mock/banner-1.svg', link: '/exhibitions/4' },
+  { title: '德国电梯展 interlift 中国展团', imageUrl: 'mock/bg-hall.jpg', link: '/exhibitions/4' },
   {
     title: 'Intersolar Europe 2026 雅博展团',
-    imageUrl: 'mock/banner-2.svg',
+    imageUrl: 'mock/bg-crowd.jpg',
     link: '/exhibitions/1'
   },
-  { title: '一站式出展服务 助力企业开拓国际市场', imageUrl: 'mock/banner-3.svg', link: '' }
+  { title: '一站式出展服务 助力企业开拓国际市场', imageUrl: 'mock/bg-port.jpg', link: '' }
 ].map((item, i) => ({
   id: i + 1,
   ...item,

@@ -6,6 +6,7 @@
       en="Design System"
       desc="规范说明见 docs/prototype/设计规范.md；地址加 ?theme=blue 或 ?theme=orange 切换配色"
       :crumbs="[{ name: '设计规范' }]"
+      :image="fileUrl('mock/bg-hall.jpg')"
     >
       <div class="flex gap-2">
         <a href="?theme=blue" class="chip" :class="{ 'chip-active': theme === 'blue' }">蓝色</a>
@@ -198,8 +199,9 @@
         />
         <div class="grid gap-4 md:gap-6 sm:grid-cols-2 lg:grid-cols-3">
           <ContentCard
-            v-for="c in sampleCases"
+            v-for="(c, i) in sampleCases"
             :key="c.id"
+            v-reveal="i"
             :to="`/cases/${c.id}`"
             :title="c.title"
             :cover="fileUrl(c.coverUrl)"
@@ -223,7 +225,7 @@
           desc="展会详情取前 2 位（D6），关于我们、联系我们显示全部"
         />
         <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <ConsultantCard v-for="c in consultants" :key="c.id" :consultant="c" />
+          <ConsultantCard v-for="(c, i) in consultants" :key="c.id" v-reveal="i" :consultant="c" />
         </div>
       </section>
 
@@ -272,6 +274,48 @@
           desc="每页页脚前放一条，文案按页面场景写"
         />
         <ConsultBar title="不知道选哪个展？" desc="告诉我们您的行业和目标市场，顾问免费为您推荐" />
+        <ConsultBar
+          class="mt-6"
+          title="想参加同类展会？"
+          desc="带大图背景的版本，每页最多用一处"
+          :image="fileUrl('mock/bg-port.jpg')"
+        />
+      </section>
+
+      <!-- 9 动效与背景图 -->
+      <section>
+        <SectionTitle
+          eyebrow="Motion"
+          title="动效与背景图"
+          desc="规则见设计规范第 10 节；首页轮播的切换效果在首页查看"
+        >
+          <template #action>
+            <NuxtLink to="/" class="text-sm text-primary-600 hover:text-primary-700">
+              查看首页轮播<i class="fas fa-arrow-right ml-1 text-xs"></i>
+            </NuxtLink>
+          </template>
+        </SectionTitle>
+        <dl
+          class="grid grid-cols-2 md:grid-cols-4 gap-px overflow-hidden rounded-lg border border-neutral-200 bg-neutral-200"
+        >
+          <div v-for="(stat, i) in stats" :key="stat.label" v-reveal="i" class="bg-white p-5">
+            <dt class="text-sm text-neutral-500">{{ stat.label }}</dt>
+            <dd class="mt-1 text-3xl font-bold text-primary-700">
+              <CountUp :value="stat.value" :suffix="stat.suffix" />
+            </dd>
+          </div>
+        </dl>
+        <ul class="mt-6 grid gap-3 md:grid-cols-3 text-sm">
+          <li
+            v-for="(rule, i) in motionRules"
+            :key="rule.name"
+            v-reveal="i"
+            class="rounded-lg border border-neutral-200 p-4"
+          >
+            <p class="font-medium text-neutral-900">{{ rule.name }}</p>
+            <p class="mt-1 text-neutral-500">{{ rule.desc }}</p>
+          </li>
+        </ul>
       </section>
     </div>
   </div>
@@ -289,6 +333,7 @@ import EmptyState from '~/components/common/EmptyState.vue'
 import ContentCard from '~/components/common/ContentCard.vue'
 import ConsultantCard from '~/components/common/ConsultantCard.vue'
 import ConsultBar from '~/components/common/ConsultBar.vue'
+import CountUp from '~/components/common/CountUp.vue'
 import { ExhibitionTypeMap } from '~/types/exhibition'
 import { exhibitions, informations, cases, subsidies, consultants } from '~/mock/data'
 
@@ -411,6 +456,20 @@ const clearFilters = () => {
 }
 
 const page = ref(1)
+
+// 信任数字样例（D3：真实数字由人提供前只放能算出的）
+const stats = [
+  { label: '覆盖国家', value: new Set(exhibitions.map(e => e.country)).size, suffix: '' },
+  { label: '在售展会', value: exhibitions.length, suffix: '' },
+  { label: '服务企业（示例）', value: 500, suffix: '+' },
+  { label: '成立年份（示例）', value: 2012, suffix: '' }
+]
+
+const motionRules = [
+  { name: '入场', desc: '滚动到视口时淡入上浮 16px，400ms，只播一次；首屏内容不做入场' },
+  { name: '切换', desc: '轮播图片淡入 800ms + 7 秒缓慢缩放，文字依次入场；带暂停按钮' },
+  { name: '悬停', desc: '卡片图片放大 1.05、边框变主色，300ms；不旋转、不弹跳' }
+]
 
 const formRef = ref<FormInstance>()
 const form = reactive({ companyOrPersonalName: '', contactName: '', contactPhone: '' })
