@@ -157,21 +157,59 @@
     @apply text-white text-xl;
   }
 
-  /* 按钮样式 */
+  /* 按钮（见 docs/prototype/设计规范.md）：纯色、圆角 md，高 40；大按钮 48 用于转化入口 */
   .btn {
-    @apply inline-flex items-center justify-center px-5 py-2.5 rounded-xl font-medium transition-all duration-300;
+    @apply inline-flex items-center justify-center gap-2 h-10 px-5 rounded-md text-sm font-medium whitespace-nowrap transition-colors disabled:opacity-50 disabled:pointer-events-none;
+  }
+
+  .btn-lg {
+    @apply h-12 px-6 text-base;
   }
 
   .btn-primary {
-    @apply bg-gradient-to-r from-primary-500 to-primary-600 text-white shadow-glow hover:shadow-hover active:scale-95;
+    @apply bg-primary-600 text-white hover:bg-primary-700;
   }
 
   .btn-secondary {
-    @apply bg-white text-primary-600 border-2 border-primary-500 hover:bg-primary-50 active:scale-95;
+    @apply bg-white text-primary-700 border border-primary-600 hover:bg-primary-50;
   }
 
   .btn-accent {
-    @apply bg-gradient-to-r from-accent-500 to-accent-600 text-white shadow-glow hover:shadow-hover active:scale-95;
+    @apply bg-accent-500 text-white hover:bg-accent-600;
+  }
+
+  .btn-ghost {
+    @apply text-neutral-600 hover:text-primary-700 hover:bg-neutral-100;
+  }
+
+  /* 标签：主推、行业、政策状态等短文字 */
+  .tag {
+    @apply inline-flex items-center h-6 px-2 rounded text-xs font-medium whitespace-nowrap bg-neutral-100 text-neutral-600;
+  }
+
+  .tag-primary {
+    @apply bg-primary-50 text-primary-700;
+  }
+
+  .tag-accent {
+    @apply bg-accent-500 text-white;
+  }
+
+  .tag-success {
+    @apply bg-emerald-50 text-emerald-700;
+  }
+
+  .tag-muted {
+    @apply bg-neutral-100 text-neutral-400;
+  }
+
+  /* 筛选项：可选中的圆角胶囊 */
+  .chip {
+    @apply inline-flex items-center gap-1 h-8 px-3 rounded-full border border-neutral-200 bg-white text-sm text-neutral-700 whitespace-nowrap hover:border-primary-400 hover:text-primary-700 transition-colors;
+  }
+
+  .chip-active {
+    @apply bg-primary-600 border-primary-600 text-white hover:text-white;
   }
 
   /* 网格布局 */

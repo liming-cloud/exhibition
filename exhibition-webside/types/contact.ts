@@ -17,3 +17,15 @@ export interface ContactInfo {
     /** 公司简介 */
     companyProfile: string
 } 
+/**
+ * 顾问联系人（GET /contact/consultants，后端由 Issue #5 实现）
+ */
+export interface Consultant {
+    id: number
+    name: string
+    /** 负责区域，如「欧洲展会顾问」 */
+    title: string
+    phone: string
+    wechat?: string
+    sort: number
+}

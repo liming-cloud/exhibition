@@ -9,3 +9,6 @@ export const fileUrl = (path?: string) => {
     ? assetUrl(path)
     : `/api/file/preview?path=${encodeURIComponent(path)}`
 }
+
+// 电话号码转拨号链接：多个号码用「/」分隔时取第一个，去掉空格和横线
+export const telHref = (phone: string) => `tel:${phone.split('/')[0].replace(/[^\d+]/g, '')}`

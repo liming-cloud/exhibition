@@ -7,7 +7,7 @@ const mock = process.env.NUXT_PUBLIC_MOCK === '1'
 // 静态生成（GitHub Pages 预览）时按 mock 数据列出全部页面，不依赖爬链接（带子路径时爬取不可靠）
 const mockRoutes = () => [
   '/',
-  ...['/exhibitions', '/news', '/cases', '/subsidies', '/about', '/contact'],
+  ...['/exhibitions', '/news', '/cases', '/subsidies', '/about', '/contact', '/styleguide'],
   ...mockData.exhibitions.map(e => `/exhibitions/${e.id}`),
   ...mockData.informations.map(e => `/news/${e.id}`),
   ...mockData.cases.map(e => `/cases/${e.id}`),
@@ -81,6 +81,15 @@ export default defineNuxtConfig({
     // mock 模式：浏览器端 /api 请求同样返回模拟数据（静态部署时没有服务端）
     ...(mock ? [{ src: '~/mock/client.ts', mode: 'client' as const }] : [])
   ],
+
+  hooks: {
+    // 设计规范样例页（pages/styleguide.vue）只在 mock 模式存在，正式构建不包含
+    'pages:extend'(pages) {
+      if (mock) return
+      const i = pages.findIndex(p => p.path === '/styleguide')
+      if (i !== -1) pages.splice(i, 1)
+    }
+  },
 
   compatibilityDate: '2025-06-09'
 })
