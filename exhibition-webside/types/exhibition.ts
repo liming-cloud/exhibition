@@ -24,6 +24,7 @@ export interface Exhibition {
   country: number
   countryName: string
   exhibitionType: ExhibitionType // 修改为枚举类型
+  featured?: boolean // 新增约定：主推展会（Issue #5 后端实现前为空）
 }
 
 export interface GlobalArea {

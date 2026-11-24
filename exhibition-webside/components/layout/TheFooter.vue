@@ -1,110 +1,82 @@
 <template>
-  <footer class="bg-gradient-to-br from-neutral-900 to-neutral-800 text-white py-12">
-    <div class="container mx-auto px-4">
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-        <!-- 公司信息 -->
-        <div class="space-y-3">
-          <h3 class="text-lg font-bold mb-3 relative inline-block text-white">
-            关于我们
-            <span class="absolute bottom-0 left-0 w-1/2 h-0.5 bg-primary-500"></span>
-          </h3>
-          <p class="text-neutral-400 leading-relaxed text-sm">
-            雅博国际展览（天津）有限公司专业从事境外展会的组展工作，为参展企业提供定制化一站式出展服务，助力企业开拓国际市场。
-          </p>
-        </div>
-
-        <!-- 快速链接 -->
-        <div class="space-y-3">
-          <h3 class="text-lg font-bold mb-3 relative inline-block text-white">
-            快速链接
-            <span class="absolute bottom-0 left-0 w-1/2 h-0.5 bg-primary-500"></span>
-          </h3>
-          <ul class="space-y-2">
-            <li v-for="link in quickLinks" :key="link.path">
-              <NuxtLink
-                :to="link.path"
-                class="text-neutral-400 hover:text-white hover:translate-x-1 transition-all duration-300 flex items-center text-sm"
-              >
-                <i class="fas fa-chevron-right text-xs mr-2"></i>
-                {{ link.name }}
-              </NuxtLink>
-            </li>
-          </ul>
-        </div>
-
-        <!-- 联系方式 -->
-        <div class="space-y-3">
-          <h3 class="text-lg font-bold mb-3 relative inline-block text-white">
-            联系我们
-            <span class="absolute bottom-0 left-0 w-1/2 h-0.5 bg-primary-500"></span>
-          </h3>
-          <ul class="space-y-3 text-neutral-400">
-            <li class="flex items-center group">
-              <div class="w-7 h-7 bg-primary-500 bg-opacity-20 rounded-lg flex items-center justify-center group-hover:bg-primary-500 transition-colors duration-300">
-                <i class="fas fa-phone text-primary-400 group-hover:text-white text-sm"></i>
-              </div>
-              <span class="ml-3 text-sm">010-53630591/2/3</span>
-            </li>
-            <li class="flex items-center group">
-              <div class="w-7 h-7 bg-primary-500 bg-opacity-20 rounded-lg flex items-center justify-center group-hover:bg-primary-500 transition-colors duration-300">
-                <i class="fas fa-mobile-alt text-primary-400 group-hover:text-white text-sm"></i>
-              </div>
-              <span class="ml-3 text-sm">18310336602</span>
-            </li>
-            <li class="flex items-center group">
-              <div class="w-7 h-7 bg-primary-500 bg-opacity-20 rounded-lg flex items-center justify-center group-hover:bg-primary-500 transition-colors duration-300">
-                <i class="fas fa-map-marker-alt text-primary-400 group-hover:text-white text-sm"></i>
-              </div>
-              <span class="ml-3 text-sm">北京市海淀区三里河路9号住建部大院</span>
-            </li>
-          </ul>
-        </div>
-
-        <!-- 社交媒体 -->
-        <div class="space-y-3">
-          <h3 class="text-lg font-bold mb-3 relative inline-block text-white">
-            关注我们
-            <span class="absolute bottom-0 left-0 w-1/2 h-0.5 bg-primary-500"></span>
-          </h3>
-          <div class="flex space-x-3">
-            <a
-              v-for="(social, index) in socialMedia"
-              :key="index"
-              :href="social.link"
-              target="_blank"
-              class="w-8 h-8 bg-primary-500 bg-opacity-20 rounded-lg flex items-center justify-center hover:bg-primary-500 transition-colors duration-300 group"
-            >
-              <i :class="[social.icon, 'text-primary-400 group-hover:text-white text-lg']"></i>
-            </a>
-          </div>
-        </div>
+  <footer class="bg-neutral-900 text-neutral-400 text-sm">
+    <div class="container py-12 grid gap-10 md:grid-cols-12">
+      <div class="md:col-span-4">
+        <h3 class="footer-title">关于我们</h3>
+        <p class="leading-relaxed line-clamp-4">{{ firstParagraph }}</p>
       </div>
 
-      <!-- 版权信息 -->
-      <div class="mt-8 pt-6 border-t border-neutral-700/50 text-center">
-        <p class="text-neutral-400 text-sm">&copy; {{ new Date().getFullYear() }} 雅博国际展览（天津）有限公司. All rights reserved.</p>
+      <div class="md:col-span-2">
+        <h3 class="footer-title">快速链接</h3>
+        <ul class="grid grid-cols-2 md:grid-cols-1 gap-2">
+          <li v-for="link in quickLinks" :key="link.path">
+            <NuxtLink :to="link.path" class="hover:text-white transition-colors">{{
+              link.name
+            }}</NuxtLink>
+          </li>
+        </ul>
+      </div>
+
+      <div class="md:col-span-4">
+        <h3 class="footer-title">联系我们</h3>
+        <ul class="space-y-3">
+          <li v-if="contact.hotline" class="flex gap-3">
+            <i class="fas fa-phone-alt w-4 mt-1 text-primary-400"></i>
+            <span>服务热线：{{ contact.hotline }}</span>
+          </li>
+          <li v-if="contact.mobile" class="flex gap-3">
+            <i class="fas fa-mobile-alt w-4 mt-1 text-primary-400"></i>
+            <span>手机 / 微信同号：{{ contact.mobile }}</span>
+          </li>
+          <li v-if="contact.email" class="flex gap-3">
+            <i class="fas fa-envelope w-4 mt-1 text-primary-400"></i>
+            <span>{{ contact.email }}</span>
+          </li>
+          <li v-if="contact.address" class="flex gap-3">
+            <i class="fas fa-map-marker-alt w-4 mt-1 text-primary-400"></i>
+            <span>{{ contact.address }}</span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="md:col-span-2">
+        <h3 class="footer-title">关注我们</h3>
+        <img
+          :src="site.qrcode"
+          alt="微信二维码"
+          class="w-32 h-32 rounded bg-white p-1.5"
+          loading="lazy"
+        />
+        <p class="mt-2 text-xs">扫码添加微信咨询</p>
+      </div>
+    </div>
+
+    <div class="border-t border-neutral-800">
+      <div class="container py-5 text-xs text-neutral-500 text-center">
+        &copy; {{ new Date().getFullYear() }} {{ site.company }} 版权所有
       </div>
     </div>
   </footer>
 </template>
 
 <script setup lang="ts">
-const quickLinks = [
-  { name: '首页', path: '/' },
-  { name: '展会列表', path: '/exhibitions' },
-  { name: '行业动态', path: '/news' }, 
-  { name: '成功案例', path: '/cases' },
-  { name: '关于我们', path: '/about' },
-]
+import { site } from '~/constants/site'
 
-const socialMedia = [
-  { icon: 'fab fa-weixin', link: '#' },
-  { icon: 'fab fa-weibo', link: '#' }
+const contact = useSiteContact()
+const firstParagraph = computed(() => contact.value.profile.split('\n')[0])
+
+const quickLinks = [
+  { name: '展会列表', path: '/exhibitions' },
+  { name: '市场简讯', path: '/news' },
+  { name: '成功案例', path: '/cases' },
+  { name: '补贴政策', path: '/subsidies' },
+  { name: '关于我们', path: '/about' },
+  { name: '联系我们', path: '/contact' }
 ]
 </script>
 
 <style scoped>
-.container {
-  max-width: 1280px;
+.footer-title {
+  @apply mb-4 text-base font-semibold text-white;
 }
-</style> 
+</style>

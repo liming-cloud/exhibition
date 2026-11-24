@@ -58,7 +58,7 @@ const newsList = computed(() => data.value?.rows ?? [])
 const total = computed(() => data.value?.total ?? 0)
 
 useSeoMeta({
-  title: '行业动态',
+  title: '市场简讯',
   description: '海外展会与外贸行业最新资讯'
 })
 

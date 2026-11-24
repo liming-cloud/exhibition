@@ -1,79 +1,64 @@
 <template>
-  <div class="relative">
-    <el-carousel v-if="carouselList.length > 0" height="500px" :interval="5000" arrow="always">
-      <el-carousel-item v-for="item in carouselList" :key="item.id">
+  <!-- 通栏轮播：展示后台所有启用的轮播图（按后台排序），客户在后台「轮播图」自行上传、排序、停用 -->
+  <section class="relative h-[220px] sm:h-[360px] lg:h-[520px] bg-neutral-800">
+    <el-carousel
+      v-if="slides.length"
+      height="100%"
+      class="h-full"
+      :interval="5000"
+      :arrow="slides.length > 1 ? 'hover' : 'never'"
+      :indicator-position="slides.length > 1 ? '' : 'none'"
+    >
+      <el-carousel-item v-for="(item, index) in slides" :key="item.id">
         <img
           :src="`/api/file/preview?path=${encodeURIComponent(item.imageUrl)}`"
           :alt="item.title"
           class="w-full h-full object-cover"
+          :loading="index === 0 ? 'eager' : 'lazy'"
         />
-        <div class="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white p-4">
-          <h3 class="text-xl font-bold">{{ item.title }}</h3>
-          <a
-            v-if="item.link"
-            :href="item.link"
-            target="_blank"
-            class="text-blue-400 hover:text-blue-300 mt-2 inline-block"
-          >
-            了解更多
-          </a>
+        <div
+          class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent"
+        ></div>
+        <div class="absolute inset-x-0 bottom-0">
+          <div class="container pb-8 sm:pb-12 lg:pb-16">
+            <p
+              class="text-xl sm:text-3xl lg:text-4xl font-bold text-white drop-shadow line-clamp-2 max-w-3xl"
+            >
+              {{ item.title }}
+            </p>
+            <NuxtLink
+              v-if="item.link"
+              :to="item.link"
+              class="mt-4 inline-flex items-center h-10 px-5 rounded-md bg-primary-600 text-white text-sm font-medium hover:bg-primary-700"
+            >
+              了解更多<i class="fas fa-arrow-right ml-2 text-xs"></i>
+            </NuxtLink>
+          </div>
         </div>
       </el-carousel-item>
     </el-carousel>
-    <div v-else class="h-[500px] flex items-center justify-center bg-gray-100">
-      <p class="text-gray-500">{{ loading ? '加载中...' : '暂无轮播图数据' }}</p>
+
+    <!-- 后台还没有启用的轮播图时，显示公司标语，不出现空白 -->
+    <div v-else class="h-full bg-gradient-to-br from-primary-800 to-primary-600 flex items-center">
+      <div class="container text-white">
+        <p class="text-2xl sm:text-4xl font-bold">专注境外展会组展与参展服务</p>
+        <p class="mt-3 text-white/80">一站式出展服务，助力企业开拓国际市场</p>
+      </div>
     </div>
-  </div>
+  </section>
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted } from 'vue'
-
 const api = useApi()
-const { data, pending: loading, refresh } = await useAsyncData('home-carousel', () =>
-  api.carousel.getList({
-    pageNum: 1,
-    pageSize: 10,
-    status: 1
-  })
+const { data } = await useAsyncData('home-carousel', () =>
+  api.carousel.getList({ pageNum: 1, pageSize: 10, status: 1 })
 )
-const carouselList = computed(() => data.value?.rows ?? [])
-
-// 定期刷新数据
-let refreshInterval: NodeJS.Timeout | null = null
-
-onMounted(() => {
-  // 每5分钟刷新一次数据
-  refreshInterval = setInterval(refresh, 5 * 60 * 1000)
-})
-
-onBeforeUnmount(() => {
-  if (refreshInterval) {
-    clearInterval(refreshInterval)
-  }
-})
+const slides = computed(() => [...(data.value?.rows ?? [])].sort((a, b) => a.sort - b.sort))
 </script>
 
 <style scoped>
-.el-carousel {
-  --el-carousel-arrow-size: 36px;
-  --el-carousel-arrow-background: rgba(0, 0, 0, 0.3);
-  --el-carousel-arrow-hover-background: rgba(0, 0, 0, 0.5);
-}
-
-:deep(.el-carousel__arrow) {
-  border-radius: 50%;
-}
-
-:deep(.el-carousel__button) {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background-color: rgba(255, 255, 255, 0.4);
-}
-
-:deep(.el-carousel__button:hover),
-:deep(.el-carousel__button--active) {
-  background-color: white;
+:deep(.el-carousel__indicator .el-carousel__button) {
+  width: 24px;
+  height: 3px;
 }
 </style>
