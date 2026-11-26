@@ -3,8 +3,8 @@
 @tailwind utilities;
 
 @layer base {
-  /* 橙色方案（现有品牌色）：主色 #ff5a1f，强调色玫红（类似色，色相差 30°；见设计规范第 1 节） */
-  :root, [data-theme='orange'] {
+  /* 配色（#23 定为橙色）：主色 #ff5a1f，强调色玫红（类似色，色相差 30°；见设计规范第 1 节） */
+  :root {
     --color-primary-50: 255 248 241;
     --color-primary-100: 254 236 220;
     --color-primary-200: 252 217 189;
@@ -27,32 +27,8 @@
     --color-accent-900: 136 19 55;
   }
 
-  /* 蓝色方案（参考 maifexpo.com）：主色 #0784c9，强调色靛蓝（类似色，色相差 42°；见设计规范第 1 节） */
-  [data-theme='blue'] {
-    --color-primary-50: 239 248 254;
-    --color-primary-100: 219 239 252;
-    --color-primary-200: 190 227 249;
-    --color-primary-300: 140 207 244;
-    --color-primary-400: 67 174 230;
-    --color-primary-500: 7 132 201;
-    --color-primary-600: 6 106 163;
-    --color-primary-700: 7 85 133;
-    --color-primary-800: 11 71 109;
-    --color-primary-900: 15 59 90;
-    --color-accent-50: 238 242 255;
-    --color-accent-100: 224 231 255;
-    --color-accent-200: 199 210 254;
-    --color-accent-300: 165 180 252;
-    --color-accent-400: 129 140 248;
-    --color-accent-500: 99 102 241;
-    --color-accent-600: 79 70 229;
-    --color-accent-700: 67 56 202;
-    --color-accent-800: 55 48 163;
-    --color-accent-900: 49 46 129;
-  }
-
   /* Element Plus 跟随主色；选择器比 element-plus 自带的 :root 更具体，避免被后加载的样式覆盖 */
-  html[data-theme] {
+  html:root {
     --el-color-primary: rgb(var(--color-primary-500));
     --el-color-primary-light-3: rgb(var(--color-primary-400));
     --el-color-primary-light-5: rgb(var(--color-primary-300));

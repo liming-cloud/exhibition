@@ -14,7 +14,7 @@ const emit = defineEmits<{ select: [countryId: number] }>()
 const chartContainer = ref<HTMLElement | null>(null)
 let chart: echarts.ECharts | null = null
 
-// 主色取自当前配色方案的 CSS 变量，保证地图与页面同色
+// 主色取自 CSS 变量，保证地图与页面同色
 const themeColor = (shade: number) => {
   const value = getComputedStyle(document.documentElement).getPropertyValue(
     `--color-primary-${shade}`
@@ -97,11 +97,7 @@ onMounted(() => {
 
   const onResize = () => chart?.resize()
   window.addEventListener('resize', onResize)
-  // 配色切换（html 的 data-theme 变化）后重新取色
-  const themeObserver = new MutationObserver(render)
-  themeObserver.observe(document.documentElement, { attributeFilter: ['data-theme'] })
   onUnmounted(() => {
-    themeObserver.disconnect()
     window.removeEventListener('resize', onResize)
     chart?.dispose()
     chart = null

@@ -4,15 +4,10 @@
     <PageBanner
       title="设计规范与通用组件"
       en="Design System"
-      desc="规范说明见 docs/prototype/设计规范.md；地址加 ?theme=blue 或 ?theme=orange 切换配色"
+      desc="规范说明见 docs/prototype/设计规范.md"
       :crumbs="[{ name: '设计规范' }]"
       :image="fileUrl('mock/bg-hall.jpg')"
-    >
-      <div class="flex gap-2">
-        <a href="?theme=blue" class="chip" :class="{ 'chip-active': theme === 'blue' }">蓝色</a>
-        <a href="?theme=orange" class="chip" :class="{ 'chip-active': theme === 'orange' }">橙色</a>
-      </div>
-    </PageBanner>
+    />
 
     <div class="container py-12 md:py-16 space-y-16">
       <!-- 1 配色 -->
@@ -338,8 +333,6 @@ import { ExhibitionTypeMap } from '~/types/exhibition'
 import { exhibitions, informations, cases, subsidies, consultants } from '~/mock/data'
 
 useSeoMeta({ title: '设计规范', robots: 'noindex' })
-
-const theme = useCookie<string>('theme')
 
 const shades = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900] as const
 // 类名写全，Tailwind 才能扫描到
