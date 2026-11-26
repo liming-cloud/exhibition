@@ -5,7 +5,7 @@
     class="relative h-[260px] sm:h-[420px] lg:h-[560px] bg-neutral-900 overflow-hidden"
     aria-roledescription="carousel"
     aria-label="首页轮播"
-    @touchstart.passive="touchX = $event.touches[0].clientX"
+    @touchstart.passive="onTouchStart($event.touches[0].clientX)"
     @touchend="onSwipe($event.changedTouches[0].clientX)"
   >
     <template v-if="slides.length">
@@ -129,7 +129,9 @@ const select = (index: number) => {
   if (playing.value) start()
 }
 
-const touchX = 0
+// 手机端左右滑动切换
+let touchX = 0
+const onTouchStart = (x: number) => (touchX = x)
 const onSwipe = (x: number) => {
   const dx = x - touchX
   if (Math.abs(dx) > 50) select(current.value + (dx > 0 ? -1 : 1))
