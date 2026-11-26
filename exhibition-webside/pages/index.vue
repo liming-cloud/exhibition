@@ -83,10 +83,7 @@ const { data } = await useAsyncData('home-exhibitions', async () => {
 const exhibitions = computed(() => data.value?.rows ?? [])
 const areas = computed(() => data.value?.areas ?? [])
 
-const stats = computed(() => [
-  { label: '覆盖国家', value: new Set(exhibitions.value.map(e => e.country)).size },
-  { label: '即将开展', value: exhibitions.value.filter(e => isUpcoming(e)).length }
-])
+const stats = computed(() => exhibitionStats(exhibitions.value))
 
 const selectedCountry = ref<number | null>(null)
 const boardRef = ref<HTMLElement | null>(null)

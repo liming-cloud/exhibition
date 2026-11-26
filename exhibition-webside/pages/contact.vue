@@ -1,119 +1,97 @@
 <template>
-  <div class="min-h-screen bg-white">
-    <!-- 页面标题 -->
-    <section class="relative py-24 overflow-hidden">
-      <div class="container relative z-10">
-        <div class="text-center">
-          <h1 class="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-primary-500 to-primary-600 bg-clip-text text-transparent">
-            联系我们
-          </h1>
-          <p class="text-lg text-neutral-600 max-w-2xl mx-auto">
-            雅博展览，专注于为企业提供专业的展会服务，助力开拓国际市场
+  <div>
+    <PageBanner
+      title="联系我们"
+      en="Contact"
+      desc="电话、微信都能直接找到顾问，免费获取参展方案"
+      :crumbs="[{ name: '联系我们' }]"
+    />
+
+    <div class="container py-12 md:py-16 space-y-12 md:space-y-16">
+      <!-- 2 主联系方式：电话全部列出、可拨；微信二维码；邮箱 -->
+      <section class="grid gap-4 md:gap-6 lg:grid-cols-3">
+        <div class="rounded-lg border border-neutral-200 bg-white p-5 md:p-6 lg:col-span-2">
+          <p class="section-eyebrow">Hotline</p>
+          <h2 class="text-lg font-semibold text-neutral-900">咨询电话</h2>
+          <ul v-if="phones.length" class="mt-4 space-y-3">
+            <li v-for="phone in phones" :key="phone">
+              <a
+                :href="telHref(phone)"
+                class="inline-flex items-center gap-3 text-2xl md:text-3xl font-bold text-primary-700 hover:text-primary-800 break-all"
+              >
+                <i class="fas fa-phone-alt text-xl text-primary-500"></i>{{ phone }}
+              </a>
+            </li>
+          </ul>
+          <p v-else class="mt-4 text-neutral-500">联系方式更新中，请通过微信联系我们</p>
+          <p v-if="info?.email" class="mt-6 text-sm text-neutral-600">
+            <i class="fas fa-envelope mr-2 text-primary-500"></i>业务邮箱：
+            <a :href="`mailto:${info.email}`" class="text-primary-700 hover:underline break-all">{{ info.email }}</a>
           </p>
         </div>
-      </div>
-      <!-- 装饰背景 -->
-      <div class="absolute inset-0 pointer-events-none">
-        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-gradient-to-b from-primary-100/50 to-transparent rounded-[60px] rotate-12 transform -translate-y-1/2"></div>
-        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-gradient-to-b from-accent-100/30 to-transparent rounded-[60px] -rotate-12 transform -translate-y-1/2"></div>
-      </div>
-    </section>
-
-    <div class="container pb-24">
-      <div class="max-w-3xl mx-auto">
-        <!-- 公司简介 -->
-        <div v-if="contactInfo" class="bg-white rounded-3xl shadow-modern p-8 mb-8 hover:shadow-glow transition-shadow duration-300">
-          <div class="flex items-center mb-6">
-            <div class="w-1.5 h-8 bg-gradient-to-b from-primary-400 to-primary-600 rounded-full mr-4"></div>
-            <h3 class="text-2xl font-bold text-neutral-900">关于我们</h3>
-          </div>
-          <div class="space-y-4">
-            <p class="text-neutral-700 leading-relaxed" v-html="contactInfo.companyProfile?.replace(/\n/g, '<br>')"></p>
+        <div class="flex items-center gap-5 rounded-lg border border-neutral-200 bg-white p-5 md:p-6">
+          <img :src="assetUrl(site.qrcode)" alt="微信二维码" class="h-28 w-28 shrink-0 rounded-md border border-neutral-200" />
+          <div class="min-w-0">
+            <h2 class="text-lg font-semibold text-neutral-900">加微信咨询</h2>
+            <p class="mt-1 text-sm text-neutral-600">扫码添加顾问微信</p>
+            <p v-if="phones[1]" class="mt-1 text-sm text-neutral-500">手机 {{ phones[1] }} 微信同号</p>
           </div>
         </div>
+      </section>
 
-        <!-- 联系方式 -->
-        <div v-if="contactInfo" class="bg-white rounded-3xl shadow-modern p-8 hover:shadow-glow transition-shadow duration-300">
-          <div class="flex items-center mb-8">
-            <div class="w-1.5 h-8 bg-gradient-to-b from-primary-400 to-primary-600 rounded-full mr-4"></div>
-            <h3 class="text-2xl font-bold text-neutral-900">联系方式</h3>
-          </div>
-          
-          <div class="grid gap-8">
-            <div class="flex items-start group">
-              <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center flex-shrink-0 shadow-glow transition-all duration-300 group-hover:scale-110">
-                <i class="fas fa-building text-white text-xl"></i>
-              </div>
-              <div class="ml-5">
-                <h4 class="text-lg font-semibold text-neutral-900 mb-2">公司地址</h4>
-                <p class="text-neutral-700">{{ contactInfo.address }}</p>
-              </div>
-            </div>
-
-            <div class="flex items-start group">
-              <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center flex-shrink-0 shadow-glow transition-all duration-300 group-hover:scale-110">
-                <i class="fas fa-phone-alt text-white text-xl"></i>
-              </div>
-              <div class="ml-5">
-                <h4 class="text-lg font-semibold text-neutral-900 mb-2">联系电话</h4>
-                <p v-for="phone in contactInfo.phone" :key="phone" class="text-neutral-700">{{ phone }}</p>
-              </div>
-            </div>
-
-            <div class="flex items-start group">
-              <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center flex-shrink-0 shadow-glow transition-all duration-300 group-hover:scale-110">
-                <i class="fas fa-user text-white text-xl"></i>
-              </div>
-              <div class="ml-5">
-                <h4 class="text-lg font-semibold text-neutral-900 mb-2">联系人</h4>
-                <p class="text-neutral-700">{{ contactInfo.contactPerson }}</p>
-              </div>
-            </div>
-
-            <div class="flex items-start group">
-              <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center flex-shrink-0 shadow-glow transition-all duration-300 group-hover:scale-110">
-                <i class="fas fa-clock text-white text-xl"></i>
-              </div>
-              <div class="ml-5">
-                <h4 class="text-lg font-semibold text-neutral-900 mb-2">工作时间</h4>
-                <p class="text-neutral-700">{{ contactInfo.workingHours }}</p>
-                <p class="text-neutral-700">{{ contactInfo.holidayArrangement }}</p>
-              </div>
-            </div>
-
-            <div class="flex items-start group">
-              <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center flex-shrink-0 shadow-glow transition-all duration-300 group-hover:scale-110">
-                <i class="fas fa-envelope text-white text-xl"></i>
-              </div>
-              <div class="ml-5">
-                <h4 class="text-lg font-semibold text-neutral-900 mb-2">业务咨询</h4>
-                <p class="text-neutral-700">如果您有任何业务咨询，欢迎通过电话或邮件与我们联系</p>
-                <p class="text-neutral-700 mt-2">邮箱：{{ contactInfo.email }}</p>
-              </div>
-            </div>
-          </div>
+      <!-- 3 顾问卡片（#5）：0 个时隐藏 -->
+      <section v-if="consultants.length">
+        <SectionTitle eyebrow="Consultants" title="展会顾问" desc="按负责区域联系对应顾问，回复更快" />
+        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 md:gap-6">
+          <ConsultantCard v-for="c in consultants" :key="c.id" :consultant="c" />
         </div>
-        
-        <!-- 加载状态 -->
-        <div v-else class="text-center p-8">
-          <p class="text-neutral-600">正在加载联系信息...</p>
+      </section>
+
+      <!-- 4 地址与工作时间：不嵌第三方地图 SDK，给「在地图中打开」外链 -->
+      <section v-if="info?.address || info?.workingHours" class="grid gap-4 md:gap-6 md:grid-cols-2">
+        <div v-if="info?.address" class="rounded-lg border border-neutral-200 bg-white p-5 md:p-6">
+          <h2 class="text-lg font-semibold text-neutral-900"><i class="fas fa-building mr-2 text-primary-500"></i>公司地址</h2>
+          <p class="mt-2 text-neutral-600">{{ info.address }}</p>
+          <a
+            :href="mapHref"
+            target="_blank"
+            rel="noopener"
+            class="btn btn-secondary mt-4"
+          >
+            <i class="fas fa-map-marker-alt"></i>在地图中打开
+          </a>
         </div>
-      </div>
+        <div v-if="info?.workingHours" class="rounded-lg border border-neutral-200 bg-white p-5 md:p-6">
+          <h2 class="text-lg font-semibold text-neutral-900"><i class="fas fa-clock mr-2 text-primary-500"></i>工作时间</h2>
+          <p class="mt-2 text-neutral-600">{{ info.workingHours }}</p>
+          <p v-if="info.holidayArrangement" class="mt-1 text-sm text-neutral-500">{{ info.holidayArrangement }}</p>
+        </div>
+      </section>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { useApi } from '~/composables/useApi'
+import PageBanner from '~/components/common/PageBanner.vue'
+import SectionTitle from '~/components/common/SectionTitle.vue'
+import ConsultantCard from '~/components/common/ConsultantCard.vue'
+import { site } from '~/constants/site'
 
 const api = useApi()
 
-// 获取联系信息
-const { data: contactInfo } = await useAsyncData('contact-info', () => api.contact.getInfo())
+const { data } = await useAsyncData('contact', async () => {
+  const [info, consultants] = await Promise.all([api.contact.getInfo(), api.contact.getConsultants()])
+  return { info, consultants }
+})
+
+const info = computed(() => data.value?.info)
+const phones = computed(() => info.value?.phone?.filter(Boolean) ?? [])
+const consultants = computed(() => data.value?.consultants ?? [])
+const mapHref = computed(() => `https://uri.amap.com/search?keyword=${encodeURIComponent(info.value?.address ?? '')}`)
 
 useSeoMeta({
   title: '联系我们',
-  description: '雅博展览联系方式：地址、电话与联系人'
+  description: () =>
+    `雅博展览联系方式：${[phones.value[0], info.value?.address].filter(Boolean).join('，')}。电话、微信直接联系展会顾问`
 })
-
-</script> 
+</script>
