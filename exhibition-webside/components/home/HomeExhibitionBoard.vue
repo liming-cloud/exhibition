@@ -54,7 +54,7 @@
             <span
               v-if="e.featured"
               class="mr-1.5 align-[2px] inline-block px-1.5 py-0.5 rounded bg-accent-600 text-white text-[11px] leading-none"
-              >重点推荐</span
+              >主推</span
             >
             {{ e.name }}
           </p>
@@ -132,14 +132,6 @@ const allLink = computed(() =>
 <style scoped>
 .continent-label {
   @apply w-14 shrink-0 text-sm font-medium text-neutral-500;
-}
-
-.chip {
-  @apply inline-flex items-center gap-1 h-8 px-3 rounded-full border border-neutral-200 text-sm text-neutral-700 hover:border-primary-400 hover:text-primary-700 transition-colors;
-}
-
-.chip-active {
-  @apply bg-primary-600 border-primary-600 text-white hover:text-white;
 }
 
 .chip-count {

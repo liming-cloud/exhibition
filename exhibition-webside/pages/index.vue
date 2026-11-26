@@ -10,25 +10,30 @@
           <div>
             <p class="section-eyebrow">Global Network</p>
             <h2 class="section-title">全球展会分布</h2>
-            <p class="section-desc">点击地图上的国家，查看该国展会</p>
+            <p class="section-desc">
+              <span class="hidden sm:inline">点击地图上的国家，查看该国展会</span>
+              <span class="sm:hidden">按国家查看下方展会</span>
+            </p>
           </div>
           <dl class="flex gap-8 md:gap-12">
             <div v-for="stat in stats" :key="stat.label">
               <dt class="text-xs text-neutral-500">{{ stat.label }}</dt>
-              <dd class="mt-1 text-3xl font-bold text-primary-600">{{ stat.value }}</dd>
+              <dd class="mt-1 text-3xl font-bold text-primary-600"><CountUp :value="stat.value" /></dd>
             </div>
           </dl>
         </div>
 
-        <div class="mt-6 rounded-lg bg-white border border-neutral-200 overflow-hidden">
+        <!-- 手机端地图太小、打点点不准：不渲染地图，直接用下方「展会项目」的国家标签 -->
+        <div class="mt-6 hidden sm:block rounded-lg bg-white border border-neutral-200 overflow-hidden">
           <ClientOnly>
             <WorldMap
+              v-if="showMap"
               :exhibitions="exhibitions"
               :selected="selectedCountry"
               @select="selectFromMap"
             />
             <template #fallback>
-              <div class="h-[260px] sm:h-[360px] lg:h-[440px]"></div>
+              <div class="h-[360px] lg:h-[440px]"></div>
             </template>
           </ClientOnly>
         </div>
@@ -59,6 +64,9 @@
           </NuxtLink>
         </div>
         <HomeServices />
+
+        <!-- 5 咨询条 -->
+        <ConsultBar class="mt-12" title="不知道选哪个展？" desc="告诉我们您的行业和目标市场，顾问免费为您推荐" />
       </div>
     </section>
   </div>
@@ -69,6 +77,8 @@ import HomeCarousel from '~/components/home/HomeCarousel.vue'
 import HomeServices from '~/components/home/HomeServices.vue'
 import HomeExhibitionBoard from '~/components/home/HomeExhibitionBoard.vue'
 import WorldMap from '~/components/home/WorldMap.vue'
+import ConsultBar from '~/components/common/ConsultBar.vue'
+import CountUp from '~/components/common/CountUp.vue'
 
 const api = useApi()
 
@@ -86,10 +96,19 @@ const areas = computed(() => data.value?.areas ?? [])
 const stats = computed(() => exhibitionStats(exhibitions.value))
 
 const selectedCountry = ref<number | null>(null)
+
+// 只在 sm（640px）及以上加载地图
+const showMap = ref(false)
+onMounted(() => (showMap.value = window.matchMedia('(min-width: 640px)').matches))
 const boardRef = ref<HTMLElement | null>(null)
 
 const selectFromMap = (countryId: number) => {
   selectedCountry.value = countryId
   boardRef.value?.scrollIntoView({ behavior: 'smooth', block: 'start' })
 }
+
+useSeoMeta({
+  description: () =>
+    `雅博展览专注境外展会组展与参展服务，覆盖 ${stats.value[0].value} 个国家的能源、电梯、医疗等行业展会，提供展位预订、展台搭建、签证行程与补贴申请一站式服务`
+})
 </script>
