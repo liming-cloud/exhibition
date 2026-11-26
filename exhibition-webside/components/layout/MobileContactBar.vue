@@ -1,6 +1,8 @@
 <template>
-  <!-- 手机端底部固定联系条（D2）：拨打电话 / 加微信，高 56px；桌面端由页头顶部联系条承担 -->
+  <!-- 手机端底部固定联系条（D2）：拨打电话 / 加微信，高 56px；桌面端由页头顶部联系条承担。
+       页面自带底部操作栏时（展会详情的报名栏）用 definePageMeta({ hideContactBar: true }) 隐藏 -->
   <div
+    v-if="!route.meta.hideContactBar"
     class="md:hidden fixed inset-x-0 bottom-0 z-40 h-14 grid grid-cols-2 border-t border-neutral-200 bg-white pb-[env(safe-area-inset-bottom)]"
   >
     <a
@@ -34,6 +36,7 @@
 <script setup lang="ts">
 import { site } from '~/constants/site'
 
+const route = useRoute()
 const contact = useSiteContact()
 const qrVisible = ref(false)
 </script>

@@ -1,73 +1,111 @@
 <template>
-  <div class="container mx-auto px-4 py-8">
-    <div v-if="exhibition" class="bg-white rounded-lg shadow-lg overflow-hidden">
-      <!-- 展会标题 -->
-      <div class="bg-gradient-to-r from-primary-500 to-primary-600 text-white p-8">
-        <h1 class="text-3xl font-bold mb-4">{{ exhibition.name }}</h1>
-        <div class="flex flex-wrap gap-6 text-lg">
-          <div class="flex items-center">
-            <i class="fas fa-map-marker-alt mr-2"></i>
-            {{ exhibition.countryName }} - {{ exhibition.location }}
-          </div>
-          <div class="flex items-center">
-            <i class="fas fa-calendar-alt mr-2"></i>
-            {{ exhibition.time }}
-          </div>
+  <div v-if="exhibition" class="container py-8 md:py-12">
+    <AppBreadcrumb :items="[{ name: '展会列表', to: '/exhibitions' }, { name: exhibition.name }]" />
+
+    <!-- 头图 + 标题区：无封面用主色色块 -->
+    <header class="mt-4 grid gap-6 md:grid-cols-[280px_1fr] md:items-center">
+      <div class="aspect-[16/9] md:aspect-[4/3] overflow-hidden rounded-lg bg-primary-700 flex items-center justify-center">
+        <img
+          v-if="exhibition.coverUrl"
+          :src="fileUrl(exhibition.coverUrl)"
+          :alt="exhibition.name"
+          class="h-full w-full object-cover"
+        />
+        <i v-else class="fas fa-globe-asia text-5xl text-white/40"></i>
+      </div>
+      <div class="min-w-0">
+        <div class="flex flex-wrap gap-2">
+          <span v-if="exhibition.featured" class="tag tag-accent">主推</span>
+          <span v-if="typeLabel" class="tag tag-primary">{{ typeLabel }}</span>
+          <span v-if="ended" class="tag tag-muted">已结束</span>
         </div>
+        <h1 class="mt-3 text-2xl md:text-4xl font-bold text-neutral-900 break-words">{{ exhibition.name }}</h1>
+        <p v-if="exhibition.summary" class="mt-3 text-neutral-600 leading-relaxed">{{ exhibition.summary }}</p>
       </div>
+    </header>
 
-      <!-- 展会内容 -->
-      <div class="p-8">
-        <div class="prose max-w-none" v-html="exhibition.content"></div>
-      </div>
+    <div class="mt-8 grid gap-8 lg:grid-cols-[1fr_340px] lg:items-start">
+      <!-- 关键信息卡：桌面在右侧随滚动吸附；手机排在最前 -->
+      <aside class="lg:order-2 lg:sticky lg:top-24 rounded-lg border border-neutral-200 bg-white p-5">
+        <dl class="space-y-3 text-sm">
+          <div v-for="item in facts" :key="item.label" class="flex gap-3">
+            <dt class="w-14 shrink-0 text-neutral-500">{{ item.label }}</dt>
+            <dd class="min-w-0 text-neutral-900 break-words">{{ item.value }}</dd>
+          </div>
+        </dl>
+        <div class="mt-5 hidden md:grid gap-3">
+          <button type="button" class="btn btn-lg w-full" :class="ended ? 'btn-secondary' : 'btn-primary'" @click="registerVisible = true">
+            {{ ended ? '咨询下一届' : '立即报名' }}
+          </button>
+          <a v-if="contact.hotline" :href="telHref(contact.hotline)" class="btn btn-secondary btn-lg w-full">
+            <i class="fas fa-phone-alt"></i>电话咨询 {{ contact.hotline }}
+          </a>
+        </div>
+      </aside>
 
-      <!-- 操作按钮区域 -->
-      <div class="p-8 border-t flex justify-between items-center">
-        <NuxtLink
-          to="/exhibitions"
-          class="inline-flex items-center px-6 py-3 bg-neutral-100 text-neutral-700 rounded-lg hover:bg-neutral-200 transition-colors"
-        >
-          <i class="fas fa-arrow-left mr-2"></i>
-          返回展会列表
-        </NuxtLink>
+      <div class="min-w-0 lg:order-1 space-y-10">
+        <!-- 正文为空时隐藏；超宽表格在正文内横向滚动，统一渲染组件见 #30 -->
+        <section v-if="hasContent" class="overflow-x-auto">
+          <div class="prose prose-neutral max-w-none" v-html="exhibition.content"></div>
+        </section>
 
-        <!-- 报名按钮 -->
-        <el-button
-          type="primary"
-          @click="openRegistrationModal"
-          class="!bg-primary-500 !border-primary-500 hover:!bg-primary-600 px-8 py-3"
-        >
-          <i class="fas fa-user-plus mr-2"></i>
-          立即报名
-        </el-button>
+        <!-- 负责顾问：sort 前 2 位（D6），接口无数据时隐藏 -->
+        <section v-if="consultants.length">
+          <h2 class="mb-4 text-lg font-semibold text-neutral-900">负责顾问</h2>
+          <div class="grid gap-4 sm:grid-cols-2">
+            <ConsultantCard v-for="c in consultants" :key="c.id" :consultant="c" />
+          </div>
+        </section>
+
+        <section v-if="related.length">
+          <h2 class="mb-4 text-lg font-semibold text-neutral-900">同国家 / 同行业展会</h2>
+          <div class="space-y-3">
+            <ListRow v-for="e in related" :key="e.id" :to="`/exhibitions/${e.id}`" :title="e.name">
+              <template #leading><DateBlock :date="exhibitionStart(e)" /></template>
+              <p class="truncate">{{ [e.countryName, e.location].filter(Boolean).join(' · ') }}</p>
+            </ListRow>
+          </div>
+        </section>
       </div>
     </div>
 
-    <!-- 加载状态 -->
-    <div v-else class="flex justify-center items-center h-64">
-      <el-skeleton :rows="10" animated />
+    <!-- 手机端底部固定栏：电话 + 报名，替代全局联系条（本页 definePageMeta 隐藏全局联系条） -->
+    <div
+      class="md:hidden fixed inset-x-0 bottom-0 z-40 h-14 grid grid-cols-2 border-t border-neutral-200 bg-white pb-[env(safe-area-inset-bottom)]"
+    >
+      <a
+        :href="telHref(contact.mobile || contact.hotline)"
+        class="flex items-center justify-center gap-2 text-primary-700 text-sm font-medium"
+      >
+        <i class="fas fa-phone-alt"></i>电话咨询
+      </a>
+      <button
+        type="button"
+        class="flex items-center justify-center gap-2 bg-primary-600 text-white text-sm font-medium"
+        @click="registerVisible = true"
+      >
+        {{ ended ? '咨询下一届' : '立即报名' }}
+      </button>
     </div>
 
-    <!-- 报名弹窗 -->
-    <RegistrationModal
-      v-model="showRegistrationModal"
-      :exhibition="exhibition"
-      @submit="handleRegistration"
-    />
+    <RegistrationModal v-model="registerVisible" :exhibition="exhibition" :next="ended" />
   </div>
 </template>
 
 <script setup lang="ts">
+import { ExhibitionTypeMap } from '~/types/exhibition'
+import AppBreadcrumb from '~/components/common/AppBreadcrumb.vue'
+import ListRow from '~/components/common/ListRow.vue'
+import DateBlock from '~/components/common/DateBlock.vue'
+import ConsultantCard from '~/components/common/ConsultantCard.vue'
 import RegistrationModal from '~/components/common/RegistrationModal.vue'
-import { ElMessage } from 'element-plus'
+
+definePageMeta({ hideContactBar: true })
 
 const route = useRoute()
 const api = useApi()
+const contact = useSiteContact()
 
-// 报名功能相关
-const showRegistrationModal = ref(false)
-
-// 获取展会详情
 const { data: exhibition, error } = await useAsyncData(`exhibition-${route.params.id}`, () =>
   api.exhibition.getDetail(Number(route.params.id))
 )
@@ -78,82 +116,42 @@ if (!exhibition.value) {
   throw createError({ statusCode: 404, message: '展会不存在', fatal: true })
 }
 
-useSeoMeta({
-  title: () => exhibition.value?.name,
-  description: () => toSummary(exhibition.value?.content)
+// 顾问与同类展会：失败不影响详情主体
+const { data: extra } = await useAsyncData(`exhibition-extra-${route.params.id}`, async () => {
+  const [consultants, list] = await Promise.all([
+    api.contact.getConsultants(),
+    api.exhibition.getList({ pageNum: 1, pageSize: 999 }).catch(() => ({ rows: [] }))
+  ])
+  return { consultants: consultants.slice(0, 2), rows: list.rows }
+})
+const consultants = computed(() => extra.value?.consultants ?? [])
+
+const ended = computed(() => !isUpcoming(exhibition.value!))
+const typeLabel = computed(() => ExhibitionTypeMap[exhibition.value!.exhibitionType])
+const hasContent = computed(() => !!toSummary(exhibition.value?.content, 1) || /<img|<table/i.test(exhibition.value?.content ?? ''))
+const facts = computed(() => {
+  const e = exhibition.value!
+  return [
+    { label: '时间', value: e.time },
+    { label: '国家', value: e.countryName },
+    { label: '场馆', value: e.location },
+    { label: '行业', value: typeLabel.value }
+  ].filter(f => f.value)
 })
 
-// 打开报名弹窗
-const openRegistrationModal = () => {
-  showRegistrationModal.value = true
-}
+// 同国家或同行业，最多 4 条，即将开始的在前
+const related = computed(() => {
+  const e = exhibition.value!
+  return (extra.value?.rows ?? [])
+    .filter(r => r.id !== e.id && (r.country === e.country || r.exhibitionType === e.exhibitionType))
+    .sort((a, b) => Number(isUpcoming(b)) - Number(isUpcoming(a)) || exhibitionStart(a).localeCompare(exhibitionStart(b)))
+    .slice(0, 4)
+})
 
-// 处理报名提交
-const handleRegistration = async (data: any) => {
-  try {
-    await $fetch(assetUrl('/api/exhibition/registration/submit'), {
-      method: 'POST',
-      body: data
-    })
-    ElMessage.success('报名成功')
-    showRegistrationModal.value = false
-  } catch (error) {
-    console.error('报名失败:', error)
-    ElMessage.error('报名失败')
-  }
-}
+const registerVisible = ref(false)
+
+useSeoMeta({
+  title: () => exhibition.value?.name,
+  description: () => exhibition.value?.summary || toSummary(exhibition.value?.content)
+})
 </script>
-
-<style>
-.prose {
-  max-width: none;
-}
-
-.prose h1 {
-  @apply text-3xl font-bold mb-6 text-neutral-800;
-}
-
-.prose h2 {
-  @apply text-2xl font-bold mb-4 mt-8 text-neutral-800;
-}
-
-.prose h3 {
-  @apply text-xl font-bold mb-3 mt-6 text-neutral-800;
-}
-
-.prose p {
-  @apply mb-4 text-neutral-600 leading-relaxed;
-}
-
-.prose ul {
-  @apply list-disc list-inside mb-4 text-neutral-600;
-}
-
-.prose ol {
-  @apply list-decimal list-inside mb-4 text-neutral-600;
-}
-
-.prose li {
-  @apply mb-2 text-neutral-600;
-}
-
-.prose img {
-  @apply rounded-lg shadow-md my-6;
-}
-
-.prose a {
-  @apply text-primary-500 hover:text-primary-600 underline;
-}
-
-.prose blockquote {
-  @apply border-l-4 border-neutral-200 pl-4 italic my-6 text-neutral-600;
-}
-
-.prose pre {
-  @apply bg-neutral-50 p-4 rounded-lg my-6;
-}
-
-.prose code {
-  @apply bg-neutral-50 px-2 py-1 rounded text-neutral-700;
-}
-</style>

@@ -1,134 +1,97 @@
 <template>
-  <el-dialog v-model="visible" title="展会报名" width="600px" @close="handleClose">
-    <!-- 展会信息展示 -->
-    <div class="mb-6 p-4 bg-gradient-to-r from-primary-50 to-accent-50 rounded-lg">
-      <h4 class="font-bold text-lg text-primary-600 mb-2">{{ exhibition?.name }}</h4>
-      <div class="text-sm text-neutral-600 space-y-1">
-        <p>
-          <i class="fas fa-map-marker-alt mr-2 text-primary-500"></i>{{ exhibition?.countryName }} -
-          {{ exhibition?.location }}
-        </p>
-        <p><i class="fas fa-calendar-alt mr-2 text-primary-500"></i>{{ exhibition?.time }}</p>
-        <p>
-          <i class="fas fa-tag mr-2 text-primary-500"></i
-          >{{ ExhibitionTypeMap[exhibition?.exhibitionType] || '能源展' }}
-        </p>
-      </div>
+  <!-- 报名弹窗：展会名回显；标签在上；提交中禁用防重复；成功后原位给出下一步；失败保留已填内容 -->
+  <el-dialog
+    v-model="visible"
+    :title="title"
+    width="min(480px, 92vw)"
+    align-center
+    append-to-body
+    @closed="reset"
+  >
+    <div v-if="exhibition" class="mb-5 rounded-md bg-primary-50 px-4 py-3">
+      <p class="font-medium text-neutral-900 line-clamp-2">{{ exhibition.name }}</p>
+      <p class="mt-1 text-sm text-neutral-600">
+        {{ exhibitionStart(exhibition) }} · {{ exhibition.countryName }}
+      </p>
     </div>
 
-    <!-- 报名表单 -->
-    <el-form ref="formRef" :model="form" :rules="rules" label-width="120px">
-      <el-form-item label="公司/个人名称" prop="companyOrPersonalName">
-        <el-input v-model="form.companyOrPersonalName" placeholder="请输入公司或个人名称" />
-      </el-form-item>
+    <div v-if="submitted" class="rounded-md bg-emerald-50 px-4 py-5 text-center text-emerald-700">
+      <i class="fas fa-check-circle text-3xl"></i>
+      <p class="mt-2 font-medium">提交成功，顾问将在 1 个工作日内联系您</p>
+      <p v-if="contact.hotline" class="mt-1 text-sm">
+        着急可直接致电
+        <a :href="telHref(contact.hotline)" class="font-medium underline">{{ contact.hotline }}</a>
+      </p>
+      <button type="button" class="btn btn-secondary mt-4" @click="visible = false">知道了</button>
+    </div>
 
-      <el-form-item label="联系人姓名" prop="contactName">
-        <el-input v-model="form.contactName" placeholder="请输入联系人姓名" />
-      </el-form-item>
-
-      <el-form-item label="联系电话" prop="contactPhone">
-        <el-input v-model="form.contactPhone" placeholder="请输入联系电话" />
-      </el-form-item>
-    </el-form>
-
-    <template #footer>
-      <div class="dialog-footer">
-        <el-button @click="handleClose">取消</el-button>
-        <el-button
-          type="primary"
-          @click="handleSubmit"
-          :loading="loading"
-          class="!bg-primary-500 !border-primary-500 hover:!bg-primary-600"
-        >
-          提交报名
-        </el-button>
-      </div>
+    <template v-else>
+      <el-form ref="formRef" :model="form" :rules="rules" label-position="top" size="large">
+        <el-form-item label="公司/个人名称" prop="companyOrPersonalName">
+          <el-input v-model="form.companyOrPersonalName" placeholder="请输入公司或个人名称" maxlength="100" />
+        </el-form-item>
+        <el-form-item label="联系人" prop="contactName">
+          <el-input v-model="form.contactName" placeholder="请输入联系人姓名" maxlength="50" />
+        </el-form-item>
+        <el-form-item label="手机号" prop="contactPhone">
+          <el-input v-model="form.contactPhone" placeholder="11 位手机号" maxlength="11" inputmode="tel" />
+        </el-form-item>
+      </el-form>
+      <p v-if="failed" class="mb-3 rounded-md bg-red-50 px-4 py-2 text-sm text-red-700">
+        提交失败，请稍后重试；也可以直接电话联系我们
+      </p>
+      <button type="button" class="btn btn-primary btn-lg w-full" :disabled="submitting" @click="submit">
+        <i v-if="submitting" class="fas fa-spinner fa-spin"></i>{{ submitting ? '提交中…' : '提交' }}
+      </button>
     </template>
   </el-dialog>
 </template>
 
 <script setup lang="ts">
-import type { Exhibition } from '~/types/exhibition'
-import { ExhibitionTypeMap } from '~/types/exhibition'
 import type { FormInstance, FormRules } from 'element-plus'
+import type { Exhibition } from '~/types/exhibition'
 
-interface Props {
-  modelValue: boolean
-  exhibition: Exhibition | null
-}
+// next：已结束展会「咨询下一届」，用同一张表，便于顾问跟进
+const props = defineProps<{ exhibition: Exhibition | null; next?: boolean }>()
+const visible = defineModel<boolean>({ required: true })
 
-interface Emits {
-  (e: 'update:modelValue', value: boolean): void
-  (e: 'submit', data: any): void
-}
-
-const props = defineProps<Props>()
-const emit = defineEmits<Emits>()
-
-const visible = computed({
-  get: () => props.modelValue,
-  set: value => emit('update:modelValue', value)
-})
+const contact = useSiteContact()
+const title = computed(() => (props.next ? '咨询下一届' : '展会报名'))
 
 const formRef = ref<FormInstance>()
-const loading = ref(false)
-
-// 表单数据
-const form = reactive({
-  exhibitionId: 0,
-  companyOrPersonalName: '',
-  contactName: '',
-  contactPhone: ''
-})
-
-// 表单验证规则
+const form = reactive({ companyOrPersonalName: '', contactName: '', contactPhone: '' })
 const rules: FormRules = {
-  companyOrPersonalName: [{ required: true, message: '请输入公司或个人名称', trigger: 'blur' }],
-  contactName: [{ required: true, message: '请输入联系人姓名', trigger: 'blur' }],
-  contactPhone: [
-    { required: true, message: '请输入联系电话', trigger: 'blur' },
-    { pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号码', trigger: 'blur' }
-  ]
+  companyOrPersonalName: [requiredRule('公司或个人名称')],
+  contactName: [requiredRule('联系人姓名')],
+  contactPhone: [requiredRule('手机号'), mobileRule]
 }
 
-// 监听展会信息变化
-watch(
-  () => props.exhibition,
-  newExhibition => {
-    if (newExhibition) {
-      form.exhibitionId = newExhibition.id!
-    }
-  },
-  { immediate: true }
-)
+const submitting = ref(false)
+const submitted = ref(false)
+const failed = ref(false)
 
-// 提交表单
-const handleSubmit = async () => {
-  if (!formRef.value) return
-
+const submit = async () => {
+  if (!props.exhibition || submitting.value) return
+  if (!(await formRef.value?.validate().catch(() => false))) return
+  submitting.value = true
+  failed.value = false
   try {
-    await formRef.value.validate()
-    loading.value = true
-    emit('submit', { ...form })
-  } catch (error) {
-    console.error('表单验证失败:', error)
+    await $fetch(assetUrl('/api/exhibition/registration/submit'), {
+      method: 'POST',
+      body: { exhibitionId: props.exhibition.id, ...form }
+    })
+    submitted.value = true
+  } catch {
+    failed.value = true
   } finally {
-    loading.value = false
+    submitting.value = false
   }
 }
 
-// 关闭弹窗
-const handleClose = () => {
-  // 重置表单
-  if (formRef.value) {
-    formRef.value.resetFields()
-  }
-  Object.assign(form, {
-    exhibitionId: 0,
-    companyOrPersonalName: '',
-    contactName: '',
-    contactPhone: ''
-  })
-  emit('update:modelValue', false)
+// 关闭后：提交成功的清空表单；未成功的保留已填内容，方便重试
+const reset = () => {
+  if (submitted.value) formRef.value?.resetFields()
+  submitted.value = false
+  failed.value = false
 }
 </script>
