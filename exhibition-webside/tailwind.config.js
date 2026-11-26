@@ -15,7 +15,7 @@ export default {
   theme: {
     extend: {
       colors: {
-        // 主色、强调色引用 assets/css/main.css 里的 CSS 变量，原型阶段可按 data-theme 切换蓝/橙两套
+        // 主色、强调色引用 assets/css/main.css 里的 CSS 变量
         primary: themeColor('primary'),
         accent: themeColor('accent'),
         neutral: {

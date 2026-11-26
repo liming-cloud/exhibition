@@ -18,22 +18,20 @@ sleep 1
 
 npx -y playwright@1 install --with-deps chromium >/dev/null
 
-# 名称|路径（默认用推荐的蓝色方案，首页另截一张橙色对比）
+# 名称|路径
 PAGES=(
-  "01-首页|/?theme=blue"
-  "02-首页-橙色|/?theme=orange"
-  "03-展会列表|/exhibitions?theme=blue"
-  "04-展会详情|/exhibitions/1?theme=blue"
-  "05-市场简讯|/news?theme=blue"
-  "06-市场简讯详情|/news/1?theme=blue"
-  "07-成功案例|/cases?theme=blue"
-  "08-案例详情|/cases/1?theme=blue"
-  "09-补贴政策|/subsidies?theme=blue"
-  "10-补贴详情|/subsidies/1?theme=blue"
-  "11-关于我们|/about?theme=blue"
-  "12-联系我们|/contact?theme=blue"
-  "13-设计规范|/styleguide?theme=blue"
-  "14-设计规范-橙色|/styleguide?theme=orange"
+  "01-首页|/"
+  "02-展会列表|/exhibitions"
+  "03-展会详情|/exhibitions/1"
+  "04-市场简讯|/news"
+  "05-市场简讯详情|/news/1"
+  "06-成功案例|/cases"
+  "07-案例详情|/cases/1"
+  "08-补贴政策|/subsidies"
+  "09-补贴详情|/subsidies/1"
+  "10-关于我们|/about"
+  "11-联系我们|/contact"
+  "12-设计规范|/styleguide"
 )
 
 ROWS=""
