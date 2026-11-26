@@ -1,343 +1,218 @@
 <template>
-  <div class="container mx-auto px-4 py-8">
-    <!-- 搜索筛选区 -->
-    <div class="bg-white rounded-lg shadow-soft p-6 mb-8">
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-        <el-input v-model="query.name" placeholder="搜索展会名称" clearable>
-          <template #prefix>
-            <i class="fas fa-search text-neutral-400"></i>
-          </template>
-        </el-input>
-
-        <!-- 新增展会类型筛选 -->
-        <el-select v-model="query.exhibitionType" placeholder="展会类型" clearable>
-          <el-option label="全部类型" value="" />
-          <el-option
-            v-for="(label, value) in ExhibitionTypeMap"
-            :key="value"
-            :label="label"
-            :value="value"
-          />
-        </el-select>
-
-        <el-select
-          v-model="selectedContinent"
-          placeholder="选择大洲"
-          @change="handleContinentChange"
-        >
-          <el-option label="全部大洲" value="" />
-          <el-option
-            v-for="continent in continents"
-            :key="continent"
-            :label="continent"
-            :value="continent"
-          />
-        </el-select>
-
-        <el-select v-model="query.country" placeholder="选择国家" :disabled="!filteredAreas.length">
-          <el-option label="全部国家" value="" />
-          <el-option
-            v-for="area in filteredAreas"
-            :key="area.id"
-            :label="area.countryName"
-            :value="area.id"
-          />
-        </el-select>
-      </div>
-
-      <!-- 搜索按钮改为橙色 -->
-      <div class="text-center">
-        <el-button
-          type="primary"
-          @click="handleSearch"
-          class="!bg-primary-500 !border-primary-500 hover:!bg-primary-600 px-8 py-2"
-        >
-          <i class="fas fa-search mr-2"></i>
-          搜索展会
-        </el-button>
-      </div>
-    </div>
-
-    <!-- 展会卡片列表 - 增加背景颜色 -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-      <div
-        v-for="exhibition in exhibitions"
-        :key="exhibition.id"
-        class="bg-gradient-to-br from-white to-neutral-50 rounded-xl shadow-elegant hover:shadow-modern overflow-hidden transition-all duration-500 border border-neutral-100"
-      >
-        <div class="p-6 relative">
-          <!-- 展会类型标签 -->
-          <div class="absolute top-4 right-4">
-            <span
-              class="px-3 py-1 bg-gradient-to-r from-primary-500 to-primary-600 text-white text-sm rounded-full"
-            >
-              {{ ExhibitionTypeMap[exhibition.exhibitionType] || '能源展' }}
-            </span>
-          </div>
-
-          <h3 class="text-xl font-bold mb-4 text-neutral-800 pr-20">{{ exhibition.name }}</h3>
-
-          <div class="space-y-3 text-neutral-600 mb-6">
-            <p class="flex items-center">
-              <i class="fas fa-map-marker-alt w-6 text-primary-500"></i>
-              {{ exhibition.countryName }} - {{ exhibition.location }}
-            </p>
-            <p class="flex items-center">
-              <i class="fas fa-calendar-alt w-6 text-primary-500"></i>
-              {{ exhibition.time }}
-            </p>
-          </div>
-
-          <!-- 操作按钮区域 -->
-          <div class="flex justify-between items-center">
-            <NuxtLink
-              :to="`/exhibitions/${exhibition.id}`"
-              class="inline-flex items-center px-6 py-2 bg-gradient-to-r from-neutral-600 to-neutral-700 text-white rounded-lg hover:shadow-lg transition-all duration-300"
-            >
-              查看详情
-            </NuxtLink>
-
-            <!-- 新增报名按钮 -->
-            <el-button
-              type="primary"
-              @click="openRegistrationModal(exhibition)"
-              class="!bg-primary-500 !border-primary-500 hover:!bg-primary-600"
-            >
-              <i class="fas fa-user-plus mr-2"></i>
-              立即报名
-            </el-button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- 报名弹窗 -->
-    <RegistrationModal
-      v-model="showRegistrationModal"
-      :exhibition="selectedExhibition"
-      @submit="handleRegistration"
+  <div>
+    <PageBanner
+      title="展会列表"
+      en="Exhibitions"
+      :desc="`共 ${all.length} 个展会，覆盖 ${countryCount} 个国家`"
+      :crumbs="[{ name: '展会列表' }]"
     />
 
-    <!-- 分页 -->
-    <div class="mt-8 flex justify-center">
-      <el-pagination
-        v-model:current-page="query.pageNum"
-        v-model:page-size="query.pageSize"
-        :total="total"
-        :page-sizes="[10, 20, 50]"
-        layout="total, sizes, prev, pager, next"
-        :pager-count="5"
-        locale="zh-cn"
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
+    <div class="container py-8 md:py-12">
+      <!-- 筛选条件全部写进地址栏：可分享，首页「查看更多」带 ?country= 进入 -->
+      <FilterBar
+        v-model:keyword="keyword"
+        placeholder="搜索展会名称"
+        :tags="tags"
+        @search="setQuery({ q: keyword.trim() })"
+        @remove="removeTag"
+        @clear="clearAll"
+      >
+        <el-select
+          :model-value="filters.type"
+          placeholder="行业"
+          clearable
+          class="!w-full md:!w-32"
+          @update:model-value="v => setQuery({ type: v })"
+        >
+          <el-option v-for="(label, value) in ExhibitionTypeMap" :key="value" :label="label" :value="value" />
+        </el-select>
+        <el-select
+          :model-value="filters.year"
+          placeholder="年份"
+          clearable
+          class="!w-full md:!w-28"
+          @update:model-value="v => setQuery({ year: v })"
+        >
+          <el-option v-for="y in years" :key="y" :label="`${y} 年`" :value="y" />
+        </el-select>
+        <el-select
+          :model-value="filters.continent"
+          placeholder="大洲"
+          clearable
+          class="!w-full md:!w-32"
+          @update:model-value="v => setQuery({ continent: v, country: '' })"
+        >
+          <el-option v-for="c in continents" :key="c" :label="c" :value="c" />
+        </el-select>
+        <el-select
+          :model-value="filters.country || undefined"
+          placeholder="国家"
+          clearable
+          filterable
+          class="!w-full md:!w-36"
+          @update:model-value="v => setQuery({ country: v ? String(v) : '' })"
+        >
+          <el-option v-for="a in countryOptions" :key="a.id" :label="a.countryName" :value="a.id" />
+        </el-select>
+      </FilterBar>
+
+      <div ref="listRef" class="mt-6 scroll-mt-24">
+        <div v-if="pageRows.length" class="space-y-3">
+          <ListRow
+            v-for="e in pageRows"
+            :key="e.id"
+            :to="`/exhibitions/${e.id}`"
+            :title="e.name"
+            :muted="!isUpcoming(e)"
+          >
+            <template #leading>
+              <DateBlock :date="exhibitionStart(e)" :muted="!isUpcoming(e)" />
+            </template>
+            <template #badge>
+              <span v-if="e.featured" class="tag tag-accent h-5 mr-1.5 align-[2px]">主推</span>
+              <span v-if="!isUpcoming(e)" class="tag tag-muted h-5 mr-1.5 align-[2px]">已结束</span>
+            </template>
+            <p class="truncate">
+              <i class="fas fa-map-marker-alt mr-1 text-neutral-400"></i>{{ [e.countryName, e.location].filter(Boolean).join(' · ') }}
+              <template v-if="ExhibitionTypeMap[e.exhibitionType]">
+                <span class="mx-1.5 text-neutral-300">|</span>{{ ExhibitionTypeMap[e.exhibitionType] }}
+              </template>
+            </p>
+            <template #actions>
+              <NuxtLink :to="`/exhibitions/${e.id}`" class="btn btn-ghost h-9 px-3">详情</NuxtLink>
+              <button v-if="isUpcoming(e)" type="button" class="btn btn-primary h-9" @click="register(e)">报名</button>
+            </template>
+          </ListRow>
+        </div>
+        <EmptyState v-else-if="tags.length" title="没有符合条件的展会" desc="换个条件试试，或让顾问帮您找" icon="fa-search">
+          <button type="button" class="btn btn-secondary" @click="clearAll">清空筛选</button>
+          <NuxtLink to="/contact" class="btn btn-primary">联系顾问</NuxtLink>
+        </EmptyState>
+        <EmptyState v-else title="暂无展会" desc="展会信息更新中，可以直接联系顾问了解" icon="fa-calendar-alt">
+          <NuxtLink to="/contact" class="btn btn-primary">联系顾问</NuxtLink>
+        </EmptyState>
+      </div>
+
+      <AppPagination
+        :model-value="filters.page"
+        :total="filtered.length"
+        :page-size="pageSize"
+        @update:model-value="p => setQuery({ page: p > 1 ? String(p) : '' }, false)"
       />
+
+      <ConsultBar class="mt-12" title="没找到想去的展会？" desc="告诉我们您的行业和目标市场，顾问帮您找" />
     </div>
+
+    <RegistrationModal v-model="registerVisible" :exhibition="registering" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import type { Exhibition, ExhibitionType } from '~/types/exhibition'
+import type { Exhibition } from '~/types/exhibition'
 import { ExhibitionTypeMap } from '~/types/exhibition'
+import PageBanner from '~/components/common/PageBanner.vue'
+import FilterBar, { type FilterTag } from '~/components/common/FilterBar.vue'
+import ListRow from '~/components/common/ListRow.vue'
+import DateBlock from '~/components/common/DateBlock.vue'
+import EmptyState from '~/components/common/EmptyState.vue'
+import AppPagination from '~/components/common/AppPagination.vue'
+import ConsultBar from '~/components/common/ConsultBar.vue'
 import RegistrationModal from '~/components/common/RegistrationModal.vue'
-import { ElMessage } from 'element-plus'
-
-interface QueryState {
-  year: string
-  continent: string
-  country: number | ''
-  pageNum: number
-  pageSize: number
-  name?: string
-  exhibitionType: ExhibitionType | ''
-}
 
 const api = useApi()
+const route = useRoute()
+const router = useRouter()
+const pageSize = 10
 
-// 查询参数
-const query = ref<QueryState>({
-  pageNum: 1,
-  pageSize: 10,
-  year: '',
-  continent: '',
-  country: '',
-  name: '',
-  exhibitionType: ''
-})
-
-// 报名功能相关
-const showRegistrationModal = ref(false)
-const selectedExhibition = ref<Exhibition | null>(null)
-
-// 展会与全球区域数据（服务端取数，筛选分页在前端完成）
+// 展会数量在几百条以内，服务端一次取全量，筛选分页在前端完成（页面清单「现状差异」）
 const { data } = await useAsyncData('exhibition-list', async () => {
   const [areas, list] = await Promise.all([
     api.exhibition.getGlobalArea(),
-    api.exhibition.getList({ pageSize: 999, pageNum: 1 })
+    api.exhibition.getList({ pageNum: 1, pageSize: 999 })
   ])
   return { areas, rows: list.rows }
 })
-const allExhibitions = computed(() => data.value?.rows ?? [])
-const exhibitions = ref<Exhibition[]>([])
-const total = ref(0)
+const all = computed(() => data.value?.rows ?? [])
+const areas = computed(() => data.value?.areas ?? [])
+const countryCount = computed(() => new Set(all.value.map(e => e.country)).size)
 
-// 全球区域数据
-const globalAreas = computed(() => data.value?.areas ?? [])
-const selectedContinent = ref('')
+// 地址栏是唯一的筛选状态：q 关键词、type 行业、year 年份、continent 大洲、country 国家 id、page 页码
+const str = (v: unknown) => (typeof v === 'string' ? v : '')
+const filters = computed(() => ({
+  q: str(route.query.q),
+  type: str(route.query.type),
+  year: str(route.query.year),
+  continent: str(route.query.continent),
+  country: Number(route.query.country) || 0,
+  page: Math.max(1, Number(route.query.page) || 1)
+}))
 
-// 年份选项（2024-2030）
-const years = Array.from({ length: 7 }, (_, i) => (2024 + i).toString())
+const keyword = ref(filters.value.q)
+watch(() => filters.value.q, q => (keyword.value = q))
 
-// 获取所有大洲
-const continents = computed(() => {
-  const continentSet = new Set<string>()
-  globalAreas.value.forEach(area => {
-    if (
-      area &&
-      area.continentName &&
-      typeof area.continentName === 'string' &&
-      area.continentName.trim() !== ''
-    ) {
-      continentSet.add(area.continentName.trim())
-    }
-  })
-  return Array.from(continentSet).sort()
+// 改筛选条件时回到第 1 页；翻页时保留其他条件
+const setQuery = (patch: Record<string, string | undefined>, resetPage = true) => {
+  const query: Record<string, string> = {}
+  for (const [k, v] of Object.entries({ ...route.query, ...(resetPage ? { page: '' } : {}), ...patch })) {
+    if (typeof v === 'string' && v) query[k] = v
+  }
+  router.replace({ query })
+}
+
+const continentOf = (countryId: number) => areas.value.find(a => a.id === countryId)?.continentName ?? ''
+const continents = computed(() => [...new Set(areas.value.map(a => a.continentName).filter(Boolean))].sort())
+const countryOptions = computed(() =>
+  areas.value.filter(a => !filters.value.continent || a.continentName === filters.value.continent)
+)
+const years = computed(() => [...new Set(all.value.map(e => exhibitionStart(e).slice(0, 4)))].sort())
+
+// 即将开始的按开始日期升序在前，已结束的按日期倒序排后
+const filtered = computed(() => {
+  const f = filters.value
+  const q = f.q.toLowerCase()
+  const rows = all.value.filter(
+    e =>
+      (!q || e.name.toLowerCase().includes(q)) &&
+      (!f.type || e.exhibitionType === f.type) &&
+      (!f.year || exhibitionStart(e).startsWith(f.year)) &&
+      (!f.continent || continentOf(e.country) === f.continent) &&
+      (!f.country || e.country === f.country)
+  )
+  const upcoming = rows.filter(e => isUpcoming(e)).sort((a, b) => exhibitionStart(a).localeCompare(exhibitionStart(b)))
+  const ended = rows.filter(e => !isUpcoming(e)).sort((a, b) => exhibitionStart(b).localeCompare(exhibitionStart(a)))
+  return [...upcoming, ...ended]
 })
+const pageRows = computed(() => filtered.value.slice((filters.value.page - 1) * pageSize, filters.value.page * pageSize))
 
-// 根据选中的大洲筛选国家
-const filteredAreas = computed(() => {
-  if (!selectedContinent.value) return globalAreas.value
-  return globalAreas.value.filter(area => area.continentName === selectedContinent.value)
+const tags = computed<FilterTag[]>(() => {
+  const f = filters.value
+  const list: FilterTag[] = []
+  if (f.q) list.push({ key: 'q', label: `“${f.q}”` })
+  if (f.type) list.push({ key: 'type', label: ExhibitionTypeMap[f.type as keyof typeof ExhibitionTypeMap] ?? f.type })
+  if (f.year) list.push({ key: 'year', label: `${f.year} 年` })
+  if (f.continent) list.push({ key: 'continent', label: f.continent })
+  if (f.country) list.push({ key: 'country', label: areas.value.find(a => a.id === f.country)?.countryName ?? '国家' })
+  return list
 })
+const removeTag = (key: string) => setQuery(key === 'continent' ? { continent: '', country: '' } : { [key]: '' })
+const clearAll = () => router.replace({ query: {} })
 
-// 筛选展会数据
-const filterExhibitions = () => {
-  let filtered = [...allExhibitions.value]
+const listRef = ref<HTMLElement>()
+watch(
+  () => filters.value.page,
+  () => listRef.value?.scrollIntoView({ behavior: 'smooth' })
+)
 
-  // 按名称筛选
-  if (query.value.name && query.value.name.trim() !== '') {
-    filtered = filtered.filter(item =>
-      item.name.toLowerCase().includes(query.value.name!.toLowerCase())
-    )
-  }
-
-  // 按展会类型筛选
-  if (query.value.exhibitionType) {
-    filtered = filtered.filter(item => item.exhibitionType === query.value.exhibitionType)
-  }
-
-  // 按年份筛选
-  if (query.value.year && query.value.year.trim() !== '') {
-    filtered = filtered.filter(item => item.year === query.value.year)
-  }
-
-  // 按国家筛选
-  if (query.value.country) {
-    filtered = filtered.filter(item => item.country === query.value.country)
-  }
-
-  // 按大洲筛选
-  if (selectedContinent.value) {
-    const countriesInContinent = globalAreas.value
-      .filter(area => area.continentName === selectedContinent.value)
-      .map(area => area.id)
-    filtered = filtered.filter(item => countriesInContinent.includes(item.country))
-  }
-
-  // 计算总数
-  total.value = filtered.length
-
-  // 分页处理
-  const pageNum = query.value.pageNum || 1
-  const pageSize = query.value.pageSize || 10
-  const start = (pageNum - 1) * pageSize
-  const end = start + pageSize
-  exhibitions.value = filtered.slice(start, end)
+const registerVisible = ref(false)
+const registering = ref<Exhibition | null>(null)
+const register = (e: Exhibition) => {
+  registering.value = e
+  registerVisible.value = true
 }
-
-// 处理大洲变化
-const handleContinentChange = () => {
-  query.value.country = ''
-  filterExhibitions()
-}
-
-// 处理搜索
-const handleSearch = () => {
-  query.value.pageNum = 1
-  filterExhibitions()
-}
-
-// 处理重置
-const handleReset = () => {
-  query.value = {
-    pageNum: 1,
-    pageSize: 10,
-    year: '',
-    continent: '',
-    country: '',
-    name: '',
-    exhibitionType: ''
-  }
-  selectedContinent.value = ''
-  filterExhibitions()
-}
-
-// 打开报名弹窗
-const openRegistrationModal = (exhibition: Exhibition) => {
-  selectedExhibition.value = exhibition
-  showRegistrationModal.value = true
-}
-
-// 处理报名提交
-const handleRegistration = async (data: any) => {
-  try {
-    // 这里调用报名接口
-    await $fetch(assetUrl('/api/exhibition/registration/submit'), {
-      method: 'POST',
-      body: data
-    })
-    ElMessage.success('报名成功')
-    showRegistrationModal.value = false
-  } catch (error) {
-    console.error('报名失败:', error)
-    ElMessage.error('报名失败')
-  }
-}
-
-// 处理每页数量变化
-const handleSizeChange = (val: number) => {
-  query.value.pageSize = val
-  filterExhibitions()
-}
-
-// 处理页码变化
-const handleCurrentChange = (val: number) => {
-  query.value.pageNum = val
-  filterExhibitions()
-}
-
-// 处理路由参数（如首页地图跳转带 country）
-const route = useRoute()
-const countryId = Number(route.query.country)
-const country = globalAreas.value.find(area => area.id === countryId)
-if (country) {
-  selectedContinent.value = country.continentName
-  query.value.country = countryId
-}
-filterExhibitions()
 
 useSeoMeta({
   title: '展会列表',
-  description: '全球能源、电梯、医疗等行业国际展会目录，按大洲、国家、年份筛选'
+  description: () =>
+    `雅博展览海外展会目录：共 ${all.value.length} 个展会，覆盖 ${countryCount.value} 个国家，可按行业、年份、大洲、国家筛选`
 })
 </script>
-
-<style scoped>
-.el-select {
-  width: 100%;
-}
-
-.el-date-picker {
-  width: 100%;
-}
-</style>
