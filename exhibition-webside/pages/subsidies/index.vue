@@ -1,109 +1,97 @@
 <template>
-  <div class="container mx-auto px-4 py-8">
-    <h1 class="text-3xl font-bold mb-8">补贴政策</h1>
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <div
-        v-for="item in subsidiesList"
-        :key="item.id"
-        class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300"
-      >
-        <div class="p-6">
-          <div class="mb-4">
-            <h2 class="text-xl font-semibold mb-2 line-clamp-2">{{ item.title }}</h2>
-            <div class="text-red-600 font-semibold text-lg mb-2">
-              补贴金额：{{ formatPrice(item.price) }}
-            </div>
-          </div>
-          <p class="text-gray-600 mb-4 line-clamp-3" v-html="item.content"></p>
-          <div class="flex flex-col space-y-3">
-            <div class="text-gray-500 text-sm">
-              <i class="far fa-calendar-alt mr-2"></i>
-              <span>{{ formatDate(item.startTime) }} - {{ formatDate(item.endTime) }}</span>
-            </div>
-            <router-link
-              :to="`/subsidies/${item.id}`"
-              class="text-blue-600 hover:text-blue-700 inline-flex items-center"
-            >
-              查看详情 <i class="fas fa-arrow-right ml-1"></i>
-            </router-link>
-          </div>
+  <div>
+    <!-- 补贴比例措辞未定（D14），不写具体比例 -->
+    <PageBanner
+      title="补贴政策"
+      en="Subsidies"
+      desc="出国参展可申请政府补贴，顾问免费帮您评估可申报的补贴"
+      :crumbs="[{ name: '补贴政策' }]"
+    />
+
+    <div class="container py-8 md:py-12">
+      <FilterBar v-model:keyword="keyword" placeholder="搜索政策标题，如地区名" @search="search" @clear="clear" />
+
+      <div ref="listRef" class="mt-6 scroll-mt-24">
+        <el-skeleton v-if="status === 'pending'" :rows="6" animated class="rounded-lg border border-neutral-200 p-4" />
+        <div v-else-if="rows.length" class="space-y-3">
+          <ListRow
+            v-for="s in rows"
+            :key="s.id"
+            :to="`/subsidies/${s.id}`"
+            :title="s.title"
+            :muted="subsidyStatus(s).closed"
+          >
+            <template #badge>
+              <span class="tag h-5 mr-1.5 align-[2px]" :class="subsidyStatus(s).cls">{{ subsidyStatus(s).label }}</span>
+            </template>
+            <p>
+              有效期 {{ s.startTime?.slice(0, 10) }} 至 {{ s.endTime?.slice(0, 10) }}
+              <template v-if="s.price > 0">
+                <span class="mx-1.5 text-neutral-300">|</span>最高补贴
+                <span class="font-medium text-primary-700">{{ formatSubsidyPrice(s.price) }}</span>
+              </template>
+            </p>
+          </ListRow>
         </div>
+        <EmptyState v-else-if="applied" title="没有找到相关政策" desc="换个关键词试试，或直接问顾问" icon="fa-search">
+          <button type="button" class="btn btn-secondary" @click="clear">清空搜索</button>
+          <NuxtLink to="/contact" class="btn btn-primary">联系顾问</NuxtLink>
+        </EmptyState>
+        <EmptyState v-else title="政策整理中" desc="可以直接电话咨询您所在地区的补贴政策" icon="fa-file-alt">
+          <a v-if="contact.hotline" :href="telHref(contact.hotline)" class="btn btn-primary">
+            <i class="fas fa-phone-alt"></i>{{ contact.hotline }}
+          </a>
+        </EmptyState>
       </div>
-    </div>
-    <!-- 分页 -->
-    <div class="mt-8 flex justify-center">
-      <el-pagination
-        v-model:current-page="queryParams.pageNum"
-        v-model:page-size="queryParams.pageSize"
-        :total="total"
-        :page-sizes="[12, 24, 36]"
-        layout="total, sizes, prev, pager, next"
-        :pager-count="5"
-        locale="zh-cn"
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-      />
+
+      <AppPagination v-model="page" :total="total" :page-size="pageSize" />
+
+      <ConsultBar class="mt-12" title="不确定能不能申报？" desc="告诉顾问您的所在地和参展计划，免费帮您评估" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, reactive } from 'vue'
-import type { Subsidies } from '~/types/subsidies'
+import PageBanner from '~/components/common/PageBanner.vue'
+import FilterBar from '~/components/common/FilterBar.vue'
+import ListRow from '~/components/common/ListRow.vue'
+import EmptyState from '~/components/common/EmptyState.vue'
+import AppPagination from '~/components/common/AppPagination.vue'
+import ConsultBar from '~/components/common/ConsultBar.vue'
 
 const api = useApi()
+const contact = useSiteContact()
 
-const queryParams = reactive({
-  pageNum: 1,
-  pageSize: 12
-})
+const pageSize = 12
+const page = ref(1)
+const keyword = ref('')
+const applied = ref('')
 
-const { data } = await useAsyncData('subsidies-list', () => api.subsidies.getList(queryParams), {
-  watch: [queryParams]
-})
-const subsidiesList = computed(() => data.value?.rows ?? [])
+const { data, status } = await useAsyncData(
+  'subsidies-list',
+  () => api.subsidies.getList({ pageNum: page.value, pageSize, title: applied.value || undefined }),
+  { watch: [page, applied] }
+)
+// 已截止的排在本页后面
+const rows = computed(() =>
+  [...(data.value?.rows ?? [])].sort((a, b) => Number(subsidyStatus(a).closed) - Number(subsidyStatus(b).closed))
+)
 const total = computed(() => data.value?.total ?? 0)
+
+const search = () => {
+  page.value = 1
+  applied.value = keyword.value.trim()
+}
+const clear = () => {
+  keyword.value = ''
+  search()
+}
+
+const listRef = ref<HTMLElement>()
+watch(page, () => listRef.value?.scrollIntoView({ behavior: 'smooth' }))
 
 useSeoMeta({
   title: '补贴政策',
-  description: '出海参展补贴政策汇总'
+  description: '出国参展补贴政策汇总：申报时间、补贴额度与申报材料，顾问免费帮您评估'
 })
-
-const formatPrice = (price: number) => {
-  return `¥ ${(price / 10000).toFixed(2)}万`
-}
-
-const formatDate = (dateStr?: string) => {
-  if (!dateStr) return ''
-  const date = new Date(dateStr)
-  return date.toLocaleDateString('zh-CN', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit'
-  })
-}
-
-const handleSizeChange = (val: number) => {
-  queryParams.pageSize = val
-}
-
-const handleCurrentChange = (val: number) => {
-  queryParams.pageNum = val
-}
 </script>
-
-<style scoped>
-.line-clamp-2 {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.line-clamp-3 {
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-</style>
