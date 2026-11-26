@@ -26,20 +26,15 @@
       </div>
     </div>
 
-    <!-- 展会列表：即将开始的在前，日期放在最前面 -->
-    <div class="mt-6 flex items-baseline justify-between">
-      <h3 class="text-lg font-semibold text-neutral-900">
-        {{ selectedName ? `${selectedName}展会` : '近期展会' }}
-        <span class="ml-2 text-sm font-normal text-neutral-500"
-          >即将开始 {{ upcoming.length }} 场</span
-        >
-      </h3>
-      <NuxtLink :to="allLink" class="text-sm text-primary-600 hover:text-primary-700 shrink-0">
-        查看全部<i class="fas fa-arrow-right ml-1 text-xs"></i>
-      </NuxtLink>
-    </div>
+    <!-- 展会列表：首页只放 6 个（即将开始的在前，日期放在最前面），其余点底部「查看更多」进展会列表 -->
+    <h3 class="mt-6 text-lg font-semibold text-neutral-900">
+      {{ selectedName ? `${selectedName}展会` : '近期展会' }}
+      <span class="ml-2 text-sm font-normal text-neutral-500"
+        >即将开始 {{ upcoming.length }} 场</span
+      >
+    </h3>
 
-    <div v-if="shown.length" class="mt-4 grid grid-cols-1 gap-3 lg:grid-cols-2">
+    <div v-if="shown.length" class="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
       <NuxtLink
         v-for="e in shown"
         :key="e.id"
@@ -65,8 +60,10 @@
           </p>
           <p class="mt-1.5 text-sm text-neutral-500 truncate">
             <i class="fas fa-map-marker-alt mr-1 text-neutral-400"></i>{{ e.countryName }} ·
-            {{ e.location }} <span class="mx-1.5 text-neutral-300">|</span
-            >{{ ExhibitionTypeMap[e.exhibitionType] }}
+            {{ e.location }}
+          </p>
+          <p class="mt-1 text-sm text-neutral-500">
+            <i class="fas fa-tag mr-1 text-neutral-400"></i>{{ ExhibitionTypeMap[e.exhibitionType] }}
           </p>
         </div>
       </NuxtLink>
@@ -79,6 +76,13 @@
       <NuxtLink to="/contact" class="text-primary-600 hover:underline">联系顾问</NuxtLink
       >了解下一届安排
     </div>
+
+    <div class="mt-8 text-center">
+      <NuxtLink :to="allLink" class="btn btn-secondary btn-lg">
+        查看更多展会<span class="text-xs opacity-70">MORE</span
+        ><i class="fas fa-arrow-right text-xs"></i>
+      </NuxtLink>
+    </div>
   </div>
 </template>
 
@@ -89,7 +93,7 @@ const props = defineProps<{ exhibitions: Exhibition[]; areas: GlobalArea[] }>()
 const selected = defineModel<number | null>({ default: null })
 
 const continentOrder = ['亚洲', '欧洲', '北美洲', '南美洲', '非洲', '大洋洲']
-const SHOW_LIMIT = 8
+const SHOW_LIMIT = 6
 
 const continents = computed(() => {
   const groups = new Map<string, Map<number, { id: number; name: string; count: number }>>()
