@@ -114,6 +114,7 @@ import {onMounted, reactive, ref} from 'vue'
 import {ElMessage, ElMessageBox, type FormInstance} from 'element-plus'
 import {Picture, Plus} from '@element-plus/icons-vue'
 import {getImageUrl} from '@/utils/request'
+import {prepareImage} from '@/utils/image'
 import type {Information, InformationQuery} from '@/types/information'
 import {deleteInformation, getInformation, listInformation, saveInformation} from '@/api/information'
 import Editor from '@/components/Editor/index.vue'
@@ -250,21 +251,8 @@ const handleUploadSuccess = (res: any) => {
   }
 }
 
-/** 上传前的校验 */
-const beforeUpload = (file: File) => {
-  const isImage = file.type.startsWith('image/')
-  const isLt5M = file.size / 1024 / 1024 < 5
-
-  if (!isImage) {
-    ElMessage.error('只能上传图片文件!')
-    return false
-  }
-  if (!isLt5M) {
-    ElMessage.error('图片大小不能超过 5MB!')
-    return false
-  }
-  return true
-}
+/** 上传前的校验与压缩 */
+const beforeUpload = (file: File) => prepareImage(file, 5)
 
 onMounted(() => {
   getList()

@@ -134,6 +134,7 @@ import {Picture, Plus} from '@element-plus/icons-vue'
 import {delCarousel, getCarousel, listCarousel, saveCarousel} from '@/api/carousel'
 import type {Carousel, CarouselQuery} from '@/types/carousel'
 import {getImageUrl} from '@/utils/request'
+import {prepareImage} from '@/utils/image'
 import Pagination from '@/components/Pagination/index.vue'
 
 const loading = ref(false)
@@ -263,20 +264,8 @@ const handleUploadSuccess: UploadProps['onSuccess'] = (response) => {
   }
 }
 
-/** 上传前的校验 */
-const beforeUpload: UploadProps['beforeUpload'] = (file) => {
-  const isImage = file.type.startsWith('image/')
-  if (!isImage) {
-    ElMessage.error('只能上传图片文件!')
-    return false
-  }
-  const isLt2M = file.size / 1024 / 1024 < 10
-  if (!isLt2M) {
-    ElMessage.error('上传图片大小不能超过 10MB!')
-    return false
-  }
-  return true
-}
+/** 上传前的校验与压缩 */
+const beforeUpload = (file: File) => prepareImage(file, 10)
 
 /** 取消按钮操作 */
 const cancel = () => {
