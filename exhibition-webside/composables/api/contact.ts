@@ -1,5 +1,5 @@
 import type { ApiResponse } from '~/types/common'
-import type { ContactInfo } from '~/types/contact'
+import type { Consultant, ContactInfo } from '~/types/contact'
 import { useHttp } from '~/composables/useHttp'
 
 /**
@@ -15,6 +15,20 @@ export function useContactApi() {
                 method: 'GET'
             })
             return data.value?.data
+        },
+
+        /**
+         * 顾问联系人（后端由 #5 实现；接口不可用时返回空列表，页面隐藏顾问区）
+         */
+        getConsultants: async () => {
+            try {
+                const { data } = await useHttp<ApiResponse<Consultant[]>>('/contact/consultants', {
+                    method: 'GET'
+                })
+                return [...(data.value?.data ?? [])].sort((a, b) => a.sort - b.sort)
+            } catch {
+                return []
+            }
         }
     }
 } 

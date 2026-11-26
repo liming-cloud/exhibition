@@ -32,6 +32,7 @@ PAGES=(
   "10-关于我们|/about"
   "11-联系我们|/contact"
   "12-设计规范|/styleguide"
+  "13-页面不存在|/404.html"
 )
 
 ROWS=""
