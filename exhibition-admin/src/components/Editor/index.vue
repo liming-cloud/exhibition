@@ -23,6 +23,7 @@ import {Editor, Toolbar} from '@wangeditor/editor-for-vue'
 import '@wangeditor/editor/dist/css/style.css'
 import {ElMessage} from 'element-plus'
 import {getImageUrl} from '@/utils/request'
+import {prepareImage} from '@/utils/image'
 
 const props = defineProps({
   modelValue: {
@@ -53,21 +54,21 @@ const editorConfig = {
   autoFocus: false,
   MENU_CONF: {
     uploadImage: {
-      server: '/api/file/upload',
-      fieldName: 'file',
-      maxFileSize: 5 * 1024 * 1024, // 5MB
-      maxNumberOfFiles: 10,
       allowedFileTypes: ['image/*'],
-      customInsert(res: any, insertFn: Function) {
-        if (res.code === 200) {
+      // 先压缩再上传（onBeforeUpload 不支持异步，所以自己上传）
+      async customUpload(file: File, insertFn: Function) {
+        const image = await prepareImage(file, 5)
+        if (!image) return
+        try {
+          const body = new FormData()
+          body.append('file', image)
+          const res = await (await fetch('/api/file/upload', {method: 'POST', body})).json()
+          if (res.code !== 200) throw new Error(res.msg)
           insertFn(getImageUrl(res.data), '', '')
-        } else {
-          ElMessage.error('图片上传失败')
+        } catch (err) {
+          ElMessage.error('上传图片失败')
+          console.error('上传图片失败:', err)
         }
-      },
-      onError(_file: File, err: any) {
-        ElMessage.error('上传图片失败')
-        console.error('上传图片失败:', err)
       }
     }
   }

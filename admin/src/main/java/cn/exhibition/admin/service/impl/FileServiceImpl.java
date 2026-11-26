@@ -10,6 +10,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
+import java.util.UUID;
 
 /**
  * @author slm
@@ -25,33 +28,28 @@ public class FileServiceImpl implements FileService {
     @Override
     public String uploadFile(MultipartFile file) {
         try {
-            // 获取存储路径
-            Path uploadPath = Paths.get(path);
-            // 确保目录存在
-            if (!Files.exists(uploadPath)) {
-                Files.createDirectories(uploadPath);
-            }
-            // 获取原始文件名并处理
-            String sanitizedFileName = sanitizeFileName(file.getOriginalFilename());
-
-            // 保存文件
-            Path filePath = uploadPath.resolve(sanitizedFileName);
+            // 按「年/月/随机名.扩展名」保存，避免同名文件（如粘贴截图统一叫 image.png）互相覆盖
+            String relative = YearMonth.now().format(DateTimeFormatter.ofPattern("yyyy/MM"))
+                + "/" + UUID.randomUUID().toString().replace("-", "") + extension(file.getOriginalFilename());
+            Path filePath = Paths.get(path).toAbsolutePath().resolve(relative);
+            Files.createDirectories(filePath.getParent());
             file.transferTo(filePath.toFile());
-            return filePath.toString();
+            // 返回相对上传目录的路径，不暴露服务器目录
+            return relative;
         } catch (IOException e) {
             throw new RuntimeException("Failed to store file.", e);
         }
     }
 
     /**
-     * 处理文件名，去除空格和特殊字符
+     * 取原始文件名的扩展名（含点，小写，只保留字母数字），没有则返回空串
      */
-    private String sanitizeFileName(String originalFileName) throws IOException {
-        if (originalFileName == null || originalFileName.isEmpty()) {
-            throw new IOException("File name is invalid.");
+    private String extension(String originalFileName) {
+        if (originalFileName == null) {
+            return "";
         }
-        return originalFileName.trim()
-            .replaceAll("\\s+", "_")
-            .replaceAll("[\\\\/:*?\"<>|]", "");
+        int dot = originalFileName.lastIndexOf('.');
+        String ext = dot < 0 ? "" : originalFileName.substring(dot + 1).toLowerCase().replaceAll("[^a-z0-9]", "");
+        return ext.isEmpty() ? "" : "." + ext;
     }
 }
