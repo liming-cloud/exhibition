@@ -3,18 +3,19 @@
 @tailwind utilities;
 
 @layer base {
-  /* 配色（#23 定为橙色）：主色 #ff5a1f，强调色玫红（类似色，色相差 30°；见设计规范第 1 节） */
+  /* 配色（#23 定为橙色）：主色取 Logo 橙 #ee8744（500 档，色相 24°），按钮/链接用 600 档 #c74e00 保证白字对比度；
+     强调色玫红（类似色，色相差 37°；见设计规范第 1 节） */
   :root {
-    --color-primary-50: 255 248 241;
-    --color-primary-100: 254 236 220;
-    --color-primary-200: 252 217 189;
-    --color-primary-300: 253 186 140;
-    --color-primary-400: 255 138 76;
-    --color-primary-500: 255 90 31;
-    --color-primary-600: 231 76 18;
-    --color-primary-700: 201 61 16;
-    --color-primary-800: 154 47 12;
-    --color-primary-900: 119 30 7;
+    --color-primary-50: 254 246 240;
+    --color-primary-100: 253 234 221;
+    --color-primary-200: 250 213 189;
+    --color-primary-300: 245 183 142;
+    --color-primary-400: 241 156 101;
+    --color-primary-500: 238 135 68;
+    --color-primary-600: 199 78 0;
+    --color-primary-700: 163 64 0;
+    --color-primary-800: 124 51 3;
+    --color-primary-900: 92 39 5;
     --color-accent-50: 255 241 242;
     --color-accent-100: 255 228 230;
     --color-accent-200: 254 205 211;
