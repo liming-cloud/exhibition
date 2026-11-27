@@ -3,9 +3,11 @@ package cn.exhibition.admin.service.impl;
 import cn.exhibition.admin.database.PageQuery;
 import cn.exhibition.admin.domain.dto.InformationDto;
 import cn.exhibition.admin.domain.entity.InformationPo;
+import cn.exhibition.admin.domain.vo.ArticleListVo;
 import cn.exhibition.admin.exception.NotFoundException;
 import cn.exhibition.admin.mapper.InformationMapper;
 import cn.exhibition.admin.service.InformationService;
+import cn.exhibition.admin.util.StringUtils;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -56,8 +58,15 @@ public class InformationServiceImpl implements InformationService {
     }
 
     @Override
-    public IPage<InformationPo> findByPage(PageQuery pageQuery, String title) {
+    public IPage<ArticleListVo> findByPage(PageQuery pageQuery, String title) {
         return informationMapper.selectPage(pageQuery.build(), Wrappers.<InformationPo>lambdaQuery()
-                .like(ObjectUtil.isNotNull(title), InformationPo::getTitle, title));
+                        .like(ObjectUtil.isNotNull(title), InformationPo::getTitle, title)
+                        .orderByDesc(InformationPo::getCreateTime)
+                        .orderByDesc(InformationPo::getId))
+                .convert(po -> {
+                    ArticleListVo vo = BeanUtil.copyProperties(po, ArticleListVo.class);
+                    vo.setSummary(StringUtils.summary(po.getContent()));
+                    return vo;
+                });
     }
 }

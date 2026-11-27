@@ -4,7 +4,11 @@ import cn.exhibition.admin.database.PageQuery;
 import cn.exhibition.admin.domain.dto.ExhibitionDto;
 import cn.exhibition.admin.domain.bo.ExhibitionBo;
 import cn.exhibition.admin.domain.entity.ExhibitionDetailPo;
+import cn.exhibition.admin.domain.vo.CountryStatVo;
+import cn.exhibition.admin.domain.vo.ExhibitionListVo;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+
+import java.util.List;
 
 /**
  * @author slm
@@ -24,5 +28,9 @@ public interface ExhibitionDetailService {
 
     ExhibitionDetailPo findById(Integer id);
 
-    IPage<ExhibitionDetailPo> page(PageQuery pageQuery, ExhibitionBo exhibitionBo);
+    IPage<ExhibitionListVo> page(PageQuery pageQuery, ExhibitionBo exhibitionBo);
+
+    List<CountryStatVo> countryStats();
+
+    List<Integer> years();
 }

@@ -101,4 +101,20 @@ class CasesControllerTest {
 
         assertThat(page.getValue().getSize()).isEqualTo(100);
     }
+
+    @Test
+    void page_returnsSummaryInsteadOfContent() throws Exception {
+        CasesPo po = new CasesPo();
+        po.setId(1);
+        po.setTitle("出团案例");
+        po.setCoverUrl("2026/11/c.png");
+        po.setContent("<h2>现场</h2>\n<p>展位&amp;洽谈</p>");
+        Pages.stubSelectPage(mapper, po);
+
+        mvc.perform(get("/cases/page"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.rows[0].coverUrl").value("2026/11/c.png"))
+                .andExpect(jsonPath("$.rows[0].summary").value("现场 展位&洽谈"))
+                .andExpect(jsonPath("$.rows[0].content").doesNotExist());
+    }
 }

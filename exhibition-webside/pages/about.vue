@@ -102,13 +102,13 @@ import CountUp from '~/components/common/CountUp.vue'
 const api = useApi()
 
 const { data } = await useAsyncData('about', async () => {
-  const [info, cases, exhibitions, consultants] = await Promise.all([
+  const [info, cases, countries, consultants] = await Promise.all([
     api.contact.getInfo(),
     api.cases.getList({ pageNum: 1, pageSize: 9 }),
-    api.exhibition.getList({ pageNum: 1, pageSize: 999 }),
+    api.exhibition.getCountries(),
     api.contact.getConsultants()
   ])
-  return { info, photos: cases.rows, exhibitions: exhibitions.rows, consultants }
+  return { info, photos: cases.rows, countries, consultants }
 })
 
 const profile = computed(() =>
@@ -116,7 +116,7 @@ const profile = computed(() =>
 )
 const photos = computed(() => (data.value?.photos ?? []).filter(p => p.coverUrl))
 const previewList = computed(() => photos.value.map(p => fileUrl(p.coverUrl)))
-const stats = computed(() => exhibitionStats(data.value?.exhibitions ?? []))
+const stats = computed(() => exhibitionStats(data.value?.countries ?? []))
 const consultants = computed(() => data.value?.consultants ?? [])
 
 const advantages = [

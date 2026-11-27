@@ -21,4 +21,35 @@
     <!--@mbg.generated-->
     id, `name`, `location`, start_date, end_date, sort, content, country, country_name, exhibition_type, create_time, update_time
   </sql>
+
+  <select id="selectListPage" resultType="cn.exhibition.admin.domain.vo.ExhibitionListVo">
+    SELECT e.id, e.`name`, e.`location`, e.start_date, e.end_date, e.sort, e.country, e.country_name, e.exhibition_type, e.create_time
+    FROM exhibition_detail e
+    <where>
+      <if test="q.name != null and q.name != ''">AND e.`name` LIKE CONCAT('%', #{q.name}, '%')</if>
+      <if test="q.type != null">AND e.exhibition_type = #{q.type}</if>
+      <if test="q.year != null">AND YEAR(e.start_date) = #{q.year}</if>
+      <if test="q.continent != null and q.continent != ''">
+        AND e.country IN (SELECT a.id FROM global_area a WHERE a.continent_name = #{q.continent})
+      </if>
+      <if test="q.country != null">AND e.country = #{q.country}</if>
+      <if test="q.upcoming != null and q.upcoming">AND e.end_date &gt;= #{today}</if>
+    </where>
+    ORDER BY e.end_date &lt; #{today},
+             CASE WHEN e.end_date &gt;= #{today} THEN e.start_date END,
+             e.start_date DESC, e.sort, e.id
+  </select>
+
+  <select id="selectCountryStats" resultType="cn.exhibition.admin.domain.vo.CountryStatVo">
+    SELECT a.id, a.continent_code, a.continent_name, a.country_code, a.country_name,
+           COUNT(*) AS exhibition_count, SUM(e.end_date &gt;= #{today}) AS upcoming_count
+    FROM exhibition_detail e
+    JOIN global_area a ON a.id = e.country
+    GROUP BY a.id, a.continent_code, a.continent_name, a.country_code, a.country_name
+    ORDER BY a.id
+  </select>
+
+  <select id="selectYears" resultType="java.lang.Integer">
+    SELECT DISTINCT YEAR(start_date) AS y FROM exhibition_detail ORDER BY y
+  </select>
 </mapper>

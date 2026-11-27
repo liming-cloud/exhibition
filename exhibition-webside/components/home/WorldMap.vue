@@ -4,11 +4,11 @@
 
 <script setup lang="ts">
 import * as echarts from 'echarts'
-import type { Exhibition } from '~/types/exhibition'
+import type { CountryStat } from '~/types/exhibition'
 import { countryCoordinates } from '~/constants/countryCoordinates'
 
-// 展会数据由首页传入（与下方展会项目板块共用），点击国家通知父组件筛选
-const props = defineProps<{ exhibitions: Exhibition[]; selected: number | null }>()
+// 有展会的国家及数量由首页传入（与下方展会项目板块共用），点击国家通知父组件筛选
+const props = defineProps<{ countries: CountryStat[]; selected: number | null }>()
 const emit = defineEmits<{ select: [countryId: number] }>()
 
 const chartContainer = ref<HTMLElement | null>(null)
@@ -22,22 +22,15 @@ const themeColor = (shade: number) => {
   return `rgb(${value.trim().split(/\s+/).join(',')})`
 }
 
-const scatterData = computed(() => {
-  const stats = new Map<string, { id: number; count: number }>()
-  for (const e of props.exhibitions) {
-    if (!e.countryName || !e.country) continue
-    const item = stats.get(e.countryName) ?? { id: e.country, count: 0 }
-    item.count++
-    stats.set(e.countryName, item)
-  }
-  return [...stats.entries()]
-    .filter(([name]) => countryCoordinates[name])
-    .map(([name, { id, count }]) => ({
-      name,
-      countryId: id,
-      value: [...countryCoordinates[name].coordinates, count]
+const scatterData = computed(() =>
+  props.countries
+    .filter(c => countryCoordinates[c.countryName])
+    .map(c => ({
+      name: c.countryName,
+      countryId: c.id,
+      value: [...countryCoordinates[c.countryName].coordinates, c.exhibitionCount]
     }))
-})
+)
 
 // 颜色每次渲染时从当前配色读取；选中的国家用深色加粗边框
 const render = () => {

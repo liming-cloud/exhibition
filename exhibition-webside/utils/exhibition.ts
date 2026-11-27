@@ -1,4 +1,4 @@
-import type { Exhibition } from '~/types/exhibition'
+import type { CountryStat, Exhibition } from '~/types/exhibition'
 
 export const exhibitionStart = (e: Exhibition) => e.startDate
 
@@ -11,8 +11,8 @@ export const exhibitionDates = (e: Exhibition) =>
 export const isUpcoming = (e: Exhibition, today = new Date().toISOString().slice(0, 10)) =>
   exhibitionEnd(e) >= today
 
-// 信任数字（D3）：只放能从展会数据算出的，首页与关于我们共用
-export const exhibitionStats = (rows: Exhibition[]) => [
-  { label: '覆盖国家', value: new Set(rows.map(e => e.country)).size },
-  { label: '即将开展', value: rows.filter(e => isUpcoming(e)).length }
+// 信任数字（D3）：只放能从展会数据算出的，首页与关于我们共用；countries 来自 /exhibition/countries
+export const exhibitionStats = (countries: CountryStat[]) => [
+  { label: '覆盖国家', value: countries.length },
+  { label: '即将开展', value: countries.reduce((sum, c) => sum + c.upcomingCount, 0) }
 ]

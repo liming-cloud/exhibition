@@ -6,6 +6,20 @@ const detailSources = [
   { api: '/subsidies/page', path: '/subsidies' }
 ]
 
+// 后端每页最多 100 条，列表接口不含正文，按页取完
+const PAGE_SIZE = 100
+
+const listIds = async (url: string) => {
+  const ids: number[] = []
+  for (let pageNum = 1; ; pageNum++) {
+    const res = await $fetch<{ total: number; rows: { id: number }[] }>(url, {
+      query: { pageNum, pageSize: PAGE_SIZE }
+    })
+    ids.push(...res.rows.map(row => row.id))
+    if (!res.rows.length || ids.length >= res.total) return ids
+  }
+}
+
 export default defineEventHandler(async (event) => {
   const { apiBase } = useRuntimeConfig(event)
   const origin = getRequestURL(event, { xForwardedProto: true }).origin
@@ -13,8 +27,8 @@ export default defineEventHandler(async (event) => {
   const staticPaths = ['/', '/exhibitions', '/news', '/cases', '/subsidies', '/about', '/contact']
   const detailPaths = await Promise.all(
     detailSources.map(async ({ api, path }) => {
-      const res = await $fetch<{ rows: { id: number }[] }>(apiBase + api).catch(() => ({ rows: [] }))
-      return res.rows.map(row => `${path}/${row.id}`)
+      const ids = await listIds(apiBase + api).catch(() => [])
+      return ids.map(id => `${path}/${id}`)
     })
   )
 

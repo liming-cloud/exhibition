@@ -48,11 +48,8 @@ const { data } = useLazyAsyncData(
   'error-upcoming',
   async () => {
     try {
-      const { rows } = await api.exhibition.getList({ pageNum: 1, pageSize: 999 })
+      const { rows } = await api.exhibition.getList({ pageNum: 1, pageSize: 3, upcoming: true })
       return rows
-        .filter(e => isUpcoming(e))
-        .sort((a, b) => exhibitionStart(a).localeCompare(exhibitionStart(b)))
-        .slice(0, 3)
     } catch {
       return []
     }

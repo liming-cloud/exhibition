@@ -28,7 +28,7 @@
           <ClientOnly>
             <WorldMap
               v-if="showMap"
-              :exhibitions="exhibitions"
+              :countries="countries"
               :selected="selectedCountry"
               @select="selectFromMap"
             />
@@ -44,8 +44,8 @@
           <p class="section-desc mb-6">我们代理和组织的海外展会，按国家查看</p>
           <HomeExhibitionBoard
             v-model="selectedCountry"
-            :exhibitions="exhibitions"
-            :areas="areas"
+            :countries="countries"
+            :upcoming="upcoming"
           />
         </div>
       </div>
@@ -81,21 +81,30 @@ import ConsultBar from '~/components/common/ConsultBar.vue'
 import CountUp from '~/components/common/CountUp.vue'
 
 const api = useApi()
+// 首页只放 6 个展会，其余点「查看更多」进展会列表
+const HOME_UPCOMING_LIMIT = 6
 
-// 首页展会数据服务端取一次，地图与展会项目板块共用
-const { data } = await useAsyncData('home-exhibitions', async () => {
-  const [areas, list] = await Promise.all([
-    api.exhibition.getGlobalArea(),
-    api.exhibition.getList({ pageNum: 1, pageSize: 999 })
-  ])
-  return { areas, rows: list.rows }
-})
-const exhibitions = computed(() => data.value?.rows ?? [])
-const areas = computed(() => data.value?.areas ?? [])
+// 有展会的国家及数量：地图、国家标签、信任数字共用
+const { data: countryData } = await useAsyncData('home-countries', () => api.exhibition.getCountries())
+const countries = computed(() => countryData.value ?? [])
 
-const stats = computed(() => exhibitionStats(exhibitions.value))
+const stats = computed(() => exhibitionStats(countries.value))
 
 const selectedCountry = ref<number | null>(null)
+
+// 即将开始的展会：选中国家后重新查
+const { data: upcomingData } = await useAsyncData(
+  'home-upcoming',
+  () =>
+    api.exhibition.getList({
+      pageNum: 1,
+      pageSize: HOME_UPCOMING_LIMIT,
+      upcoming: true,
+      country: selectedCountry.value ?? undefined
+    }),
+  { watch: [selectedCountry] }
+)
+const upcoming = computed(() => upcomingData.value?.rows ?? [])
 
 // 只在 sm（640px）及以上加载地图
 const showMap = ref(false)

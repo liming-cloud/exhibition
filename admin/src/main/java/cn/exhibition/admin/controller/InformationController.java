@@ -5,6 +5,7 @@ import cn.exhibition.admin.database.TableDataInfo;
 import cn.exhibition.admin.domain.R;
 import cn.exhibition.admin.domain.dto.InformationDto;
 import cn.exhibition.admin.domain.entity.InformationPo;
+import cn.exhibition.admin.domain.vo.ArticleListVo;
 import cn.exhibition.admin.service.InformationService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import jakarta.validation.Valid;
@@ -46,8 +47,8 @@ public class InformationController {
     }
 
     @GetMapping("/page")
-    public TableDataInfo<InformationPo> page(PageQuery pageQuery,String title) {
-        IPage<InformationPo> page = informationService.findByPage(pageQuery,title);
+    public TableDataInfo<ArticleListVo> page(PageQuery pageQuery,String title) {
+        IPage<ArticleListVo> page = informationService.findByPage(pageQuery,title);
         return TableDataInfo.build(page);
     }
  }

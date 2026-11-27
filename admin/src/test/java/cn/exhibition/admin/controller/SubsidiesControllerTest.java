@@ -107,4 +107,20 @@ class SubsidiesControllerTest {
 
         assertThat(page.getValue().getSize()).isEqualTo(100);
     }
+
+    @Test
+    void page_returnsSummaryInsteadOfContent() throws Exception {
+        SubsidiesPo po = new SubsidiesPo();
+        po.setId(1);
+        po.setTitle("境外展会补贴");
+        po.setPrice(new BigDecimal("5000"));
+        po.setContent("<p>按展位面积补贴</p>");
+        Pages.stubSelectPage(mapper, po);
+
+        mvc.perform(get("/subsidies/page"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.rows[0].price").value(5000))
+                .andExpect(jsonPath("$.rows[0].summary").value("按展位面积补贴"))
+                .andExpect(jsonPath("$.rows[0].content").doesNotExist());
+    }
 }

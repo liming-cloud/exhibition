@@ -5,6 +5,7 @@ import cn.exhibition.admin.database.TableDataInfo;
 import cn.exhibition.admin.domain.R;
 import cn.exhibition.admin.domain.dto.CasesDto;
 import cn.exhibition.admin.domain.entity.CasesPo;
+import cn.exhibition.admin.domain.vo.ArticleListVo;
 import cn.exhibition.admin.service.CasesService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import jakarta.validation.Valid;
@@ -46,9 +47,9 @@ public class CasesController {
     }
 
     @GetMapping("/page")
-    public TableDataInfo<CasesPo> dataGrid(PageQuery pageQuery,String title) {
+    public TableDataInfo<ArticleListVo> dataGrid(PageQuery pageQuery,String title) {
 
-        IPage<CasesPo> page = casesService.findByPage(pageQuery,title);
+        IPage<ArticleListVo> page = casesService.findByPage(pageQuery,title);
         return TableDataInfo.build(page);
     }
 

@@ -106,7 +106,8 @@ const api = useApi()
 const { data } = await useAsyncData('home-carousel', () =>
   api.carousel.getList({ pageNum: 1, pageSize: 10, status: 1 })
 )
-const slides = computed(() => [...(data.value?.rows ?? [])].sort((a, b) => a.sort - b.sort))
+// 后端已按 sort 升序返回
+const slides = computed(() => data.value?.rows ?? [])
 
 const INTERVAL = 6000
 const current = ref(0)

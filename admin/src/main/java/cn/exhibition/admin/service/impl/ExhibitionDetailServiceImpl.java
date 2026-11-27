@@ -5,17 +5,20 @@ import cn.exhibition.admin.domain.bo.ExhibitionBo;
 import cn.exhibition.admin.domain.dto.ExhibitionDto;
 import cn.exhibition.admin.domain.entity.ExhibitionDetailPo;
 import cn.exhibition.admin.domain.entity.GlobalAreaPo;
+import cn.exhibition.admin.domain.vo.CountryStatVo;
+import cn.exhibition.admin.domain.vo.ExhibitionListVo;
 import cn.exhibition.admin.exception.NotFoundException;
 import cn.exhibition.admin.exception.ServiceException;
 import cn.exhibition.admin.mapper.ExhibitionDetailMapper;
 import cn.exhibition.admin.mapper.GlobalAreaMapper;
 import cn.exhibition.admin.service.ExhibitionDetailService;
 import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
+import java.util.List;
 
 /**
  * @author slm
@@ -74,9 +77,17 @@ public class ExhibitionDetailServiceImpl implements ExhibitionDetailService {
     }
 
     @Override
-    public IPage<ExhibitionDetailPo> page(PageQuery pageQuery, ExhibitionBo exhibitionBo) {
-        return exhibitionDetailMapper.selectPage(pageQuery.build(), Wrappers.<ExhibitionDetailPo>lambdaQuery()
-                .like(ObjectUtil.isNotNull(exhibitionBo.getName()), ExhibitionDetailPo::getName, exhibitionBo.getName())
-                .eq(ObjectUtil.isNotNull(exhibitionBo.getCountry()), ExhibitionDetailPo::getCountry, exhibitionBo.getCountry()));
+    public IPage<ExhibitionListVo> page(PageQuery pageQuery, ExhibitionBo exhibitionBo) {
+        return exhibitionDetailMapper.selectListPage(pageQuery.build(), exhibitionBo, LocalDate.now());
+    }
+
+    @Override
+    public List<CountryStatVo> countryStats() {
+        return exhibitionDetailMapper.selectCountryStats(LocalDate.now());
+    }
+
+    @Override
+    public List<Integer> years() {
+        return exhibitionDetailMapper.selectYears();
     }
 }
