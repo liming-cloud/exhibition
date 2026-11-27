@@ -1,8 +1,10 @@
 package cn.exhibition.admin.controller;
 
 import cn.exhibition.admin.domain.R;
+import cn.exhibition.admin.domain.dto.ContactInfoDto;
 import cn.exhibition.admin.domain.entity.ContactInfoPo;
 import cn.exhibition.admin.service.ContactInfoService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,8 +30,8 @@ public class ContactInfoController {
      * 更新联系信息
      */
     @PutMapping("/update")
-    public R<Void> updateContactInfo(@RequestBody ContactInfoPo contactInfo) {
-        contactInfoService.updateContactInfo(contactInfo);
+    public R<Void> updateContactInfo(@Valid @RequestBody ContactInfoDto dto) {
+        contactInfoService.updateContactInfo(dto);
         return R.ok("更新成功");
     }
 }

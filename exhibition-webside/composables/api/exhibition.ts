@@ -23,10 +23,10 @@ export const useExhibitionApi = () => {
      * 获取展会详情
      */
     getDetail: async (id: number) => {
-      const { data } = await useHttp<ApiResponse<Exhibition>>(`/exhibition/detail/${id}`, {
+      const res = await useHttp<ApiResponse<Exhibition>>(`/exhibition/detail/${id}`, {
         method: 'GET'
-      })
-      return data.value?.data || null
+      }).catch(ignoreNotFound)
+      return res?.data.value?.data || null
     },
 
     /**

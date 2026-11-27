@@ -25,10 +25,10 @@ export const useInformationApi = () => {
      * 获取市场资讯详情
      */
     getDetail: async (id: number): Promise<Information | undefined> => {
-      const { data } = await useHttp<ApiResponse<Information>>(`/information/detail/${id}`, {
+      const res = await useHttp<ApiResponse<Information>>(`/information/detail/${id}`, {
         method: 'GET'
-      })
-      return data.value?.data
+      }).catch(ignoreNotFound)
+      return res?.data.value?.data
     }
   }
 }

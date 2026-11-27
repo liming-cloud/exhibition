@@ -131,7 +131,7 @@ import {onMounted, reactive, ref} from 'vue'
 import type {FormInstance, UploadProps} from 'element-plus'
 import {ElMessage, ElMessageBox} from 'element-plus'
 import {Picture, Plus} from '@element-plus/icons-vue'
-import {delCarousel, getCarousel, listCarousel, saveCarousel} from '@/api/carousel'
+import {addCarousel, delCarousel, getCarousel, listCarousel, updateCarousel} from '@/api/carousel'
 import type {Carousel, CarouselQuery} from '@/types/carousel'
 import {getImageUrl} from '@/utils/request'
 import {prepareImage} from '@/utils/image'
@@ -219,7 +219,9 @@ const submitForm = async () => {
   carouselRef.value?.validate(async (valid) => {
     if (valid) {
       try {
-        await saveCarousel(form)
+        const { id, title, imageUrl, link, sort, status } = form
+        const data = { title, imageUrl, link, sort, status }
+        await (id ? updateCarousel(id, data) : addCarousel(data))
         ElMessage.success('操作成功')
         open.value = false
         getList()

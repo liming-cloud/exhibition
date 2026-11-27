@@ -25,10 +25,10 @@ export const useSubsidiesApi = () => {
      * 获取补贴政策详情
      */
     getDetail: async (id: number): Promise<Subsidies | undefined> => {
-      const { data } = await useHttp<ApiResponse<Subsidies>>(`/subsidies/detail/${id}`, {
+      const res = await useHttp<ApiResponse<Subsidies>>(`/subsidies/detail/${id}`, {
         method: 'GET'
-      })
-      return data.value?.data
+      }).catch(ignoreNotFound)
+      return res?.data.value?.data
     }
   }
 }

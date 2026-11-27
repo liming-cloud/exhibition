@@ -19,11 +19,23 @@ export function getExhibition(id: number) {
   })
 }
 
-/** 新增或修改展会 */
-export function saveExhibition(data: Exhibition) {
+/** 展会表单字段（新增、修改只提交这些） */
+export type ExhibitionForm = Pick<Exhibition, 'name' | 'exhibitionType' | 'content' | 'location' | 'time' | 'year' | 'month' | 'country' | 'sort'>
+
+/** 新增展会 */
+export function addExhibition(data: ExhibitionForm) {
   return request<ApiResponse<void>>({
-    url: '/exhibition/save',
+    url: '/exhibition/add',
     method: 'post',
+    data
+  })
+}
+
+/** 修改展会 */
+export function updateExhibition(id: number, data: ExhibitionForm) {
+  return request<ApiResponse<void>>({
+    url: `/exhibition/update/${id}`,
+    method: 'put',
     data
   })
 }

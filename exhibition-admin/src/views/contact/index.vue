@@ -228,7 +228,8 @@ const submitEdit = async () => {
     await contactFormRef.value.validate()
     submitLoading.value = true
 
-    await updateContactInfo(editForm)
+    const { address, phone, contactPerson, workingHours, holidayArrangement, email, companyProfile } = editForm
+    await updateContactInfo({ address, phone, contactPerson, workingHours, holidayArrangement, email, companyProfile })
     ElMessage.success('联系信息更新成功')
     editOpen.value = false
     await fetchContactInfo()

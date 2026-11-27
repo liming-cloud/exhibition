@@ -1,9 +1,12 @@
 package cn.exhibition.admin.service.impl;
 
 import cn.exhibition.admin.database.PageQuery;
+import cn.exhibition.admin.domain.dto.InformationDto;
 import cn.exhibition.admin.domain.entity.InformationPo;
+import cn.exhibition.admin.exception.NotFoundException;
 import cn.exhibition.admin.mapper.InformationMapper;
 import cn.exhibition.admin.service.InformationService;
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -18,20 +21,38 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class InformationServiceImpl implements InformationService {
 
+    private static final String NOT_FOUND = "资讯不存在";
+
     private final InformationMapper informationMapper;
+
     @Override
-    public void save(InformationPo informationPo) {
-        informationMapper.insertOrUpdate(informationPo);
+    public void add(InformationDto dto) {
+        informationMapper.insert(BeanUtil.copyProperties(dto, InformationPo.class));
+    }
+
+    @Override
+    public void update(Integer id, InformationDto dto) {
+        InformationPo informationPo = BeanUtil.copyProperties(dto, InformationPo.class);
+        informationPo.setId(id);
+        if (informationMapper.updateById(informationPo) == 0) {
+            throw new NotFoundException(NOT_FOUND);
+        }
     }
 
     @Override
     public void delete(Integer id) {
-        informationMapper.deleteById(id);
+        if (informationMapper.deleteById(id) == 0) {
+            throw new NotFoundException(NOT_FOUND);
+        }
     }
 
     @Override
     public InformationPo findById(Integer id) {
-        return informationMapper.selectById(id);
+        InformationPo informationPo = informationMapper.selectById(id);
+        if (informationPo == null) {
+            throw new NotFoundException(NOT_FOUND);
+        }
+        return informationPo;
     }
 
     @Override

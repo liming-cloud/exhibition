@@ -50,8 +50,9 @@ service.interceptors.response.use(
   },
   (error) => {
     console.log('err' + error)
+    // 后端出错时也返回 { code, msg }，优先显示后端给出的原因
     ElMessage({
-      message: error.message,
+      message: error.response?.data?.msg || error.message,
       type: 'error',
       duration: 5 * 1000
     })

@@ -3,9 +3,11 @@ package cn.exhibition.admin.controller;
 import cn.exhibition.admin.database.PageQuery;
 import cn.exhibition.admin.database.TableDataInfo;
 import cn.exhibition.admin.domain.R;
+import cn.exhibition.admin.domain.dto.CasesDto;
 import cn.exhibition.admin.domain.entity.CasesPo;
 import cn.exhibition.admin.service.CasesService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,9 +22,15 @@ public class CasesController {
 
     private final CasesService casesService;
 
-    @PostMapping("/save")
-    public R<Void> save(@RequestBody CasesPo casesPo) {
-        casesService.save(casesPo);
+    @PostMapping("/add")
+    public R<Void> add(@Valid @RequestBody CasesDto dto) {
+        casesService.add(dto);
+        return R.ok();
+    }
+
+    @PutMapping("/update/{id}")
+    public R<Void> update(@PathVariable Integer id, @Valid @RequestBody CasesDto dto) {
+        casesService.update(id, dto);
         return R.ok();
     }
 

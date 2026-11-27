@@ -20,11 +20,23 @@ export function getCases(id: number) {
   })
 }
 
+/** 案例表单字段（新增、修改只提交这些） */
+export type CasesForm = Pick<Cases, 'title' | 'content' | 'coverUrl'>
+
 /** 新增案例 */
-export function saveCases(data: Cases) {
+export function addCases(data: CasesForm) {
   return request<ApiResponse<void>>({
-    url: '/cases/save',
+    url: '/cases/add',
     method: 'post',
+    data
+  })
+}
+
+/** 修改案例 */
+export function updateCases(id: number, data: CasesForm) {
+  return request<ApiResponse<void>>({
+    url: `/cases/update/${id}`,
+    method: 'put',
     data
   })
 }

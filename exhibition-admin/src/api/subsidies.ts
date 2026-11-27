@@ -20,11 +20,23 @@ export function getSubsidies(id: number) {
   })
 }
 
+/** 补贴信息表单字段（新增、修改只提交这些） */
+export type SubsidiesForm = Pick<Subsidies, 'title' | 'content' | 'price' | 'startTime' | 'endTime'>
+
 /** 新增补贴信息 */
-export function saveCarousel(data: Subsidies) {
+export function addSubsidies(data: SubsidiesForm) {
   return request<ApiResponse<void>>({
-    url: '/subsidies/save',
+    url: '/subsidies/add',
     method: 'post',
+    data
+  })
+}
+
+/** 修改补贴信息 */
+export function updateSubsidies(id: number, data: SubsidiesForm) {
+  return request<ApiResponse<void>>({
+    url: `/subsidies/update/${id}`,
+    method: 'put',
     data
   })
 }

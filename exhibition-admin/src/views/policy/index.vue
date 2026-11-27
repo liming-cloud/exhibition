@@ -108,7 +108,7 @@
 import {onMounted, reactive, ref} from 'vue'
 import {ElMessage, ElMessageBox, type FormInstance} from 'element-plus'
 import type {Subsidies, SubsidiesQuery} from '@/types/subsidies'
-import {deleteSubsidies, getSubsidies, listSubsidies, saveCarousel} from '@/api/subsidies'
+import {addSubsidies, deleteSubsidies, getSubsidies, listSubsidies, updateSubsidies} from '@/api/subsidies'
 import Editor from '@/components/Editor/index.vue'
 import Pagination from '@/components/Pagination/index.vue'
 
@@ -227,7 +227,9 @@ const submitForm = async () => {
   await formEl.validate(async (valid) => {
     if (valid) {
       try {
-        const res = await saveCarousel(form)
+        const { id, title, content, price, startTime, endTime } = form
+        const data = { title, content, price, startTime, endTime }
+        const res = await (id ? updateSubsidies(id, data) : addSubsidies(data))
         if (res.code === 200) {
           ElMessage.success(form.id ? '修改成功' : '新增成功')
           dialog.visible = false
