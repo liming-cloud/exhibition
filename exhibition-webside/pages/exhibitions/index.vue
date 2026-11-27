@@ -3,7 +3,7 @@
     <PageBanner
       title="展会列表"
       en="Exhibitions"
-      :desc="`共 ${all.length} 个展会，覆盖 ${countryCount} 个国家`"
+      :desc="`共 ${allCount} 个展会，覆盖 ${countryCount} 个国家`"
       :crumbs="[{ name: '展会列表' }]"
     />
 
@@ -95,7 +95,7 @@
 
       <AppPagination
         :model-value="filters.page"
-        :total="filtered.length"
+        :total="total"
         :page-size="pageSize"
         @update:model-value="p => setQuery({ page: p > 1 ? String(p) : '' }, false)"
       />
@@ -124,17 +124,15 @@ const route = useRoute()
 const router = useRouter()
 const pageSize = 10
 
-// 展会数量在几百条以内，服务端一次取全量，筛选分页在前端完成（页面清单「现状差异」）
-const { data } = await useAsyncData('exhibition-list', async () => {
-  const [areas, list] = await Promise.all([
-    api.exhibition.getGlobalArea(),
-    api.exhibition.getList({ pageNum: 1, pageSize: 999 })
-  ])
-  return { areas, rows: list.rows }
+// 筛选项只列有展会的国家和年份；展会总数由各国数量相加
+const { data: options } = await useAsyncData('exhibition-filter-options', async () => {
+  const [countries, years] = await Promise.all([api.exhibition.getCountries(), api.exhibition.getYears()])
+  return { countries, years }
 })
-const all = computed(() => data.value?.rows ?? [])
-const areas = computed(() => data.value?.areas ?? [])
-const countryCount = computed(() => new Set(all.value.map(e => e.country)).size)
+const countries = computed(() => options.value?.countries ?? [])
+const years = computed(() => (options.value?.years ?? []).map(String))
+const allCount = computed(() => countries.value.reduce((sum, c) => sum + c.exhibitionCount, 0))
+const countryCount = computed(() => countries.value.length)
 
 // 地址栏是唯一的筛选状态：q 关键词、type 行业、year 年份、continent 大洲、country 国家 id、page 页码
 const str = (v: unknown) => (typeof v === 'string' ? v : '')
@@ -159,30 +157,30 @@ const setQuery = (patch: Record<string, string | undefined>, resetPage = true) =
   router.replace({ query })
 }
 
-const continentOf = (countryId: number) => areas.value.find(a => a.id === countryId)?.continentName ?? ''
-const continents = computed(() => [...new Set(areas.value.map(a => a.continentName).filter(Boolean))].sort())
+const continents = computed(() => [...new Set(countries.value.map(c => c.continentName).filter(Boolean))].sort())
 const countryOptions = computed(() =>
-  areas.value.filter(a => !filters.value.continent || a.continentName === filters.value.continent)
+  countries.value.filter(c => !filters.value.continent || c.continentName === filters.value.continent)
 )
-const years = computed(() => [...new Set(all.value.map(e => exhibitionStart(e).slice(0, 4)))].sort())
 
-// 即将开始的按开始日期升序在前，已结束的按日期倒序排后
-const filtered = computed(() => {
-  const f = filters.value
-  const q = f.q.toLowerCase()
-  const rows = all.value.filter(
-    e =>
-      (!q || e.name.toLowerCase().includes(q)) &&
-      (!f.type || e.exhibitionType === f.type) &&
-      (!f.year || exhibitionStart(e).startsWith(f.year)) &&
-      (!f.continent || continentOf(e.country) === f.continent) &&
-      (!f.country || e.country === f.country)
-  )
-  const upcoming = rows.filter(e => isUpcoming(e)).sort((a, b) => exhibitionStart(a).localeCompare(exhibitionStart(b)))
-  const ended = rows.filter(e => !isUpcoming(e)).sort((a, b) => exhibitionStart(b).localeCompare(exhibitionStart(a)))
-  return [...upcoming, ...ended]
-})
-const pageRows = computed(() => filtered.value.slice((filters.value.page - 1) * pageSize, filters.value.page * pageSize))
+// 筛选、排序（即将开始的升序在前，已结束的倒序在后）、分页都在后端。
+// key 随筛选条件变化：条件变了自动重新查；静态预览站带参数打开时没有对应的预渲染数据，也会在浏览器端重新查
+const { data: result } = await useAsyncData(
+  () => `exhibition-list:${JSON.stringify(filters.value)}`,
+  () => {
+    const f = filters.value
+    return api.exhibition.getList({
+      pageNum: f.page,
+      pageSize,
+      name: f.q || undefined,
+      type: f.type || undefined,
+      year: f.year || undefined,
+      continent: f.continent || undefined,
+      country: f.country || undefined
+    })
+  }
+)
+const pageRows = computed(() => result.value?.rows ?? [])
+const total = computed(() => result.value?.total ?? 0)
 
 const tags = computed<FilterTag[]>(() => {
   const f = filters.value
@@ -191,7 +189,7 @@ const tags = computed<FilterTag[]>(() => {
   if (f.type) list.push({ key: 'type', label: ExhibitionTypeMap[f.type as keyof typeof ExhibitionTypeMap] ?? f.type })
   if (f.year) list.push({ key: 'year', label: `${f.year} 年` })
   if (f.continent) list.push({ key: 'continent', label: f.continent })
-  if (f.country) list.push({ key: 'country', label: areas.value.find(a => a.id === f.country)?.countryName ?? '国家' })
+  if (f.country) list.push({ key: 'country', label: countries.value.find(c => c.id === f.country)?.countryName ?? '国家' })
   return list
 })
 const removeTag = (key: string) => setQuery(key === 'continent' ? { continent: '', country: '' } : { [key]: '' })
@@ -213,6 +211,6 @@ const register = (e: Exhibition) => {
 useSeoMeta({
   title: '展会列表',
   description: () =>
-    `雅博展览海外展会目录：共 ${all.value.length} 个展会，覆盖 ${countryCount.value} 个国家，可按行业、年份、大洲、国家筛选`
+    `雅博展览海外展会目录：共 ${allCount.value} 个展会，覆盖 ${countryCount.value} 个国家，可按行业、年份、大洲、国家筛选`
 })
 </script>

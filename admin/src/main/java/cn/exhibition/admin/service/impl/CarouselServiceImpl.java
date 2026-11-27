@@ -66,6 +66,8 @@ public class CarouselServiceImpl implements CarouselService {
     public IPage<CarouselPo> findByPage(PageQuery query, CarouselBo carouselBo) {
         return carouselMapper.selectPage(query.build(), Wrappers.<CarouselPo>lambdaQuery()
                 .like(ObjectUtil.isNotNull(carouselBo.getTitle()), CarouselPo::getTitle, carouselBo.getTitle())
-                .eq(ObjectUtil.isNotNull(carouselBo.getStatus()), CarouselPo::getStatus, carouselBo.getStatus()));
+                .eq(ObjectUtil.isNotNull(carouselBo.getStatus()), CarouselPo::getStatus, carouselBo.getStatus())
+                .orderByAsc(CarouselPo::getSort)
+                .orderByAsc(CarouselPo::getId));
     }
 }

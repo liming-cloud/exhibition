@@ -7,6 +7,8 @@ import cn.exhibition.admin.domain.dto.ExhibitionDto;
 import cn.exhibition.admin.domain.bo.ExhibitionBo;
 import cn.exhibition.admin.domain.entity.ExhibitionDetailPo;
 import cn.exhibition.admin.domain.entity.GlobalAreaPo;
+import cn.exhibition.admin.domain.vo.CountryStatVo;
+import cn.exhibition.admin.domain.vo.ExhibitionListVo;
 import cn.exhibition.admin.mapper.GlobalAreaMapper;
 import cn.exhibition.admin.service.ExhibitionDetailService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -51,16 +53,34 @@ public class ExhibitionController {
         return R.ok(exhibitionService.findById(id));
     }
 
+    /**
+     * 列表不含正文。筛选参数见 {@link ExhibitionBo}
+     */
     @GetMapping("/page")
-    public TableDataInfo<ExhibitionDetailPo> pageList(PageQuery pageQuery,String name,Integer country) {
-
-        IPage<ExhibitionDetailPo> page = exhibitionService.page(pageQuery,new ExhibitionBo(name,null,null,country));
+    public TableDataInfo<ExhibitionListVo> pageList(PageQuery pageQuery, ExhibitionBo query) {
+        IPage<ExhibitionListVo> page = exhibitionService.page(pageQuery, query);
         return TableDataInfo.build(page);
     }
 
     @GetMapping("/area")
     public R<List<GlobalAreaPo>> findGlobalArea() {
         return R.ok(globalAreaMapper.selectList());
+    }
+
+    /**
+     * 有展会的国家及展会数量
+     */
+    @GetMapping("/countries")
+    public R<List<CountryStatVo>> countries() {
+        return R.ok(exhibitionService.countryStats());
+    }
+
+    /**
+     * 有展会的年份
+     */
+    @GetMapping("/years")
+    public R<List<Integer>> years() {
+        return R.ok(exhibitionService.years());
     }
 
 

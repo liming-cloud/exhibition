@@ -26,7 +26,7 @@
                     loading="lazy"
                   />
                 </template>
-                <p class="line-clamp-2">{{ toSummary(n.content, 120) }}</p>
+                <p class="line-clamp-2">{{ n.summary }}</p>
                 <p class="text-xs text-neutral-400">{{ formatDate(n.createTime) }}</p>
               </ListRow>
             </div>
@@ -99,14 +99,9 @@ const rows = computed(() => data.value?.rows ?? [])
 const total = computed(() => data.value?.total ?? 0)
 
 const { data: exhibitions } = await useAsyncData('news-upcoming', () =>
-  api.exhibition.getList({ pageNum: 1, pageSize: 999 })
+  api.exhibition.getList({ pageNum: 1, pageSize: 5, upcoming: true })
 )
-const upcoming = computed(() =>
-  (exhibitions.value?.rows ?? [])
-    .filter(e => isUpcoming(e))
-    .sort((a, b) => exhibitionStart(a).localeCompare(exhibitionStart(b)))
-    .slice(0, 5)
-)
+const upcoming = computed(() => exhibitions.value?.rows ?? [])
 
 const search = () => {
   page.value = 1

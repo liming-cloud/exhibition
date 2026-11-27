@@ -3,6 +3,7 @@ package cn.exhibition.admin.util;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.http.HtmlUtil;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.util.AntPathMatcher;
@@ -24,6 +25,22 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils{
     public static final String SEPARATOR = ",";
 
     public static final String SLASH = "/";
+
+    /**
+     * 列表摘要长度
+     */
+    public static final int SUMMARY_LENGTH = 120;
+
+    /**
+     * 富文本转纯文本摘要：去标签、反转义、合并空白，截取前 {@value #SUMMARY_LENGTH} 字
+     */
+    public static String summary(String html) {
+        if (StrUtil.isBlank(html)) {
+            return "";
+        }
+        String text = HtmlUtil.unescape(HtmlUtil.cleanHtmlTag(html)).replaceAll("[\\s\\u00a0]+", " ").trim();
+        return StrUtil.sub(text, 0, SUMMARY_LENGTH);
+    }
 
 
     /**

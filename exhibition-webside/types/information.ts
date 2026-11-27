@@ -4,8 +4,10 @@ export interface Information {
   id: number
   /** 标题 */
   title: string
-  /** 内容 */
-  content: string
+  /** 内容，只有详情接口返回 */
+  content?: string
+  /** 正文纯文本摘要，只有列表接口返回 */
+  summary?: string
   /** 封面图 */
   coverUrl?: string
   /** 创建时间 */

@@ -19,7 +19,8 @@ export interface Exhibition {
   startDate: string // YYYY-MM-DD
   endDate: string // YYYY-MM-DD，单日展会与 startDate 相同
   sort: number
-  content: string
+  content?: string // 只有详情接口返回
+
   country: number
   countryName: string
   exhibitionType: ExhibitionType // 修改为枚举类型
@@ -29,23 +30,34 @@ export interface Exhibition {
   summary?: string // 新增约定：一句话简介（#5）
 }
 
-export interface GlobalArea {
+/** 有展会的国家及展会数量（/exhibition/countries） */
+export interface CountryStat {
   id: number
   continentCode: string
   continentName: string
   countryCode: string
   countryName: string
+  /** 展会总数 */
+  exhibitionCount: number
+  /** 未结束的展会数 */
+  upcomingCount: number
 }
-/** 展会查询参数 */
+/** 展会查询参数，列表按「未结束的开始日期升序在前、已结束倒序在后」排好 */
 export interface ExhibitionQuery {
   /** 页码 */
   pageNum: number
-  /** 每页条数 */
+  /** 每页条数，上限 100 */
   pageSize: number
   /** 展会名称 */
   name?: string
+  /** 展会类型 */
+  type?: ExhibitionType | string
+  /** 开始日期所在年份 */
+  year?: number | string
+  /** 大洲名称 */
+  continent?: string
   /** 国家ID */
   country?: number
-  /** 展会类型 */
-  exhibitionType?: ExhibitionType // 修改为枚举类型
+  /** 只看未结束的 */
+  upcoming?: boolean
 }

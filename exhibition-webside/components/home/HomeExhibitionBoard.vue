@@ -5,7 +5,7 @@
       <div class="flex flex-wrap items-center gap-2 px-4 py-3">
         <span class="continent-label">全部</span>
         <button class="chip" :class="{ 'chip-active': selected === null }" @click="selected = null">
-          全部国家 <span class="chip-count">{{ exhibitions.length }}</span>
+          全部国家 <span class="chip-count">{{ totalCount }}</span>
         </button>
       </div>
       <div
@@ -30,13 +30,13 @@
     <h3 class="mt-6 text-lg font-semibold text-neutral-900">
       {{ selectedName ? `${selectedName}展会` : '近期展会' }}
       <span class="ml-2 text-sm font-normal text-neutral-500"
-        >即将开始 {{ upcoming.length }} 场</span
+        >即将开始 {{ upcomingCount }} 场</span
       >
     </h3>
 
-    <div v-if="shown.length" class="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+    <div v-if="upcoming.length" class="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
       <NuxtLink
-        v-for="e in shown"
+        v-for="e in upcoming"
         :key="e.id"
         :to="`/exhibitions/${e.id}`"
         class="group flex gap-4 p-4 rounded-lg border border-neutral-200 bg-white hover:border-primary-300 hover:shadow-sm transition"
@@ -87,43 +87,39 @@
 </template>
 
 <script setup lang="ts">
-import { ExhibitionTypeMap, type Exhibition, type GlobalArea } from '~/types/exhibition'
+import { ExhibitionTypeMap, type CountryStat, type Exhibition } from '~/types/exhibition'
 
-const props = defineProps<{ exhibitions: Exhibition[]; areas: GlobalArea[] }>()
+// countries：有展会的国家及数量；upcoming：当前选中国家（或全部）即将开始的前几个，由页面按选中国家查询
+const props = defineProps<{ countries: CountryStat[]; upcoming: Exhibition[] }>()
 const selected = defineModel<number | null>({ default: null })
 
 const continentOrder = ['亚洲', '欧洲', '北美洲', '南美洲', '非洲', '大洋洲']
-const SHOW_LIMIT = 6
 
 const continents = computed(() => {
-  const groups = new Map<string, Map<number, { id: number; name: string; count: number }>>()
-  for (const e of props.exhibitions) {
-    const continent = props.areas.find(a => a.id === e.country)?.continentName || '其他'
-    const countries = groups.get(continent) ?? new Map()
-    const item = countries.get(e.country) ?? { id: e.country, name: e.countryName, count: 0 }
-    item.count++
-    countries.set(e.country, item)
-    groups.set(continent, countries)
+  const groups = new Map<string, { id: number; name: string; count: number }[]>()
+  for (const c of props.countries) {
+    const continent = c.continentName || '其他'
+    const list = groups.get(continent) ?? []
+    list.push({ id: c.id, name: c.countryName, count: c.exhibitionCount })
+    groups.set(continent, list)
   }
   const rank = (name: string) => (continentOrder.includes(name) ? continentOrder.indexOf(name) : 99)
   return [...groups.entries()]
     .sort(([a], [b]) => rank(a) - rank(b))
     .map(([name, countries]) => ({
       name,
-      countries: [...countries.values()].sort((a, b) => b.count - a.count)
+      countries: countries.sort((a, b) => b.count - a.count)
     }))
 })
 
-const selectedName = computed(
-  () => props.exhibitions.find(e => e.country === selected.value)?.countryName ?? ''
+const totalCount = computed(() => props.countries.reduce((sum, c) => sum + c.exhibitionCount, 0))
+const selectedCountry = computed(() => props.countries.find(c => c.id === selected.value))
+const selectedName = computed(() => selectedCountry.value?.countryName ?? '')
+const upcomingCount = computed(() =>
+  selected.value === null
+    ? props.countries.reduce((sum, c) => sum + c.upcomingCount, 0)
+    : (selectedCountry.value?.upcomingCount ?? 0)
 )
-
-const upcoming = computed(() =>
-  props.exhibitions
-    .filter(e => (selected.value === null || e.country === selected.value) && isUpcoming(e))
-    .sort((a, b) => exhibitionStart(a).localeCompare(exhibitionStart(b)))
-)
-const shown = computed(() => upcoming.value.slice(0, SHOW_LIMIT))
 const allLink = computed(() =>
   selected.value ? `/exhibitions?country=${selected.value}` : '/exhibitions'
 )

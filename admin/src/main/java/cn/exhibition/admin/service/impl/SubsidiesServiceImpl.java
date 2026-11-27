@@ -3,9 +3,11 @@ package cn.exhibition.admin.service.impl;
 import cn.exhibition.admin.database.PageQuery;
 import cn.exhibition.admin.domain.dto.SubsidiesDto;
 import cn.exhibition.admin.domain.entity.SubsidiesPo;
+import cn.exhibition.admin.domain.vo.SubsidiesListVo;
 import cn.exhibition.admin.exception.NotFoundException;
 import cn.exhibition.admin.mapper.SubsidiesMapper;
 import cn.exhibition.admin.service.SubsidiesService;
+import cn.exhibition.admin.util.StringUtils;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -56,8 +58,15 @@ public class SubsidiesServiceImpl implements SubsidiesService {
     }
 
     @Override
-    public IPage<SubsidiesPo> page(PageQuery pageQuery, String title) {
+    public IPage<SubsidiesListVo> page(PageQuery pageQuery, String title) {
         return subsidiesMapper.selectPage(pageQuery.build(), Wrappers.<SubsidiesPo>lambdaQuery()
-                .like(ObjectUtil.isNotNull(title), SubsidiesPo::getTitle, title));
+                        .like(ObjectUtil.isNotNull(title), SubsidiesPo::getTitle, title)
+                        .orderByDesc(SubsidiesPo::getCreateTime)
+                        .orderByDesc(SubsidiesPo::getId))
+                .convert(po -> {
+                    SubsidiesListVo vo = BeanUtil.copyProperties(po, SubsidiesListVo.class);
+                    vo.setSummary(StringUtils.summary(po.getContent()));
+                    return vo;
+                });
     }
 }

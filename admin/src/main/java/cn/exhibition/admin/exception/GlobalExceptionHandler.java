@@ -35,11 +35,14 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * 请求体校验失败，返回第一条字段错误
+     * 请求体校验失败，返回第一条字段错误；查询参数类型转换失败（如 year=abc）不带出内部信息
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<R<Void>> handleInvalid(MethodArgumentNotValidException e) {
         FieldError error = e.getBindingResult().getFieldError();
+        if (error != null && error.isBindingFailure()) {
+            return fail(HttpStatus.BAD_REQUEST.value(), "参数格式错误");
+        }
         String msg = error != null ? error.getDefaultMessage() : e.getBindingResult().getAllErrors().get(0).getDefaultMessage();
         return fail(HttpStatus.BAD_REQUEST.value(), msg);
     }

@@ -5,6 +5,7 @@ import cn.exhibition.admin.database.TableDataInfo;
 import cn.exhibition.admin.domain.R;
 import cn.exhibition.admin.domain.dto.SubsidiesDto;
 import cn.exhibition.admin.domain.entity.SubsidiesPo;
+import cn.exhibition.admin.domain.vo.SubsidiesListVo;
 import cn.exhibition.admin.service.SubsidiesService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import jakarta.validation.Valid;
@@ -47,8 +48,8 @@ public class SubsidiesController {
     }
 
     @GetMapping("/page")
-    public TableDataInfo<SubsidiesPo> page(PageQuery pageQuery,String title) {
-        IPage<SubsidiesPo> page = subsidiesService.page(pageQuery,title);
+    public TableDataInfo<SubsidiesListVo> page(PageQuery pageQuery,String title) {
+        IPage<SubsidiesListVo> page = subsidiesService.page(pageQuery,title);
         return TableDataInfo.build(page);
     }
 }

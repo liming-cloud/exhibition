@@ -3,6 +3,7 @@ package cn.exhibition.admin.service;
 import cn.exhibition.admin.database.PageQuery;
 import cn.exhibition.admin.domain.dto.InformationDto;
 import cn.exhibition.admin.domain.entity.InformationPo;
+import cn.exhibition.admin.domain.vo.ArticleListVo;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 
 /**
@@ -22,5 +23,5 @@ public interface InformationService{
 
     InformationPo findById(Integer id);
 
-    IPage<InformationPo> findByPage(PageQuery pageQuery, String title);
+    IPage<ArticleListVo> findByPage(PageQuery pageQuery, String title);
 }

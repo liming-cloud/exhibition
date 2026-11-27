@@ -93,7 +93,7 @@
 </template>
 
 <script setup lang="ts">
-import { ExhibitionTypeMap } from '~/types/exhibition'
+import { ExhibitionTypeMap, type Exhibition } from '~/types/exhibition'
 import AppBreadcrumb from '~/components/common/AppBreadcrumb.vue'
 import ListRow from '~/components/common/ListRow.vue'
 import DateBlock from '~/components/common/DateBlock.vue'
@@ -116,13 +116,21 @@ if (!exhibition.value) {
   throw createError({ statusCode: 404, message: '展会不存在', fatal: true })
 }
 
-// 顾问与同类展会：失败不影响详情主体
+// 顾问与同类展会（同国家或同行业、未结束的）：失败不影响详情主体
+const RELATED_LIMIT = 4
 const { data: extra } = await useAsyncData(`exhibition-extra-${route.params.id}`, async () => {
-  const [consultants, list] = await Promise.all([
+  const e = exhibition.value!
+  // 多取 1 条，去掉当前展会后仍够数
+  const fetchRelated = (query: { country?: number; type?: string }) =>
+    api.exhibition
+      .getList({ pageNum: 1, pageSize: RELATED_LIMIT + 1, upcoming: true, ...query })
+      .catch(() => ({ rows: [] as Exhibition[] }))
+  const [consultants, sameCountry, sameType] = await Promise.all([
     api.contact.getConsultants(),
-    api.exhibition.getList({ pageNum: 1, pageSize: 999 }).catch(() => ({ rows: [] }))
+    fetchRelated({ country: e.country }),
+    fetchRelated({ type: e.exhibitionType })
   ])
-  return { consultants: consultants.slice(0, 2), rows: list.rows }
+  return { consultants: consultants.slice(0, 2), rows: [...sameCountry.rows, ...sameType.rows] }
 })
 const consultants = computed(() => extra.value?.consultants ?? [])
 
@@ -139,13 +147,11 @@ const facts = computed(() => {
   ].filter(f => f.value)
 })
 
-// 同国家或同行业，最多 4 条，即将开始的在前
+// 两组合并去重，按开始日期升序，最多 4 条
 const related = computed(() => {
-  const e = exhibition.value!
-  return (extra.value?.rows ?? [])
-    .filter(r => r.id !== e.id && (r.country === e.country || r.exhibitionType === e.exhibitionType))
-    .sort((a, b) => Number(isUpcoming(b)) - Number(isUpcoming(a)) || exhibitionStart(a).localeCompare(exhibitionStart(b)))
-    .slice(0, 4)
+  const id = exhibition.value!.id
+  const rows = (extra.value?.rows ?? []).filter((r, i, all) => r.id !== id && all.findIndex(x => x.id === r.id) === i)
+  return rows.sort((a, b) => exhibitionStart(a).localeCompare(exhibitionStart(b))).slice(0, RELATED_LIMIT)
 })
 
 const registerVisible = ref(false)

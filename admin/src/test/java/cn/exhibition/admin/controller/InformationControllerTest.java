@@ -88,4 +88,20 @@ class InformationControllerTest {
         assertThat(page.getValue().getSize()).isEqualTo(100);
         assertThat(page.getValue().getCurrent()).isEqualTo(2);
     }
+
+    @Test
+    void page_returnsSummaryInsteadOfContent() throws Exception {
+        InformationPo po = new InformationPo();
+        po.setId(1);
+        po.setTitle("市场简讯");
+        po.setContent("<p>迪拜&nbsp;<b>能源展</b></p><img src=\"a.png\"><table><tr><td>报名中</td></tr></table>");
+        Pages.stubSelectPage(mapper, po);
+
+        mvc.perform(get("/information/page"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.total").value(1))
+                .andExpect(jsonPath("$.rows[0].title").value("市场简讯"))
+                .andExpect(jsonPath("$.rows[0].summary").value("迪拜 能源展报名中"))
+                .andExpect(jsonPath("$.rows[0].content").doesNotExist());
+    }
 }

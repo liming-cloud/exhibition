@@ -3,6 +3,7 @@ package cn.exhibition.admin.service;
 import cn.exhibition.admin.database.PageQuery;
 import cn.exhibition.admin.domain.dto.SubsidiesDto;
 import cn.exhibition.admin.domain.entity.SubsidiesPo;
+import cn.exhibition.admin.domain.vo.SubsidiesListVo;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 
 /**
@@ -23,5 +24,5 @@ public interface SubsidiesService {
 
     SubsidiesPo findById(Integer id);
 
-    IPage<SubsidiesPo> page(PageQuery pageQuery, String title);
+    IPage<SubsidiesListVo> page(PageQuery pageQuery, String title);
 }
