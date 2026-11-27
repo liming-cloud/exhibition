@@ -35,7 +35,7 @@ cp -R "$ROOT/exhibition-admin/dist" "$STAGE/app/admin-dist"
 cp -R "$ROOT/exhibition-webside/.output" "$STAGE/app/webside"
 cp "$ROOT/deploy/docker-compose.yml" "$ROOT/deploy/docker-compose.https.yml" \
    "$ROOT/deploy/.env.example" "$ROOT/deploy/README.md" "$STAGE/"
-cp -R "$ROOT/deploy/nginx" "$ROOT/deploy/scripts" "$STAGE/"
+cp -R "$ROOT/deploy/nginx" "$ROOT/deploy/scripts" "$ROOT/sql" "$STAGE/"
 rm -f "$STAGE/scripts/release.sh"
 echo "$VERSION" > "$STAGE/VERSION"
 

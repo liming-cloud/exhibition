@@ -54,7 +54,11 @@
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="time" label="时间" width="160" />
+        <el-table-column label="展会日期" width="210">
+          <template #default="scope: { row: Exhibition }">
+            {{ scope.row.startDate === scope.row.endDate ? scope.row.startDate : `${scope.row.startDate} ~ ${scope.row.endDate}` }}
+          </template>
+        </el-table-column>
         <el-table-column prop="location" label="地址" show-overflow-tooltip />
         <el-table-column prop="countryName" label="国家" width="120" />
         <el-table-column prop="sort" label="排序" width="80" />
@@ -88,19 +92,9 @@
           <el-form-item label="举办地址" prop="location">
             <el-input v-model="form.location" placeholder="请输入举办地址" />
           </el-form-item>
-          <el-form-item label="时间" prop="time">
-            <el-date-picker v-model="form.time" type="date" placeholder="请选择时间" format="YYYY-MM-DD"
-              value-format="YYYY-MM-DD" @change="handleTimeChange" />
-          </el-form-item>
-          <el-form-item label="年月" prop="year">
-            <el-row :gutter="10">
-              <el-col :span="12">
-                <el-input v-model="form.year" placeholder="年份" disabled />
-              </el-col>
-              <el-col :span="12">
-                <el-input v-model="form.month" placeholder="月份" disabled />
-              </el-col>
-            </el-row>
+          <el-form-item label="展会日期" prop="startDate">
+            <el-date-picker v-model="dateRange" type="daterange" start-placeholder="开始日期" end-placeholder="结束日期"
+              range-separator="~" format="YYYY-MM-DD" value-format="YYYY-MM-DD" />
           </el-form-item>
           <el-form-item label="国家" prop="country">
             <el-row :gutter="10">
@@ -167,9 +161,8 @@ const form = reactive<Exhibition>({
   name: '',
   content: '',
   location: '',
-  time: '',
-  year: '',
-  month: '',
+  startDate: '',
+  endDate: '',
   sort: 0,
   country: 0,
   countryName: '',
@@ -181,7 +174,7 @@ const rules = reactive({
   name: [{ required: true, message: '展会名称不能为空', trigger: 'blur' }],
   exhibitionType: [{ required: true, message: '请选择展会类型', trigger: 'change' }],
   content: [{ required: true, message: '展会内容不能为空', trigger: 'blur' }],
-  time: [{ required: true, message: '请选择时间', trigger: 'change' }],
+  startDate: [{ required: true, message: '请选择展会日期', trigger: 'change' }],
   country: [{ required: true, message: '请选择国家', trigger: 'change' }],
   location: [{ required: true, message: '举办地址不能为空', trigger: 'blur' }],
   sort: [{ required: true, message: '排序不能空', trigger: 'blur' }]
@@ -230,17 +223,14 @@ const getAreaOptions = async () => {
   }
 }
 
-/** 处理时间选择变化 */
-const handleTimeChange = (val: string) => {
-  if (val) {
-    const date = new Date(val)
-    form.year = date.getFullYear().toString()
-    form.month = (date.getMonth() + 1).toString().padStart(2, '0')
-  } else {
-    form.year = ''
-    form.month = ''
+/** 日期范围选择器与 startDate / endDate 双向绑定；单日展会开始、结束选同一天 */
+const dateRange = computed({
+  get: () => (form.startDate ? [form.startDate, form.endDate] : []),
+  set: (val: string[] | null) => {
+    form.startDate = val?.[0] ?? ''
+    form.endDate = val?.[1] ?? ''
   }
-}
+})
 
 /** 处理大洲选择变化 */
 const handleContinentChange = (_val: string) => {
@@ -331,8 +321,8 @@ const submitForm = async () => {
   exhibitionRef.value?.validate(async (valid) => {
     if (valid) {
       try {
-        const { id, name, exhibitionType, content, location, time, year, month, country, sort } = form
-        const data = { name, exhibitionType, content, location, time, year, month, country, sort }
+        const { id, name, exhibitionType, content, location, startDate, endDate, country, sort } = form
+        const data = { name, exhibitionType, content, location, startDate, endDate, country, sort }
         await (id ? updateExhibition(id, data) : addExhibition(data))
         ElMessage.success('保存成功')
         open.value = false
@@ -374,18 +364,19 @@ const getExhibitionTypeTagType = (type: ExhibitionType) => {
 
 /** 表单重置 */
 const reset = () => {
+  // 先 resetFields 再清空：表单首次在「修改」时渲染的话，resetFields 会恢复成那条展会的值
+  exhibitionRef.value?.resetFields()
   form.id = 0
   form.name = ''
+  form.content = ''
   form.location = ''
-  form.time = ''
-  form.year = ''
-  form.month = ''
+  form.startDate = ''
+  form.endDate = ''
   form.sort = 0
   form.country = 0
   form.countryName = ''
   form.exhibitionType = ExhibitionType.ENERGY
   selectedContinent.value = ''
-  exhibitionRef.value?.resetFields()
 }
 
 /** 取消按钮操作 */

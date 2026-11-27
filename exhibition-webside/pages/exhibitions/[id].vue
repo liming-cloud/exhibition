@@ -132,7 +132,7 @@ const hasContent = computed(() => !!toSummary(exhibition.value?.content, 1) || /
 const facts = computed(() => {
   const e = exhibition.value!
   return [
-    { label: '时间', value: e.time },
+    { label: '时间', value: exhibitionDates(e) },
     { label: '国家', value: e.countryName },
     { label: '场馆', value: e.location },
     { label: '行业', value: typeLabel.value }

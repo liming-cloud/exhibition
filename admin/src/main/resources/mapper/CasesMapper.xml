@@ -8,9 +8,11 @@
     <result column="cover_url" jdbcType="LONGVARCHAR" property="coverUrl" />
     <result column="title" jdbcType="VARCHAR" property="title" />
     <result column="content" jdbcType="LONGVARCHAR" property="content" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
   </resultMap>
   <sql id="Base_Column_List">
     <!--@mbg.generated-->
-    id, cover_url, title, content
+    id, cover_url, title, content, create_time, update_time
   </sql>
 </mapper>
