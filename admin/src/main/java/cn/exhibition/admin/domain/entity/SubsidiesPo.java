@@ -1,5 +1,6 @@
 package cn.exhibition.admin.domain.entity;
 
+import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -50,4 +51,18 @@ public class SubsidiesPo {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @TableField(value = "end_time")
     private LocalDateTime endTime;
+
+    /**
+     * 创建时间，新增时由后端填写
+     */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
+    private LocalDateTime createTime;
+
+    /**
+     * 更新时间，新增、修改时由后端填写
+     */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @TableField(value = "update_time", fill = FieldFill.INSERT_UPDATE)
+    private LocalDateTime updateTime;
 }

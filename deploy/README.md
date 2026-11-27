@@ -61,6 +61,8 @@ dc exec mysql sh -c 'mysqldump -uroot -p"$MYSQL_ROOT_PASSWORD" --databases exhib
 3. **停旧**：`scripts/cleanup-legacy.sh stop`。先备份到 `/root/legacy-backup-<时间>/`（数据库导出、上传文件、/bash、nginx 配置、MySQL 数据目录），再停用旧服务。
 4. **装新**：`scripts/install.sh https://github.com/liming-cloud/exhibition/releases/download/<版本>/exhibition-<版本>.tar.gz`
 5. **导数据**：`scripts/restore.sh /root/legacy-backup-<时间>/exhibition.sql /root/legacy-backup-<时间>/uploads.tgz`
+   - 旧库结构比新版本旧，导入后按 `sql/README.md` 依次执行迁移（Release 包里带 `sql/`），例如：
+     `dc exec -T mysql sh -c 'mysql -uroot -p"$MYSQL_ROOT_PASSWORD" exhibition' < sql/migrations/001-dates-and-create-time.sql`
 6. **验证**：访问 https://topexpo.com.cn/ 和 /admin/，检查展会、案例、图片。
    - 有问题就回滚：先 `dc down`，再执行 `scripts/cleanup-legacy.sh rollback`。
 7. **清理**（不可逆）：`scripts/cleanup-legacy.sh purge`。会检查新环境已在运行且有数据，然后要求输入 `PURGE` 确认，删除旧文件并卸载 nginx、mysql-community、java-17、nodejs、pm2/pnpm。保留 acme.sh 证书续期和备份目录。

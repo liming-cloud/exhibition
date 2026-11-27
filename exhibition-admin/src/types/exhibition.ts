@@ -20,12 +20,12 @@ export interface Exhibition {
   name: string
   /** 展会内容 */
   content: string
-  /** 展会时间 */
-  time: string
-  /** 年份 */
-  year: string
-  /** 月份 */
-  month: string
+  /** 开始日期 YYYY-MM-DD */
+  startDate: string
+  /** 结束日期 YYYY-MM-DD，不早于开始日期 */
+  endDate: string
+  /** 创建时间（后端填写） */
+  createTime?: string
   /** 国家ID */
   country: number
   /** 国家名称 */

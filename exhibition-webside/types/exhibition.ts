@@ -16,14 +16,14 @@ export interface Exhibition {
   id: number
   name: string
   location: string
-  time: string
-  year: string
-  month: string
+  startDate: string // YYYY-MM-DD
+  endDate: string // YYYY-MM-DD，单日展会与 startDate 相同
   sort: number
   content: string
   country: number
   countryName: string
   exhibitionType: ExhibitionType // 修改为枚举类型
+  createTime?: string
   featured?: boolean // 新增约定：主推展会（Issue #5 后端实现前为空）
   coverUrl?: string // 新增约定：封面图（#5）
   summary?: string // 新增约定：一句话简介（#5）

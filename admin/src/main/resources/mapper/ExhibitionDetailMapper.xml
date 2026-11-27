@@ -7,16 +7,18 @@
     <id column="id" jdbcType="INTEGER" property="id" />
     <result column="name" jdbcType="VARCHAR" property="name" />
     <result column="location" jdbcType="VARCHAR" property="location" />
-    <result column="time" jdbcType="VARCHAR" property="time" />
-    <result column="year" jdbcType="VARCHAR" property="year" />
-    <result column="month" jdbcType="VARCHAR" property="month" />
+    <result column="start_date" jdbcType="DATE" property="startDate" />
+    <result column="end_date" jdbcType="DATE" property="endDate" />
     <result column="sort" jdbcType="INTEGER" property="sort" />
     <result column="content" jdbcType="LONGVARCHAR" property="content" />
     <result column="country" jdbcType="INTEGER" property="country" />
     <result column="country_name" jdbcType="VARCHAR" property="countryName" />
+    <result column="exhibition_type" jdbcType="VARCHAR" property="exhibitionType" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
   </resultMap>
   <sql id="Base_Column_List">
     <!--@mbg.generated-->
-    id, `name`, `location`, `time`, `year`, `month`, sort, content, country, country_name
+    id, `name`, `location`, start_date, end_date, sort, content, country, country_name, exhibition_type, create_time, update_time
   </sql>
 </mapper>

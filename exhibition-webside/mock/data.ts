@@ -378,16 +378,15 @@ const exhibitionContent = (name: string, location: string, time: string) => `
 
 export const exhibitions = exhibitionRows.map(
   ([name, countryName, location, start, end, exhibitionType, featured], i) => {
-    const time = `${start} 至 ${end}`
     return {
       id: i + 1,
       name,
       location,
-      time,
-      year: start.slice(0, 4),
-      month: start.slice(5, 7),
+      startDate: start,
+      endDate: end,
       sort: i + 1,
-      content: exhibitionContent(name, location, time),
+      content: exhibitionContent(name, location, `${start} 至 ${end}`),
+      createTime: '2026-10-01 10:00:00',
       country: areaId(countryName),
       countryName,
       exhibitionType,

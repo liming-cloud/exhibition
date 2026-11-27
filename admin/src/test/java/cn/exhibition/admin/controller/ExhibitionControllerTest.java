@@ -17,6 +17,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -36,7 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class ExhibitionControllerTest {
 
     private static final String BODY = """
-            {"name":"迪拜能源展","location":"迪拜世贸中心","time":"2026-03-01","year":"2026","month":"03",
+            {"name":"迪拜能源展","location":"迪拜世贸中心","startDate":"2026-03-01","endDate":"2026-03-03",
              "sort":1,"content":"<p>介绍</p>","country":8,"countryName":"前端乱填","exhibitionType":"ENERGY"}""";
 
     @Autowired
@@ -65,6 +67,36 @@ class ExhibitionControllerTest {
         verify(mapper).insert(saved.capture());
         assertThat(saved.getValue().getCountryName()).isEqualTo("阿联酋");
         assertThat(saved.getValue().getExhibitionType()).isEqualTo(ExhibitionType.ENERGY);
+        assertThat(saved.getValue().getStartDate()).isEqualTo(LocalDate.of(2026, 3, 1));
+        assertThat(saved.getValue().getEndDate()).isEqualTo(LocalDate.of(2026, 3, 3));
+    }
+
+    @Test
+    void add_acceptsOneDayExhibition() throws Exception {
+        mvc.perform(post("/exhibition/add").contentType(MediaType.APPLICATION_JSON)
+                        .content(BODY.replace("2026-03-03", "2026-03-01")))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void add_rejectsEndBeforeStart() throws Exception {
+        mvc.perform(post("/exhibition/add").contentType(MediaType.APPLICATION_JSON)
+                        .content(BODY.replace("2026-03-03", "2026-02-28")))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.msg").value("结束日期不能早于开始日期"));
+        verify(mapper, never()).insert(any(ExhibitionDetailPo.class));
+    }
+
+    @Test
+    void add_rejectsMissingDates() throws Exception {
+        mvc.perform(post("/exhibition/add").contentType(MediaType.APPLICATION_JSON)
+                        .content(BODY.replace("\"startDate\":\"2026-03-01\",", "")))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.msg").value("请选择开始日期"));
+        mvc.perform(post("/exhibition/add").contentType(MediaType.APPLICATION_JSON)
+                        .content(BODY.replace("\"endDate\":\"2026-03-03\",", "")))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.msg").value("请选择结束日期"));
     }
 
     @Test
@@ -108,12 +140,19 @@ class ExhibitionControllerTest {
         ExhibitionDetailPo po = new ExhibitionDetailPo();
         po.setId(1);
         po.setName("迪拜能源展");
+        po.setStartDate(LocalDate.of(2026, 3, 1));
+        po.setEndDate(LocalDate.of(2026, 3, 3));
+        po.setCreateTime(LocalDateTime.of(2026, 1, 2, 9, 30));
         when(mapper.selectById(1)).thenReturn(po);
         when(mapper.deleteById(1)).thenReturn(1);
 
         mvc.perform(get("/exhibition/detail/1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.name").value("迪拜能源展"));
+                .andExpect(jsonPath("$.data.name").value("迪拜能源展"))
+                .andExpect(jsonPath("$.data.startDate").value("2026-03-01"))
+                .andExpect(jsonPath("$.data.endDate").value("2026-03-03"))
+                .andExpect(jsonPath("$.data.createTime").value("2026-01-02 09:30:00"))
+                .andExpect(jsonPath("$.data.time").doesNotExist());
         mvc.perform(get("/exhibition/detail/2")).andExpect(status().isNotFound());
         mvc.perform(delete("/exhibition/delete/1")).andExpect(status().isOk());
         mvc.perform(delete("/exhibition/delete/2")).andExpect(status().isNotFound());

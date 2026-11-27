@@ -20,7 +20,7 @@ export function getExhibition(id: number) {
 }
 
 /** 展会表单字段（新增、修改只提交这些） */
-export type ExhibitionForm = Pick<Exhibition, 'name' | 'exhibitionType' | 'content' | 'location' | 'time' | 'year' | 'month' | 'country' | 'sort'>
+export type ExhibitionForm = Pick<Exhibition, 'name' | 'exhibitionType' | 'content' | 'location' | 'startDate' | 'endDate' | 'country' | 'sort'>
 
 /** 新增展会 */
 export function addExhibition(data: ExhibitionForm) {
