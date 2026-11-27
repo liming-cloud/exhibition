@@ -20,7 +20,7 @@ jobs:
           distribution: temurin
           java-version: '17'
           cache: maven
-      - run: mvn -q -B -f admin/pom.xml -DskipTests package
+      - run: mvn -q -B -f admin/pom.xml package
 
   admin-ui:
     runs-on: ubuntu-latest

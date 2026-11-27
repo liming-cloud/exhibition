@@ -116,7 +116,7 @@ import {Picture, Plus} from '@element-plus/icons-vue'
 import {getImageUrl} from '@/utils/request'
 import {prepareImage} from '@/utils/image'
 import type {Information, InformationQuery} from '@/types/information'
-import {deleteInformation, getInformation, listInformation, saveInformation} from '@/api/information'
+import {addInformation, deleteInformation, getInformation, listInformation, updateInformation} from '@/api/information'
 import Editor from '@/components/Editor/index.vue'
 import Pagination from '@/components/Pagination/index.vue'
 
@@ -216,7 +216,9 @@ const submitForm = async () => {
   await formEl.validate(async (valid) => {
     if (valid) {
       try {
-        const res = await saveInformation(form)
+        const { id, title, content, coverUrl } = form
+        const data = { title, content, coverUrl }
+        const res = await (id ? updateInformation(id, data) : addInformation(data))
         if (res.code === 200) {
           ElMessage.success(form.id ? '修改成功' : '新增成功')
           dialog.visible = false

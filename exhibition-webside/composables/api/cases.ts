@@ -25,10 +25,10 @@ export const useCasesApi = () => {
      * 获取项目案例详情
      */
     getDetail: async (id: number): Promise<Cases | undefined> => {
-      const { data } = await useHttp<ApiResponse<Cases>>(`/cases/detail/${id}`, {
+      const res = await useHttp<ApiResponse<Cases>>(`/cases/detail/${id}`, {
         method: 'GET'
-      })
-      return data.value?.data
+      }).catch(ignoreNotFound)
+      return res?.data.value?.data
     }
   }
 }

@@ -118,13 +118,13 @@ SELECT 'Section 4: Populating initial data...' AS 'Log';
 
 -- Insert default contact information (if not already present)
 -- Using INSERT IGNORE to avoid error if a row with ID 1 (or any unique key violation) already exists.
-INSERT IGNORE INTO `contact_info` (`id`, `address`, `phone`, `mobile`, `contact_person`, `create_time`, `update_time`)
+-- GET /contact/info 不再写库，没有数据时返回空对象，默认联系信息只在这里初始化；phone 按 JSON 数组存储（后端用 JacksonTypeHandler 读取）
+INSERT IGNORE INTO `contact_info` (`id`, `address`, `phone`, `contact_person`, `create_time`, `update_time`)
 VALUES (
-    1, 
-    '默认公司地址',
-    '010-12345678',
-    '13800138000',
-    '默认联系人',
+    1,
+    '北京市海淀区三里河路9号住建部大院',
+    '["010-53630591/2/3"]',
+    '林琳',
     NOW(),
     NOW()
 );

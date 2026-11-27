@@ -32,9 +32,12 @@ const byKeyword = <T>(list: T[], field: keyof T, keyword?: string) =>
 // path 不含 /api 前缀，如 /exhibition/page
 export const mockApi = (path: string, query: Record<string, any>) => {
   const id = Number(path.split('/').pop())
-  // 与后端一致：查不到时返回 data: null，由页面显示 404
-  const detail = <T extends { id: number }>(list: T[]) =>
-    ok(list.find(row => row.id === id) ?? null)
+  // 与后端一致：查不到时返回 HTTP 404，由页面显示 404
+  const detail = <T extends { id: number }>(list: T[]) => {
+    const row = list.find(item => item.id === id)
+    if (!row) throw new MockNotFound(`${path} 不存在`)
+    return ok(row)
+  }
 
   if (path === '/carousel/page') return page(carousels, query)
   if (path === '/exhibition/page') {

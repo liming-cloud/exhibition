@@ -3,12 +3,14 @@ package cn.exhibition.admin.controller;
 import cn.exhibition.admin.database.PageQuery;
 import cn.exhibition.admin.database.TableDataInfo;
 import cn.exhibition.admin.domain.R;
+import cn.exhibition.admin.domain.dto.ExhibitionDto;
 import cn.exhibition.admin.domain.bo.ExhibitionBo;
 import cn.exhibition.admin.domain.entity.ExhibitionDetailPo;
 import cn.exhibition.admin.domain.entity.GlobalAreaPo;
 import cn.exhibition.admin.mapper.GlobalAreaMapper;
 import cn.exhibition.admin.service.ExhibitionDetailService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,9 +28,15 @@ public class ExhibitionController {
     private final ExhibitionDetailService exhibitionService;
     private final GlobalAreaMapper globalAreaMapper;
 
-    @PostMapping("/save")
-    public R<Void> save(@RequestBody ExhibitionDetailPo exhibitionDetailPo) {
-        exhibitionService.save(exhibitionDetailPo);
+    @PostMapping("/add")
+    public R<Void> add(@Valid @RequestBody ExhibitionDto dto) {
+        exhibitionService.add(dto);
+        return R.ok();
+    }
+
+    @PutMapping("/update/{id}")
+    public R<Void> update(@PathVariable Integer id, @Valid @RequestBody ExhibitionDto dto) {
+        exhibitionService.update(id, dto);
         return R.ok();
     }
 

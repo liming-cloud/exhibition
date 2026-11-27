@@ -16,3 +16,9 @@ export const useHttp = async <T = any>(url: string, opts: HttpOptions = {}) => {
   })
   return { data: ref(data) as Ref<T> }
 }
+
+// 后端查不到记录时返回 HTTP 404；详情接口用它把 404 转成空结果，由页面显示 404，其他错误照常抛出
+export const ignoreNotFound = (error: unknown) => {
+  if ((error as { statusCode?: number })?.statusCode === 404) return undefined
+  throw error
+}

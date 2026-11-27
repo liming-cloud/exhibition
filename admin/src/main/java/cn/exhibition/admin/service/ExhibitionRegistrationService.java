@@ -1,6 +1,7 @@
 package cn.exhibition.admin.service;
 
 import cn.exhibition.admin.database.PageQuery;
+import cn.exhibition.admin.domain.dto.RegistrationDto;
 import cn.exhibition.admin.domain.entity.ExhibitionRegistrationPo;
 import cn.exhibition.admin.domain.enums.ContactProgress;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -11,9 +12,9 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 public interface ExhibitionRegistrationService {
 
     /**
-     * 保存报名信息
+     * 保存报名信息，展会不存在时抛 ServiceException
      */
-    void save(ExhibitionRegistrationPo registration);
+    void save(RegistrationDto dto);
 
     /**
      * 分页查询报名列表（包含展会信息）

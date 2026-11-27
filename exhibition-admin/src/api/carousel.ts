@@ -19,11 +19,23 @@ export function getCarousel(id: number) {
   })
 }
 
-/** 新增或修改轮播图 */
-export function saveCarousel(data: Carousel) {
+/** 轮播图表单字段（新增、修改只提交这些） */
+export type CarouselForm = Pick<Carousel, 'title' | 'imageUrl' | 'link' | 'sort' | 'status'>
+
+/** 新增轮播图 */
+export function addCarousel(data: CarouselForm) {
   return request<ApiResponse<void>>({
-    url: '/carousel/save',
+    url: '/carousel/add',
     method: 'post',
+    data
+  })
+}
+
+/** 修改轮播图 */
+export function updateCarousel(id: number, data: CarouselForm) {
+  return request<ApiResponse<void>>({
+    url: `/carousel/update/${id}`,
+    method: 'put',
     data
   })
 }

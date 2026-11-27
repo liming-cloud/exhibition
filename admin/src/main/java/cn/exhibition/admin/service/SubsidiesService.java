@@ -1,6 +1,7 @@
 package cn.exhibition.admin.service;
 
 import cn.exhibition.admin.database.PageQuery;
+import cn.exhibition.admin.domain.dto.SubsidiesDto;
 import cn.exhibition.admin.domain.entity.SubsidiesPo;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 
@@ -11,7 +12,12 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 
 public interface SubsidiesService {
 
-    void save(SubsidiesPo subsidiesPo);
+    void add(SubsidiesDto dto);
+
+    /**
+     * 记录不存在时抛 NotFoundException
+     */
+    void update(Integer id, SubsidiesDto dto);
 
     void delete(Integer id);
 

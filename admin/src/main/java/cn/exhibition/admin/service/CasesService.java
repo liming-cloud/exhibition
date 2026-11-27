@@ -1,6 +1,7 @@
 package cn.exhibition.admin.service;
 
 import cn.exhibition.admin.database.PageQuery;
+import cn.exhibition.admin.domain.dto.CasesDto;
 import cn.exhibition.admin.domain.entity.CasesPo;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 
@@ -11,11 +12,12 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 
 public interface CasesService {
 
+    void add(CasesDto dto);
+
     /**
-    * @author sunliming
-    * @description 保存
-    */
-    void save(CasesPo casesPo);
+     * 记录不存在时抛 NotFoundException
+     */
+    void update(Integer id, CasesDto dto);
 
     void delete(Integer id);
 

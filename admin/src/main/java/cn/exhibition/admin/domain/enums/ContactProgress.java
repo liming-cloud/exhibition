@@ -30,18 +30,6 @@ public enum ContactProgress {
     }
 
     /**
-     * 根据代码获取枚举
-     */
-    public static ContactProgress fromCode(String code) {
-        for (ContactProgress progress : ContactProgress.values()) {
-            if (progress.getCode().equals(code)) {
-                return progress;
-            }
-        }
-        throw new IllegalArgumentException("Unknown contact progress code: " + code);
-    }
-
-    /**
      * 根据描述获取枚举
      */
     public static ContactProgress fromDescription(String description) {

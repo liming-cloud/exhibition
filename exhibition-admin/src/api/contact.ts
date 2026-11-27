@@ -24,7 +24,7 @@ export function getContactInfo() {
 }
 
 // 更新联系信息
-export function updateContactInfo(data: ContactInfo) {
+export function updateContactInfo(data: Omit<ContactInfo, 'id' | 'createTime' | 'updateTime'>) {
     return request<ApiResponse<void>>({
         url: '/contact/update',
         method: 'put',

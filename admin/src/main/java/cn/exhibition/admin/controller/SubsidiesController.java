@@ -3,9 +3,11 @@ package cn.exhibition.admin.controller;
 import cn.exhibition.admin.database.PageQuery;
 import cn.exhibition.admin.database.TableDataInfo;
 import cn.exhibition.admin.domain.R;
+import cn.exhibition.admin.domain.dto.SubsidiesDto;
 import cn.exhibition.admin.domain.entity.SubsidiesPo;
 import cn.exhibition.admin.service.SubsidiesService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,9 +22,15 @@ public class SubsidiesController {
 
     private final SubsidiesService subsidiesService;
 
-    @PostMapping("/save")
-    public R<Void> save(@RequestBody SubsidiesPo subsidiesPo) {
-        subsidiesService.save(subsidiesPo);
+    @PostMapping("/add")
+    public R<Void> add(@Valid @RequestBody SubsidiesDto dto) {
+        subsidiesService.add(dto);
+        return R.ok();
+    }
+
+    @PutMapping("/update/{id}")
+    public R<Void> update(@PathVariable Integer id, @Valid @RequestBody SubsidiesDto dto) {
+        subsidiesService.update(id, dto);
         return R.ok();
     }
 

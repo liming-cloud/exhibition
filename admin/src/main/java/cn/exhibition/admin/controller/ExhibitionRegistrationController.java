@@ -3,10 +3,12 @@ package cn.exhibition.admin.controller;
 import cn.exhibition.admin.database.PageQuery;
 import cn.exhibition.admin.database.TableDataInfo;
 import cn.exhibition.admin.domain.R;
+import cn.exhibition.admin.domain.dto.RegistrationDto;
 import cn.exhibition.admin.domain.entity.ExhibitionRegistrationPo;
 import cn.exhibition.admin.domain.enums.ContactProgress;
 import cn.exhibition.admin.service.ExhibitionRegistrationService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,8 +26,8 @@ public class ExhibitionRegistrationController {
      * 提交报名
      */
     @PostMapping("/submit")
-    public R<Void> submitRegistration(@RequestBody ExhibitionRegistrationPo registration) {
-        registrationService.save(registration);
+    public R<Void> submitRegistration(@Valid @RequestBody RegistrationDto dto) {
+        registrationService.save(dto);
         return R.ok("报名成功");
     }
 
@@ -42,9 +44,8 @@ public class ExhibitionRegistrationController {
      * 更新联系进度
      */
     @PutMapping("/update-progress/{id}")
-    public R<Void> updateProgress(@PathVariable Integer id, @RequestParam String progress) {
-        ContactProgress contactProgress = ContactProgress.fromCode(progress);
-        registrationService.updateProgress(id, contactProgress);
+    public R<Void> updateProgress(@PathVariable Integer id, @RequestParam ContactProgress progress) {
+        registrationService.updateProgress(id, progress);
         return R.ok("更新成功");
     }
 

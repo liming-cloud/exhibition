@@ -139,7 +139,7 @@
 import {computed, nextTick, onMounted, reactive, ref} from 'vue'
 import type {FormInstance} from 'element-plus'
 import {ElMessage, ElMessageBox} from 'element-plus'
-import {delExhibition, findGlobalArea, getExhibition, listExhibition, saveExhibition} from '@/api/exhibition'
+import {addExhibition, delExhibition, findGlobalArea, getExhibition, listExhibition, updateExhibition} from '@/api/exhibition'
 import type {Exhibition, ExhibitionQuery, GlobalArea} from '@/types/exhibition'
 import {ExhibitionType, ExhibitionTypeMap} from '@/types/exhibition'
 import Pagination from '@/components/Pagination/index.vue'
@@ -331,7 +331,9 @@ const submitForm = async () => {
   exhibitionRef.value?.validate(async (valid) => {
     if (valid) {
       try {
-        await saveExhibition(form)
+        const { id, name, exhibitionType, content, location, time, year, month, country, sort } = form
+        const data = { name, exhibitionType, content, location, time, year, month, country, sort }
+        await (id ? updateExhibition(id, data) : addExhibition(data))
         ElMessage.success('保存成功')
         open.value = false
         getList()
