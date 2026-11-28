@@ -6,7 +6,7 @@ export interface Subsidies {
   title: string
   /** 内容 */
   content: string
-  /** 补贴金额（分） */
+  /** 补贴金额（元） */
   price: number
   /** 开始时间 */
   startTime: string

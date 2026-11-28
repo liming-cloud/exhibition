@@ -55,6 +55,7 @@ import type { Exhibition } from '~/types/exhibition'
 const props = defineProps<{ exhibition: Exhibition | null; next?: boolean }>()
 const visible = defineModel<boolean>({ required: true })
 
+const api = useApi()
 const contact = useSiteContact()
 const title = computed(() => (props.next ? '咨询下一届' : '展会报名'))
 
@@ -76,10 +77,7 @@ const submit = async () => {
   submitting.value = true
   failed.value = false
   try {
-    await $fetch(assetUrl('/api/exhibition/registration/submit'), {
-      method: 'POST',
-      body: { exhibitionId: props.exhibition.id, ...form }
-    })
+    await api.exhibition.submitRegistration({ exhibitionId: props.exhibition.id, ...form })
     submitted.value = true
   } catch {
     failed.value = true

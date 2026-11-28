@@ -11,10 +11,10 @@ export function useContactApi() {
          * 获取联系信息
          */
         getInfo: async () => {
-            const { data } = await useHttp<ApiResponse<ContactInfo>>('/contact/info', {
+            const res = await useHttp<ApiResponse<ContactInfo>>('/contact/info', {
                 method: 'GET'
             })
-            return data.value?.data
+            return res.data
         },
 
         /**
@@ -22,10 +22,10 @@ export function useContactApi() {
          */
         getConsultants: async () => {
             try {
-                const { data } = await useHttp<ApiResponse<Consultant[]>>('/contact/consultants', {
+                const res = await useHttp<ApiResponse<Consultant[]>>('/contact/consultants', {
                     method: 'GET'
                 })
-                return [...(data.value?.data ?? [])].sort((a, b) => a.sort - b.sort)
+                return [...(res.data ?? [])].sort((a, b) => a.sort - b.sort)
             } catch {
                 return []
             }

@@ -13,23 +13,22 @@ export const useCarouselApi = () => {
       if (params.title) queryParams.append('title', params.title)
       if (params.status !== undefined) queryParams.append('status', params.status.toString())
 
-      const { data } = await useHttp<TableDataInfo<Carousel>>(
+      return useHttp<TableDataInfo<Carousel>>(
         `/carousel/page?${queryParams.toString()}`,
         {
           method: 'GET'
         }
       )
-      return data.value || { total: 0, rows: [], code: 0, msg: '' }
     },
 
     /**
      * 获取轮播图详情
      */
     getDetail: async (id: number) => {
-      const { data } = await useHttp<ApiResponse<Carousel>>(`/carousel/detail/${id}`, {
+      const res = await useHttp<ApiResponse<Carousel>>(`/carousel/detail/${id}`, {
         method: 'GET'
       })
-      return data.value?.data
+      return res.data
     }
   }
 }
