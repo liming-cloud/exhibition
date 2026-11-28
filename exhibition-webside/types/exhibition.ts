@@ -61,3 +61,13 @@ export interface ExhibitionQuery {
   /** 只看未结束的 */
   upcoming?: boolean
 }
+/** 展会报名 / 咨询下一届提交内容 */
+export interface RegistrationSubmit {
+  exhibitionId: number
+  /** 公司或个人名称 */
+  companyOrPersonalName: string
+  /** 联系人姓名 */
+  contactName: string
+  /** 手机号 */
+  contactPhone: string
+}

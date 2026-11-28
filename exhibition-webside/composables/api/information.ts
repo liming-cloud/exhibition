@@ -12,13 +12,12 @@ export const useInformationApi = () => {
       if (params.pageNum) queryParams.append('pageNum', params.pageNum.toString())
       if (params.title) queryParams.append('title', params.title)
 
-      const { data } = await useHttp<TableDataInfo<Information>>(
+      return useHttp<TableDataInfo<Information>>(
         `/information/page?${queryParams.toString()}`,
         {
           method: 'GET'
         }
       )
-      return data.value || { total: 0, rows: [], code: 0, msg: '' }
     },
 
     /**
@@ -28,7 +27,7 @@ export const useInformationApi = () => {
       const res = await useHttp<ApiResponse<Information>>(`/information/detail/${id}`, {
         method: 'GET'
       }).catch(ignoreNotFound)
-      return res?.data.value?.data
+      return res?.data
     }
   }
 }

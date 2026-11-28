@@ -79,14 +79,13 @@ import { site } from '~/constants/site'
 
 const api = useApi()
 
-const { data } = await useAsyncData('contact', async () => {
-  const [info, consultants] = await Promise.all([api.contact.getInfo(), api.contact.getConsultants()])
-  return { info, consultants }
-})
+const [{ data: info }, { data: consultantList }] = await Promise.all([
+  useContactInfo(),
+  useAsyncData('contact-consultants', () => api.contact.getConsultants())
+])
 
-const info = computed(() => data.value?.info)
 const phones = computed(() => info.value?.phone?.filter(Boolean) ?? [])
-const consultants = computed(() => data.value?.consultants ?? [])
+const consultants = computed(() => consultantList.value ?? [])
 const mapHref = computed(() => `https://uri.amap.com/search?keyword=${encodeURIComponent(info.value?.address ?? '')}`)
 
 useSeoMeta({

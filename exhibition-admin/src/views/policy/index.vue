@@ -73,7 +73,9 @@
               :precision="2"
               :step="0.01"
               style="width: 200px"
-            />
+            >
+              <template #suffix>元</template>
+            </el-input-number>
           </el-form-item>
           <el-form-item label="时间范围" prop="dateRange">
             <el-date-picker

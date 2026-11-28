@@ -8,7 +8,7 @@ export interface Subsidies {
   content?: string
   /** 正文纯文本摘要，只有列表接口返回 */
   summary?: string
-  /** 补贴金额（分） */
+  /** 补贴金额（元），页面显示为万元 */
   price: number
   /** 开始时间 */
   startTime: string

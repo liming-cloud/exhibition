@@ -12,13 +12,12 @@ export const useSubsidiesApi = () => {
       if (params.pageNum) queryParams.append('pageNum', params.pageNum.toString())
       if (params.title) queryParams.append('title', params.title)
 
-      const { data } = await useHttp<TableDataInfo<Subsidies>>(
+      return useHttp<TableDataInfo<Subsidies>>(
         `/subsidies/page?${queryParams.toString()}`,
         {
           method: 'GET'
         }
       )
-      return data.value || { total: 0, rows: [], code: 0, msg: '' }
     },
 
     /**
@@ -28,7 +27,7 @@ export const useSubsidiesApi = () => {
       const res = await useHttp<ApiResponse<Subsidies>>(`/subsidies/detail/${id}`, {
         method: 'GET'
       }).catch(ignoreNotFound)
-      return res?.data.value?.data
+      return res?.data
     }
   }
 }
